@@ -1359,6 +1359,169 @@ class LeMaitreMotAPITester:
         
         return True, {"export_security_verified": True}
 
+    def test_specific_magic_link_issue_oussama92_1(self):
+        """CRITICAL TEST: Test specific magic link issue with oussama92.1@gmail.com"""
+        print("\n🚨 CRITICAL BUG TEST: Magic Link Issue with oussama92.1@gmail.com")
+        print("=" * 80)
+        print("USER REPORTED ISSUE:")
+        print("- Email: oussama92.1@gmail.com")
+        print("- User receives magic link email successfully")
+        print("- But when clicking link: 'Token invalide' error")
+        print("- No access possible to the application")
+        print("=" * 80)
+        
+        # Step 1: Check if this specific email has Pro status
+        print("\n   Step 1: Checking Pro status for oussama92.1@gmail.com...")
+        success, response = self.run_test(
+            "CRITICAL: Check oussama92.1@gmail.com Pro Status",
+            "GET",
+            f"user/status/{self.problematic_email}",
+            200
+        )
+        
+        if success and isinstance(response, dict):
+            is_pro = response.get('is_pro', False)
+            subscription_type = response.get('subscription_type')
+            subscription_expires = response.get('subscription_expires')
+            
+            print(f"   User is Pro: {is_pro}")
+            if is_pro:
+                print(f"   Subscription type: {subscription_type}")
+                print(f"   Expires: {subscription_expires}")
+            else:
+                print("   ❌ CRITICAL ISSUE: User is not Pro - this explains the magic link failure!")
+                return False, {"issue": "user_not_pro", "email": self.problematic_email}
+        else:
+            print("   ❌ CRITICAL ISSUE: Cannot check Pro status for this email")
+            return False, {"issue": "status_check_failed", "email": self.problematic_email}
+        
+        # Step 2: Test magic link request for this specific email
+        print(f"\n   Step 2: Testing magic link request for {self.problematic_email}...")
+        login_data = {"email": self.problematic_email}
+        
+        success, response = self.run_test(
+            "CRITICAL: Magic Link Request for oussama92.1@gmail.com",
+            "POST",
+            "auth/request-login",
+            200 if is_pro else 404,  # Should be 404 if not Pro
+            data=login_data
+        )
+        
+        if is_pro and success:
+            print(f"   ✅ Magic link request successful for {self.problematic_email}")
+            message = response.get('message', '') if isinstance(response, dict) else ''
+            print(f"   Response: {message}")
+        elif not is_pro and success:
+            print(f"   ✅ Magic link correctly rejected for non-Pro user {self.problematic_email}")
+            print("   This explains why user gets 'Token invalide' - they're not Pro!")
+        else:
+            print(f"   ❌ Unexpected response for {self.problematic_email}")
+            return False, {"issue": "unexpected_response", "email": self.problematic_email}
+        
+        # Step 3: Compare with working email (oussama92.18@gmail.com)
+        print(f"\n   Step 3: Comparing with working email {self.pro_user_email}...")
+        success_working, response_working = self.run_test(
+            "CRITICAL: Compare with Working Email",
+            "GET",
+            f"user/status/{self.pro_user_email}",
+            200
+        )
+        
+        if success_working and isinstance(response_working, dict):
+            is_pro_working = response_working.get('is_pro', False)
+            print(f"   {self.pro_user_email} is Pro: {is_pro_working}")
+            
+            if is_pro_working and not is_pro:
+                print("   ✅ ROOT CAUSE IDENTIFIED:")
+                print(f"   - {self.pro_user_email} is Pro (working)")
+                print(f"   - {self.problematic_email} is NOT Pro (failing)")
+                print("   - Magic links only work for Pro users")
+                print("   - User needs to purchase Pro subscription")
+                return True, {
+                    "root_cause": "user_not_pro",
+                    "problematic_email": self.problematic_email,
+                    "working_email": self.pro_user_email,
+                    "solution": "User needs Pro subscription"
+                }
+            elif is_pro and is_pro_working:
+                print("   ⚠️  Both emails are Pro - need deeper investigation")
+                return self.test_deeper_magic_link_investigation()
+        
+        # Step 4: Test token validation behavior
+        print(f"\n   Step 4: Testing token validation behavior...")
+        fake_token = f"{uuid.uuid4()}-magic-{int(time.time())}"
+        verify_data = {
+            "token": fake_token,
+            "device_id": self.device_id
+        }
+        
+        success, response = self.run_test(
+            "CRITICAL: Token Validation Test",
+            "POST",
+            "auth/verify-login",
+            400,
+            data=verify_data
+        )
+        
+        if success and isinstance(response, dict):
+            detail = response.get('detail', '')
+            print(f"   Token validation error message: {detail}")
+            
+            if 'invalide' in detail.lower():
+                print("   ✅ Getting expected 'Token invalide' error message")
+            else:
+                print(f"   ⚠️  Different error message: {detail}")
+        
+        return True, {"investigation_completed": True}
+    
+    def test_deeper_magic_link_investigation(self):
+        """Deeper investigation if both emails are Pro"""
+        print("\n   🔍 DEEPER INVESTIGATION: Both emails are Pro...")
+        
+        # Test email format validation
+        print("   Testing email format validation...")
+        
+        # Check if there's any difference in how the emails are handled
+        test_emails = [
+            self.problematic_email,  # oussama92.1@gmail.com
+            self.pro_user_email,     # oussama92.18@gmail.com
+            "test.user@gmail.com",   # Control email
+        ]
+        
+        for email in test_emails:
+            print(f"\n   Testing email: {email}")
+            
+            # Test Pro status
+            success, response = self.run_test(
+                f"Deep Investigation: {email} Status",
+                "GET",
+                f"user/status/{email}",
+                200
+            )
+            
+            if success and isinstance(response, dict):
+                is_pro = response.get('is_pro', False)
+                print(f"     Pro status: {is_pro}")
+                
+                if is_pro:
+                    # Test magic link request
+                    success_magic, response_magic = self.run_test(
+                        f"Deep Investigation: {email} Magic Link",
+                        "POST",
+                        "auth/request-login",
+                        200,
+                        data={"email": email}
+                    )
+                    
+                    if success_magic:
+                        print(f"     Magic link request: SUCCESS")
+                    else:
+                        print(f"     Magic link request: FAILED")
+                else:
+                    print(f"     Skipping magic link test (not Pro)")
+        
+        return True, {"deep_investigation_completed": True}
+
     def run_critical_security_tests(self):
         """Run the critical security tests for single session enforcement"""
         print("\n" + "="*80)
@@ -1370,6 +1533,7 @@ class LeMaitreMotAPITester:
         print("="*80)
         
         critical_tests = [
+            ("CRITICAL: Magic Link Issue oussama92.1@gmail.com", self.test_specific_magic_link_issue_oussama92_1),
             ("Single Session Enforcement", self.test_critical_single_session_enforcement),
             ("Email Header Fallback Removal", self.test_critical_email_header_fallback_removal),
             ("Export Endpoint Security", self.test_critical_export_endpoint_security),
