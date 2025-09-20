@@ -526,17 +526,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Wizard Navigation and Flow"
-    - "Step 1 - Programme scolaire"
-    - "Step 2 - Paramètres du document"
-    - "Step 3 - Génération et aperçu"
-    - "Step 4 - Export et téléchargement"
-    - "Responsive Design Implementation"
-    - "Accessibility Implementation"
-    - "Backend Integration Verification"
+    - "Wizard Interface Critical Bug Fixes"
   stuck_tasks: []
   test_all: false
-  test_priority: "high_first"
+  test_priority: "critical_first"
 
 frontend:
   - task: "Wizard Navigation and Flow"
