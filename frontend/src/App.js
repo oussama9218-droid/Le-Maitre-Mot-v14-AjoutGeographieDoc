@@ -967,7 +967,7 @@ function MainApp() {
                         <Button 
                           variant="ghost" 
                           size="sm" 
-                          onClick={() => setCurrentDocument(doc)}
+                          onClick={() => openRecentDocument(doc)}
                           className="text-blue-600 hover:text-blue-700"
                         >
                           Ouvrir
