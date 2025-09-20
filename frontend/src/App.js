@@ -874,423 +874,54 @@ function MainApp() {
           </div>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Generation Panel */}
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
-              <CardTitle className="flex items-center">
-                <BookOpen className="mr-2 h-5 w-5" />
-                Créer un nouveau document
-              </CardTitle>
-              <CardDescription className="text-blue-50">
-                Sélectionnez les paramètres pour générer votre document
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6 space-y-6">
-              {/* Step 1 */}
-              <div className="space-y-4">
-                <div className="flex items-center mb-3">
-                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">1</div>
-                  <h3 className="text-lg font-semibold text-gray-900">Programme scolaire</h3>
-                </div>
-                
-                <div className="grid gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Matière</label>
-                    <Select value={selectedMatiere} onValueChange={setSelectedMatiere}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisir une matière" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {catalog.map(matiere => (
-                          <SelectItem key={matiere.name} value={matiere.name}>
-                            {matiere.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Niveau</label>
-                    <Select value={selectedNiveau} onValueChange={setSelectedNiveau} disabled={!selectedMatiere}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisir un niveau" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableLevels.map(niveau => (
-                          <SelectItem key={niveau.name} value={niveau.name}>
-                            {niveau.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Chapitre</label>
-                    <Select value={selectedChapitre} onValueChange={setSelectedChapitre} disabled={!selectedNiveau}>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Choisir un chapitre" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {availableChapters.map(chapitre => (
-                          <SelectItem key={chapitre} value={chapitre}>
-                            {chapitre}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Step 2 */}
-              <div className="space-y-4">
-                <div className="flex items-center mb-3">
-                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">2</div>
-                  <h3 className="text-lg font-semibold text-gray-900">Paramètres du document</h3>
-                </div>
-
-                <div className="grid gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Type de document</label>
-                    <Select value={typeDoc} onValueChange={setTypeDoc}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="exercices">Feuille d'exercices</SelectItem>
-                        <SelectItem value="controle">Contrôle</SelectItem>
-                        <SelectItem value="dm">Devoir maison</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Difficulté</label>
-                    <Select value={difficulte} onValueChange={setDifficulte}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="facile">Facile</SelectItem>
-                        <SelectItem value="moyen">Moyen</SelectItem>
-                        <SelectItem value="difficile">Difficile</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">Nombre d'exercices</label>
-                    <Select value={nbExercices.toString()} onValueChange={(value) => setNbExercices(parseInt(value))}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {[3, 4, 5, 6, 7, 8, 9, 10].map(n => (
-                          <SelectItem key={n} value={n.toString()}>{n} exercices</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              {/* Template Settings */}
-              <TemplateSettings 
-                isPro={isPro}
-                sessionToken={sessionToken}
-                onTemplateChange={(template) => {
-                  setUserTemplate(template);
-                  setTemplateUpdated(true);
-                }}
-              />
-
-              <Separator />
-
-              {/* Step 3: Generate Document */}
-              <div className="space-y-4">
-                <div className="flex items-center mb-3">
-                  <div className="bg-green-600 text-white rounded-full w-8 h-8 flex items-center justify-center text-sm font-bold mr-3">3</div>
-                  <h3 className="text-lg font-semibold text-gray-900">Génération</h3>
-                </div>
-
-                <Button
-                  onClick={generateDocument}
-                  disabled={!selectedMatiere || !selectedNiveau || !selectedChapitre || isGenerating}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-lg font-semibold transition-all duration-200"
-                >
-                  {isGenerating ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Génération en cours...
-                    </>
-                  ) : (
-                    <>
-                      <FileText className="mr-2 h-4 w-4" />
-                      Générer le document
-                    </>
-                  )}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Preview Panel */}
-          <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-            <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-lg">
-              <CardTitle className="flex items-center">
-                <FileText className="mr-2 h-5 w-5" />
-                Aperçu du document
-              </CardTitle>
-              <CardDescription className="text-indigo-50">
-                Prévisualisez et exportez votre document
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="p-6">
-              {currentDocument ? (
-                <div className="space-y-6">
-                  {/* Document Info */}
-                  <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="font-bold text-lg text-gray-900">{currentDocument.type_doc.charAt(0).toUpperCase() + currentDocument.type_doc.slice(1)}</h3>
-                        <p className="text-gray-600">{currentDocument.matiere} - {currentDocument.niveau}</p>
-                        <p className="text-sm text-gray-500">{currentDocument.chapitre}</p>
-                      </div>
-                      <div className="text-right">
-                        <Badge variant="outline" className="mb-1">{currentDocument.difficulte}</Badge>
-                        <p className="text-sm text-gray-500">{currentDocument.nb_exercices} exercices</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Export Buttons */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button 
-                      onClick={() => exportPDF('sujet')}
-                      disabled={!currentDocument || exportingSubject}
-                      className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white disabled:opacity-50"
-                    >
-                      {exportingSubject ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Export...
-                        </>
-                      ) : (
-                        <>
-                          <Download className="mr-2 h-4 w-4" />
-                          Export Sujet PDF
-                        </>
-                      )}
-                    </Button>
-                    
-                    <Button 
-                      onClick={() => exportPDF('corrige')}
-                      disabled={!currentDocument || exportingSolution}
-                      className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white disabled:opacity-50"
-                    >
-                      {exportingSolution ? (
-                        <>
-                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                          Export...
-                        </>
-                      ) : (
-                        <>
-                          <Download className="mr-2 h-4 w-4" />
-                          Export Corrigé PDF
-                        </>
-                      )}
-                    </Button>
-                  </div>
-
-                  {/* Export Style Selection */}
-                  {currentDocument && (
-                    <div className="border-t pt-4 mt-4">
-                      <div className="mb-3">
-                        <Label htmlFor="export-style" className="text-sm font-medium text-gray-700 flex items-center">
-                          🎨 Style d'export
-                          {!isPro && (
-                            <Badge variant="outline" className="ml-2 text-xs">
-                              Pro requis pour plus de styles
-                            </Badge>
-                          )}
-                        </Label>
-                      </div>
-                      <Select value={selectedExportStyle} onValueChange={setSelectedExportStyle}>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Choisir un style" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {Object.entries(exportStyles).map(([styleId, style]) => (
-                            <SelectItem 
-                              key={styleId} 
-                              value={styleId}
-                              disabled={style.pro_only && !isPro}
-                            >
-                              <div className="flex items-center justify-between w-full">
-                                <div>
-                                  <div className="font-medium">{style.name}</div>
-                                  <div className="text-xs text-gray-500">{style.description}</div>
-                                </div>
-                                {style.pro_only && (
-                                  <Crown className="h-3 w-3 text-yellow-500 ml-2" />
-                                )}
-                              </div>
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      
-                      {/* Style Preview */}
-                      {exportStyles[selectedExportStyle] && (
-                        <div className="mt-2 text-xs text-gray-600">
-                          <p>📋 {exportStyles[selectedExportStyle].description}</p>
-                          {exportStyles[selectedExportStyle].pro_only && !isPro && (
-                            <p className="text-orange-600 mt-1">
-                              ⚠️ Ce style nécessite un compte Pro
-                            </p>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Export Status Info */}
-                  {quotaLoaded && (
-                    <div className="text-center text-sm text-gray-600">
-                      {isPro ? (
-                        <p className="text-blue-600">
-                          👑 Compte Pro - Exports illimités
-                        </p>
-                      ) : quotaStatus.quota_exceeded ? (
-                        <div>
-                          <p className="text-orange-600 mb-2">
-                            ⚠️ Quota dépassé - 
-                            <Button 
-                              variant="link" 
-                              className="p-0 h-auto text-orange-600 underline ml-1"
-                              onClick={() => setShowPaymentModal(true)}
-                            >
-                              Passer à Pro
-                            </Button>
-                          </p>
-                          {userEmail && (
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              onClick={() => checkProStatus(userEmail)}
-                              className="text-xs"
-                            >
-                              Vérifier mon statut Pro
-                            </Button>
-                          )}
-                        </div>
-                      ) : (
-                        <p>
-                          📄 Exports restants : {quotaStatus.exports_remaining}
-                        </p>
-                      )}
-                    </div>
-                  )}
-
-                  {/* Exercises */}
-                  <Tabs defaultValue="sujet" className="w-full">
-                    <TabsList className="grid w-full grid-cols-2">
-                      <TabsTrigger value="sujet">Sujet</TabsTrigger>
-                      <TabsTrigger value="corrige">Corrigé</TabsTrigger>
-                    </TabsList>
-                    
-                    <TabsContent value="sujet" className="space-y-4 mt-4">
-                      {currentDocument.exercises.map((exercise, index) => (
-                        <Card key={exercise.id} className="border-l-4 border-l-blue-500">
-                          <CardContent className="p-4">
-                            <div className="flex justify-between items-start mb-3">
-                              <div className="flex items-center">
-                                <span className="font-bold text-blue-600 mr-2">Exercice {index + 1}</span>
-                                <Badge variant="secondary" className="text-xs">{exercise.type}</Badge>
-                                <Badge variant="outline" className="text-xs ml-2">{exercise.difficulte}</Badge>
-                              </div>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => varyExercise(index)}
-                                className="text-gray-500 hover:text-gray-700"
-                              >
-                                <Shuffle className="h-4 w-4" />
-                              </Button>
-                            </div>
-                            <div className="text-gray-900 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: exercise.enonce }}></div>
-                            {/* NEW: Display geometric schema if present */}
-                            {exercise.schema_img && (
-                              <div className="mt-4 text-center">
-                                <img 
-                                  src={exercise.schema_img} 
-                                  alt="Schéma géométrique" 
-                                  className="max-w-full h-auto mx-auto border border-gray-300 rounded-lg shadow-sm"
-                                  style={{ maxHeight: '400px' }}
-                                />
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </TabsContent>
-                    
-                    <TabsContent value="corrige" className="space-y-4 mt-4">
-                      {currentDocument.exercises.map((exercise, index) => (
-                        <Card key={exercise.id} className="border-l-4 border-l-green-500">
-                          <CardContent className="p-4">
-                            <div className="flex items-center mb-3">
-                              <span className="font-bold text-green-600 mr-2">Exercice {index + 1} - Solution</span>
-                            </div>
-                            <div className="space-y-2">
-                              {exercise.solution.etapes.map((etape, etapeIndex) => (
-                                <div key={etapeIndex} className="text-sm">
-                                  <span className="font-medium text-gray-700">Étape {etapeIndex + 1}:</span>
-                                  <span className="ml-2 text-gray-900" dangerouslySetInnerHTML={{ __html: etape }}></span>
-                                </div>
-                              ))}
-                              <div className="mt-3 p-2 bg-green-50 rounded">
-                                <strong className="text-green-800">Résultat :</strong> 
-                                <span className="ml-2 text-green-900" dangerouslySetInnerHTML={{ __html: exercise.solution.resultat }}></span>
-                              </div>
-                              {exercise.bareme.length > 0 && (
-                                <div className="mt-3 p-2 bg-blue-50 rounded">
-                                  <strong className="text-blue-800">Barème :</strong>
-                                  <ul className="list-disc list-inside mt-1 text-sm">
-                                    {exercise.bareme.map((item, i) => (
-                                      <li key={i} className="text-blue-900">
-                                        {item.etape}: {item.points} pts
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-                            </div>
-                          </CardContent>
-                        </Card>
-                      ))}
-                    </TabsContent>
-                  </Tabs>
-                </div>
-              ) : (
-                <div className="text-center py-12">
-                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">Aucun document généré</h3>
-                  <p className="text-gray-500">
-                    Utilisez le panneau de gauche pour créer votre premier document
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+        {/* Document Wizard */}
+        <DocumentWizard 
+          // Curriculum data
+          matieres={catalog.map(m => m.name)}
+          niveaux={availableLevels.map(l => l.name)}
+          chapitres={availableChapters}
+          // Current selections
+          selectedMatiere={selectedMatiere}
+          selectedNiveau={selectedNiveau}
+          selectedChapitre={selectedChapitre}
+          typeDoc={typeDoc}
+          difficulte={difficulte}
+          nbExercices={nbExercices}
+          // Handlers
+          onMatiereChange={setSelectedMatiere}
+          onNiveauChange={setSelectedNiveau}
+          onChapitreChange={setSelectedChapitre}
+          onTypeDocChange={setTypeDoc}
+          onDifficulteChange={setDifficulte}
+          onNbExercicesChange={setNbExercices}
+          // Generation
+          isGenerating={isGenerating}
+          currentDocument={currentDocument}
+          onGenerate={generateDocument}
+          onVaryExercise={varyExercise}
+          // Export
+          exportStyles={exportStyles}
+          selectedExportStyle={selectedExportStyle}
+          onExportStyleChange={setSelectedExportStyle}
+          exportingSubject={exportingSubject}
+          exportingSolution={exportingSolution}
+          onExportPDF={exportPDF}
+          // Template settings
+          isPro={isPro}
+          sessionToken={sessionToken}
+          onTemplateChange={(template) => {
+            setUserTemplate(template);
+            setTemplateUpdated(true);
+          }}
+          // Quota/Pro status
+          quotaStatus={quotaStatus}
+          quotaLoaded={quotaLoaded}
+          userEmail={userEmail}
+          onCheckProStatus={checkProStatus}
+          onShowPaymentModal={() => setShowPaymentModal(true)}
+          // Loading states
+          isLoading={false}
+        />
 
         {/* Recent Documents */}
         {documents.length > 0 && (
