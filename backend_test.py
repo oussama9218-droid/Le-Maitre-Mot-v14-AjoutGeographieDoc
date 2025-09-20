@@ -1099,6 +1099,7 @@ class LeMaitreMotAPITester:
         
         auth_tests = [
             ("Pro User Exists Check", self.test_pro_user_exists),
+            ("CRITICAL: Race Condition Fix", self.test_magic_link_race_condition_fix),
             ("CRITICAL: Magic Link Bug Fixes", self.test_magic_link_critical_bug_fixes),
             ("CRITICAL: Complete Workflow Test", self.test_magic_link_workflow_comprehensive),
             ("Request Login - Pro User", self.test_request_login_pro_user),
