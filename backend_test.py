@@ -1670,6 +1670,7 @@ class LeMaitreMotAPITester:
         
         critical_tests = [
             ("CRITICAL: Magic Link Issue oussama92.1@gmail.com", self.test_specific_magic_link_issue_oussama92_1),
+            ("CRITICAL: Magic Link Database Investigation", self.test_magic_link_database_investigation),
             ("Single Session Enforcement", self.test_critical_single_session_enforcement),
             ("Email Header Fallback Removal", self.test_critical_email_header_fallback_removal),
             ("Export Endpoint Security", self.test_critical_export_endpoint_security),
