@@ -165,11 +165,20 @@ function LoginVerify() {
   }, [searchParams, isVerifying]);
 
   const verifyLogin = async (token) => {
+    // Prevent multiple simultaneous calls
+    if (isVerifying) {
+      console.log('Login verification already in progress, skipping duplicate call');
+      return;
+    }
+    
+    setIsVerifying(true);
+    
     try {
       // Generate device ID
       const deviceId = localStorage.getItem('lemaitremot_device_id') || generateDeviceId();
       localStorage.setItem('lemaitremot_device_id', deviceId);
 
+      console.log('🔐 Verifying login token...');
       const response = await axios.post(`${API}/auth/verify-login`, {
         token: token,
         device_id: deviceId
@@ -180,6 +189,7 @@ function LoginVerify() {
       localStorage.setItem('lemaitremot_user_email', response.data.email);
       localStorage.setItem('lemaitremot_login_method', 'session');
 
+      console.log('✅ Login verification successful');
       setSuccess(true);
       setTimeout(() => {
         navigate('/');
@@ -190,6 +200,7 @@ function LoginVerify() {
       setError(error.response?.data?.detail || 'Erreur lors de la vérification');
     } finally {
       setVerifying(false);
+      setIsVerifying(false);
     }
   };
 
