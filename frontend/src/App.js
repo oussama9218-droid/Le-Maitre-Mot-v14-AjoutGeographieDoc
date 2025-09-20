@@ -935,6 +935,9 @@ function MainApp() {
           onShowPaymentModal={() => setShowPaymentModal(true)}
           // Loading states
           isLoading={false}
+          // Document loading
+          openedDocument={openedDocument}
+          onDocumentOpened={handleDocumentOpened}
         />
 
         {/* Recent Documents */}
