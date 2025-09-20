@@ -1100,9 +1100,18 @@ async def create_login_session(email: str, device_id: str):
         delete_result = await db.login_sessions.delete_many({"user_email": email})
         logger.info(f"Deleted {delete_result.deleted_count} existing sessions for {email}")
         
-        # Insert the new session
-        await db.login_sessions.insert_one(session_dict)
+        # Use upsert to handle race conditions - replace existing session atomically
+        upsert_result = await db.login_sessions.replace_one(
+            {"user_email": email},
+            session_dict,
+            upsert=True
+        )
         logger.info(f"Created new session for {email} on device {device_id}")
+        
+        if upsert_result.matched_count > 0:
+            logger.info(f"Replaced existing session for {email}")
+        else:
+            logger.info(f"Created new session for {email}")
         
         # Update user's last_login
         await db.pro_users.update_one(
