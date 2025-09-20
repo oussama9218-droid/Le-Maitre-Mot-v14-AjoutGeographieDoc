@@ -245,6 +245,7 @@ function MainApp() {
   const [currentDocument, setCurrentDocument] = useState(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [documents, setDocuments] = useState([]);
+  const [openedDocument, setOpenedDocument] = useState(null);
   
   // Guest and quota management (new logic)
   const [guestId, setGuestId] = useState("");
