@@ -28,6 +28,9 @@ const DocumentWizard = ({
   onTypeDocChange,
   onDifficulteChange,
   onNbExercicesChange,
+  // Document loading
+  openedDocument,
+  onDocumentOpened,
   // Generation
   isGenerating,
   currentDocument,
