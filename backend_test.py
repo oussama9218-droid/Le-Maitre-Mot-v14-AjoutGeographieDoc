@@ -1521,6 +1521,142 @@ class LeMaitreMotAPITester:
                     print(f"     Skipping magic link test (not Pro)")
         
         return True, {"deep_investigation_completed": True}
+    
+    def test_magic_link_database_investigation(self):
+        """Investigate magic link token storage and validation issues"""
+        print("\n🔍 MAGIC LINK DATABASE INVESTIGATION")
+        print("=" * 60)
+        print("INVESTIGATING: Token storage, expiration, and validation process")
+        print("=" * 60)
+        
+        # Step 1: Test magic link request and analyze response
+        print("\n   Step 1: Testing magic link request for problematic email...")
+        login_data = {"email": self.problematic_email}
+        
+        success, response = self.run_test(
+            "DB Investigation: Magic Link Request",
+            "POST",
+            "auth/request-login",
+            [200, 404],  # Accept both - we'll analyze the response
+            data=login_data
+        )
+        
+        if success:
+            if isinstance(response, dict):
+                message = response.get('message', '')
+                email = response.get('email', '')
+                print(f"   Response message: {message}")
+                print(f"   Response email: {email}")
+                
+                # Check if email was actually sent
+                if 'envoyé' in message.lower() or 'sent' in message.lower():
+                    print("   ✅ Magic link email appears to have been sent")
+                    print("   ⚠️  But user reports 'Token invalide' when clicking")
+                    print("   🔍 This suggests token storage or validation issue")
+                else:
+                    print("   ❌ Magic link email may not have been sent")
+            else:
+                print(f"   Non-JSON response: {response}")
+        else:
+            print("   ❌ Magic link request failed")
+        
+        # Step 2: Test token validation with various token formats
+        print("\n   Step 2: Testing token validation with different formats...")
+        
+        test_tokens = [
+            f"{uuid.uuid4()}-magic-{int(time.time())}",  # Current format
+            f"{uuid.uuid4()}-{int(time.time())}",        # Alternative format
+            f"magic-{uuid.uuid4()}",                     # Different format
+            str(uuid.uuid4()),                           # Simple UUID
+            "invalid-token",                             # Simple invalid
+            "",                                          # Empty token
+        ]
+        
+        for i, token in enumerate(test_tokens):
+            verify_data = {
+                "token": token,
+                "device_id": f"test_device_{i}"
+            }
+            
+            success, response = self.run_test(
+                f"DB Investigation: Token Format {i+1}",
+                "POST",
+                "auth/verify-login",
+                400,  # All should fail with invalid token
+                data=verify_data
+            )
+            
+            if success and isinstance(response, dict):
+                detail = response.get('detail', '')
+                print(f"   Token {i+1}: {detail}")
+                
+                # Look for specific error messages
+                if 'invalide' in detail.lower():
+                    print(f"     ✅ Standard 'invalide' error")
+                elif 'not found' in detail.lower():
+                    print(f"     ⚠️  'Not found' error - different from 'invalide'")
+                elif 'expired' in detail.lower() or 'expiré' in detail.lower():
+                    print(f"     ⚠️  'Expired' error - token exists but expired")
+                else:
+                    print(f"     ❓ Unexpected error: {detail}")
+        
+        # Step 3: Test rapid token requests (race condition check)
+        print("\n   Step 3: Testing rapid magic link requests...")
+        
+        import threading
+        import concurrent.futures
+        
+        def make_rapid_request(request_id):
+            try:
+                url = f"{self.api_url}/auth/request-login"
+                headers = {'Content-Type': 'application/json'}
+                response = requests.post(
+                    url, 
+                    json={"email": self.problematic_email}, 
+                    headers=headers, 
+                    timeout=10
+                )
+                return {
+                    "id": request_id,
+                    "status": response.status_code,
+                    "response": response.json() if response.status_code == 200 else response.text
+                }
+            except Exception as e:
+                return {"id": request_id, "error": str(e)}
+        
+        print("   Making 3 rapid magic link requests...")
+        with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
+            futures = [executor.submit(make_rapid_request, i+1) for i in range(3)]
+            results = [future.result() for future in concurrent.futures.as_completed(futures)]
+        
+        success_count = sum(1 for r in results if r.get('status') == 200)
+        print(f"   Rapid requests: {success_count}/3 successful")
+        
+        for result in results:
+            if result.get('status') == 200:
+                print(f"   Request {result['id']}: SUCCESS")
+            else:
+                print(f"   Request {result['id']}: FAILED - {result.get('error', result.get('response', 'Unknown'))}")
+        
+        # Step 4: Check backend logs for specific errors
+        print("\n   Step 4: Checking for backend log patterns...")
+        print("   (Note: This test simulates log analysis - actual logs would need manual review)")
+        
+        # Simulate checking for common error patterns
+        common_errors = [
+            "Magic token not found or already used",
+            "Token expired",
+            "Database connection error",
+            "MongoDB transaction error",
+            "Email validation failed",
+            "User not found in database"
+        ]
+        
+        print("   Common error patterns to look for in backend logs:")
+        for error in common_errors:
+            print(f"     - {error}")
+        
+        return True, {"database_investigation_completed": True}
 
     def run_critical_security_tests(self):
         """Run the critical security tests for single session enforcement"""
