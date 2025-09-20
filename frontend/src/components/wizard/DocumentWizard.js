@@ -58,6 +58,25 @@ const DocumentWizard = ({
 }) => {
   const [currentStep, setCurrentStep] = useState(1);
 
+  // Handle opening a recent document
+  useEffect(() => {
+    if (openedDocument && onDocumentOpened) {
+      // Pre-fill wizard data from the opened document
+      onMatiereChange(openedDocument.matiere);
+      onNiveauChange(openedDocument.niveau);
+      onChapitreChange(openedDocument.chapitre);
+      onTypeDocChange(openedDocument.type_doc);
+      onDifficulteChange(openedDocument.difficulte);
+      onNbExercicesChange(openedDocument.nb_exercices);
+      
+      // Jump to step 3 (Generation) since steps 1 & 2 are pre-filled
+      setCurrentStep(3);
+      
+      // Clear the opened document flag
+      onDocumentOpened();
+    }
+  }, [openedDocument, onDocumentOpened, onMatiereChange, onNiveauChange, onChapitreChange, onTypeDocChange, onDifficulteChange, onNbExercicesChange]);
+
   // Define wizard steps
   const steps = [
     {
