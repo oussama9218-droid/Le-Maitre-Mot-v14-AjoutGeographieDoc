@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Refactor the frontend interface from a single-page layout to a wizard step-by-step approach. Create a 4-step wizard: 1) Programme scolaire (Matière, Niveau, Chapitre), 2) Paramètres du document (type, difficulté, nb exercices, options avancées), 3) Génération et aperçu, 4) Export et téléchargement. Make it responsive with stepper visible on desktop and single step visible on mobile. Ensure WCAG 2.1 AA accessibility compliance."
+user_problem_statement: "Test the specific magic link issue with email oussama92.1@gmail.com that user reported. User received magic link email successfully but when clicking link: 'Token invalide' error. No access possible to the application."
 
 backend:
   - task: "Two-pass AI approach for geometric schema generation"
