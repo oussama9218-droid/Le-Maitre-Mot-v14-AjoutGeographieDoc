@@ -8426,19 +8426,88 @@ Résultat final.''',
         return geometry_passed, geometry_total
 
 if __name__ == "__main__":
+    # Check if we should run specific race condition tests
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "race-condition":
+        run_magic_link_race_condition_tests()
+        sys.exit(0)
+    
     tester = LeMaitreMotAPITester()
     
-    # Run only geometric schema PDF tests for this specific review
-    print("🔺 RUNNING GEOMETRIC SCHEMA PDF EXPORT TESTS")
+    print("🚀 Starting Le Maître Mot API Testing Suite")
+    print("=" * 60)
+    
+    # Run basic functionality tests
+    basic_tests = [
+        ("Root API", tester.test_root_endpoint),
+        ("Catalog", tester.test_catalog_endpoint),
+        ("Generate Document", tester.test_generate_document),
+        ("Get Documents", tester.test_get_documents),
+        ("Quota Check", tester.test_quota_check),
+        ("Export PDF Sujet", tester.test_export_pdf_sujet),
+        ("Export PDF Corrigé", tester.test_export_pdf_corrige),
+        ("Pricing", tester.test_pricing_endpoint),
+        ("Checkout Session", tester.test_checkout_session_creation),
+        ("Vary Exercise", tester.test_vary_exercise),
+        ("Invalid Requests", tester.test_invalid_requests)
+    ]
+    
+    print("\n📋 BASIC FUNCTIONALITY TESTS")
+    print("=" * 40)
+    
+    for test_name, test_func in basic_tests:
+        try:
+            success, _ = test_func()
+            if success:
+                print(f"✅ {test_name}: PASSED")
+            else:
+                print(f"❌ {test_name}: FAILED")
+        except Exception as e:
+            print(f"❌ {test_name}: FAILED with exception: {e}")
+    
+    # Run authentication tests
+    auth_passed, auth_total = tester.run_authentication_tests()
+    
+    # Run critical security tests
+    critical_passed, critical_total = tester.run_critical_security_tests()
+    
+    # Run template personalization tests
+    template_passed, template_total = tester.run_template_personalization_tests()
+    
+    # Run quota exhaustion test
+    print("\n" + "="*60)
+    print("📊 QUOTA EXHAUSTION WORKFLOW TEST")
     print("="*60)
     
-    geometry_passed, geometry_total = tester.run_geometric_schema_pdf_tests()
+    try:
+        success, _ = tester.test_quota_exhaustion_workflow()
+        if success:
+            print("✅ Quota Exhaustion Workflow: PASSED")
+        else:
+            print("❌ Quota Exhaustion Workflow: FAILED")
+    except Exception as e:
+        print(f"❌ Quota Exhaustion Workflow: FAILED with exception: {e}")
     
-    print(f"\n🎯 GEOMETRIC SCHEMA PDF TEST RESULTS: {geometry_passed}/{geometry_total} tests passed ({geometry_passed/geometry_total*100:.1f}%)")
+    # Final summary
+    print("\n" + "="*60)
+    print("📊 FINAL TEST SUMMARY")
+    print("="*60)
+    print(f"🔧 Basic Tests: {tester.tests_passed}/{tester.tests_run} passed")
+    print(f"🔐 Authentication Tests: {auth_passed}/{auth_total} passed")
+    print(f"🔒 Critical Security Tests: {critical_passed}/{critical_total} passed")
+    print(f"🎨 Template Tests: {template_passed}/{template_total} passed")
     
-    if geometry_passed == geometry_total:
-        print("🎉 ALL GEOMETRIC SCHEMA PDF TESTS PASSED!")
-    elif geometry_passed / geometry_total >= 0.8:
-        print("✅ Most geometric schema PDF tests passed - system appears stable")
+    total_passed = tester.tests_passed + auth_passed + critical_passed + template_passed
+    total_tests = tester.tests_run + auth_total + critical_total + template_total
+    
+    print(f"🎯 OVERALL: {total_passed}/{total_tests} tests passed ({total_passed/total_tests*100:.1f}%)")
+    
+    if total_passed == total_tests:
+        print("🎉 ALL TESTS PASSED! System is working correctly.")
+    elif total_passed / total_tests >= 0.8:
+        print("✅ Most tests passed. System is mostly functional.")
     else:
-        print("⚠️  Several geometric schema PDF tests failed - review needed")
+        print("⚠️  Many tests failed. System may have issues.")
+    
+    print("\n🏁 Testing completed!")
+    print("="*60)
