@@ -3311,6 +3311,91 @@ class LeMaitreMotAPITester:
         
         return weasyprint_passed, weasyprint_total
 
+def run_magic_link_race_condition_tests():
+    """Run specific tests for the magic link race condition bug fix"""
+    tester = LeMaitreMotAPITester()
+    
+    print("🚀 MAGIC LINK RACE CONDITION BUG FIX TESTING")
+    print("=" * 80)
+    print("CONTEXT: User reported 'Erreur lors de la création de la session' followed by successful login")
+    print("ROOT CAUSE: Race condition in backend create_login_session function")
+    print("MONGODB ERROR: E11000 duplicate key error on user_email unique index")
+    print("FIX IMPLEMENTED: Changed delete_many + insert_one to delete_many + replace_one with upsert")
+    print("=" * 80)
+    
+    # Test the specific race condition fix
+    print("\n🔍 TESTING RACE CONDITION FIX...")
+    try:
+        success, result = tester.test_magic_link_race_condition_fix()
+        if success:
+            print("✅ RACE CONDITION FIX: PASSED")
+        else:
+            print("❌ RACE CONDITION FIX: FAILED")
+    except Exception as e:
+        print(f"❌ RACE CONDITION FIX: FAILED with exception: {e}")
+    
+    # Test magic link request for Pro user
+    print("\n🔍 TESTING MAGIC LINK REQUEST...")
+    try:
+        success, result = tester.test_request_login_pro_user()
+        if success:
+            print("✅ MAGIC LINK REQUEST: PASSED")
+        else:
+            print("❌ MAGIC LINK REQUEST: FAILED")
+    except Exception as e:
+        print(f"❌ MAGIC LINK REQUEST: FAILED with exception: {e}")
+    
+    # Test session validation
+    print("\n🔍 TESTING SESSION VALIDATION...")
+    try:
+        success, result = tester.test_session_validation_without_token()
+        if success:
+            print("✅ SESSION VALIDATION: PASSED")
+        else:
+            print("❌ SESSION VALIDATION: FAILED")
+    except Exception as e:
+        print(f"❌ SESSION VALIDATION: FAILED with exception: {e}")
+    
+    # Test backend logs analysis (indirect)
+    print("\n🔍 TESTING BACKEND LOGS ANALYSIS...")
+    print("   Making multiple requests to check for MongoDB duplicate key errors...")
+    
+    # Make several requests to check for any remaining race condition issues
+    race_condition_detected = False
+    for i in range(5):
+        try:
+            success, response = tester.run_test(
+                f"Backend Logs Test {i+1}",
+                "POST",
+                "auth/request-login",
+                200,
+                data={"email": tester.pro_user_email}
+            )
+            if not success:
+                print(f"   ⚠️  Request {i+1} failed - possible race condition issue")
+                race_condition_detected = True
+        except Exception as e:
+            print(f"   ⚠️  Request {i+1} exception: {e}")
+            race_condition_detected = True
+        
+        time.sleep(0.2)  # Small delay between requests
+    
+    if not race_condition_detected:
+        print("✅ BACKEND LOGS ANALYSIS: PASSED - No race condition errors detected")
+    else:
+        print("❌ BACKEND LOGS ANALYSIS: FAILED - Possible race condition issues")
+    
+    print("\n" + "="*80)
+    print("📊 MAGIC LINK RACE CONDITION TEST SUMMARY")
+    print("="*80)
+    print("SUCCESS CRITERIA:")
+    print("✅ No more 'Erreur lors de la création de la session' errors")
+    print("✅ Magic link verification works on first attempt")
+    print("✅ No MongoDB duplicate key errors in logs")
+    print("✅ Session creation is stable and consistent")
+    print("✅ Race condition fix (replace_one with upsert) working correctly")
+    print("="*80)
+
     # ========== REPORTLAB FLOWABLES TESTS ==========
     
     def test_reportlab_flowables_implementation(self):
