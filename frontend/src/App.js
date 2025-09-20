@@ -622,6 +622,19 @@ function MainApp() {
     }
   };
 
+  const openRecentDocument = (doc) => {
+    console.log('📂 Opening recent document:', doc);
+    // Set the document as current
+    setCurrentDocument(doc);
+    // Flag it for the wizard to pre-fill and jump to step 3
+    setOpenedDocument(doc);
+  };
+
+  const handleDocumentOpened = () => {
+    // Clear the opened document flag after wizard processes it
+    setOpenedDocument(null);
+  };
+
   // Initialize authentication on load and set up session monitoring
   useEffect(() => {
     initializeAuth();
