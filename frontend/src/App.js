@@ -148,6 +148,7 @@ function LoginVerify() {
   const [verifying, setVerifying] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false); // Prevent multiple calls
 
   useEffect(() => {
     const token = searchParams.get('token');
@@ -157,8 +158,11 @@ function LoginVerify() {
       return;
     }
 
-    verifyLogin(token);
-  }, [searchParams]);
+    // Prevent multiple simultaneous calls
+    if (!isVerifying) {
+      verifyLogin(token);
+    }
+  }, [searchParams, isVerifying]);
 
   const verifyLogin = async (token) => {
     try {
