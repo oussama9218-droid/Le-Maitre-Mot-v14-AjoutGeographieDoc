@@ -18,6 +18,7 @@ class LeMaitreMotAPITester:
         self.initial_quota = None
         # Authentication testing variables
         self.pro_user_email = "oussama92.18@gmail.com"
+        self.problematic_email = "oussama92.1@gmail.com"  # User reported issue with this email
         self.magic_token = None
         self.session_token = None
         self.device_id = f"test_device_{datetime.now().strftime('%H%M%S')}"
