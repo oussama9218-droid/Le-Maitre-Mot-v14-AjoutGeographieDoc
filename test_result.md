@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Implement a two-pass AI approach to improve geometric schema generation reliability. The first pass generates the exercise content, and the second pass specifically generates geometric schemas when needed. This addresses issues where malformed JSON from AI responses caused geometric schemas to not appear in exercises."
+user_problem_statement: "Refactor the frontend interface from a single-page layout to a wizard step-by-step approach. Create a 4-step wizard: 1) Programme scolaire (Matière, Niveau, Chapitre), 2) Paramètres du document (type, difficulté, nb exercices, options avancées), 3) Génération et aperçu, 4) Export et téléchargement. Make it responsive with stepper visible on desktop and single step visible on mobile. Ensure WCAG 2.1 AA accessibility compliance."
 
 backend:
   - task: "Two-pass AI approach for geometric schema generation"
