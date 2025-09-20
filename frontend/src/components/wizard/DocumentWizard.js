@@ -108,6 +108,9 @@ const DocumentWizard = ({
   const handleNext = () => {
     if (currentStep < steps.length && canProceedToNext()) {
       setCurrentStep(currentStep + 1);
+    } else if (currentStep === steps.length) {
+      // Handle "Terminé" button - reset wizard to step 1
+      setCurrentStep(1);
     }
   };
 
