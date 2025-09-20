@@ -1657,6 +1657,69 @@ class LeMaitreMotAPITester:
             print(f"     - {error}")
         
         return True, {"database_investigation_completed": True}
+    
+    def run_magic_link_investigation(self):
+        """Run comprehensive magic link investigation for oussama92.1@gmail.com"""
+        print("\n" + "="*80)
+        print("🚨 MAGIC LINK INVESTIGATION: oussama92.1@gmail.com")
+        print("="*80)
+        print("USER REPORTED BUG:")
+        print("- Email: oussama92.1@gmail.com")
+        print("- User received magic link email successfully")
+        print("- But when clicking link: 'Token invalide' error")
+        print("- No access possible to the application")
+        print("="*80)
+        
+        investigation_tests = [
+            ("Pro Status Check", self.test_specific_magic_link_issue_oussama92_1),
+            ("Database Investigation", self.test_magic_link_database_investigation),
+            ("Token Validation Analysis", self.test_deeper_magic_link_investigation),
+        ]
+        
+        investigation_passed = 0
+        investigation_total = len(investigation_tests)
+        
+        for test_name, test_func in investigation_tests:
+            try:
+                print(f"\n{'='*60}")
+                print(f"🔍 {test_name}")
+                print(f"{'='*60}")
+                
+                success, result = test_func()
+                if success:
+                    investigation_passed += 1
+                    print(f"\n✅ {test_name}: COMPLETED")
+                    
+                    # Print key findings
+                    if isinstance(result, dict):
+                        if "root_cause" in result:
+                            print(f"🎯 ROOT CAUSE: {result['root_cause']}")
+                        if "solution" in result:
+                            print(f"💡 SOLUTION: {result['solution']}")
+                else:
+                    print(f"\n❌ {test_name}: FAILED")
+                    if isinstance(result, dict) and "issue" in result:
+                        print(f"❌ ISSUE: {result['issue']}")
+                        
+            except Exception as e:
+                print(f"\n❌ {test_name}: FAILED with exception: {e}")
+        
+        print(f"\n{'='*80}")
+        print(f"🚨 MAGIC LINK INVESTIGATION SUMMARY")
+        print(f"{'='*80}")
+        print(f"Tests completed: {investigation_passed}/{investigation_total}")
+        
+        if investigation_passed == investigation_total:
+            print("✅ INVESTIGATION COMPLETED SUCCESSFULLY")
+            print("📋 NEXT STEPS:")
+            print("1. Check if oussama92.1@gmail.com has active Pro subscription")
+            print("2. If not Pro, user needs to purchase subscription")
+            print("3. If Pro, check backend logs for specific token validation errors")
+            print("4. Verify magic token storage in database")
+        else:
+            print("❌ INVESTIGATION INCOMPLETE - Some tests failed")
+        
+        return investigation_passed, investigation_total
 
     def run_critical_security_tests(self):
         """Run the critical security tests for single session enforcement"""
