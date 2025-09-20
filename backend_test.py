@@ -1361,118 +1361,203 @@ class LeMaitreMotAPITester:
 
     def test_specific_magic_link_issue_oussama92_1(self):
         """CRITICAL TEST: Test specific magic link issue with oussama92.1@gmail.com"""
-        print("\n🚨 CRITICAL BUG TEST: Magic Link Issue with oussama92.1@gmail.com")
+        print("\n🚨 CRITICAL DIAGNOSTIC TEST: Magic Link Issue Investigation")
         print("=" * 80)
         print("USER REPORTED ISSUE:")
         print("- Email: oussama92.1@gmail.com")
         print("- User receives magic link email successfully")
         print("- But when clicking link: 'Token invalide' error")
         print("- No access possible to the application")
+        print("\nHYPOTHESIS TO TEST:")
+        print("- User might NOT be Pro (magic links are Pro-only)")
+        print("- This would explain 'Token invalide' error")
         print("=" * 80)
         
-        # Step 1: Check if this specific email has Pro status
-        print("\n   Step 1: Checking Pro status for oussama92.1@gmail.com...")
+        # Step 1: Pro Status Verification for problematic email
+        print("\n   🔍 Step 1: Pro Status Verification for oussama92.1@gmail.com")
         success, response = self.run_test(
-            "CRITICAL: Check oussama92.1@gmail.com Pro Status",
+            "DIAGNOSTIC: Check oussama92.1@gmail.com Pro Status",
             "GET",
             f"user/status/{self.problematic_email}",
             200
         )
         
+        problematic_is_pro = False
+        problematic_account_type = "unknown"
+        problematic_subscription = "unknown"
+        
         if success and isinstance(response, dict):
-            is_pro = response.get('is_pro', False)
-            subscription_type = response.get('subscription_type')
+            problematic_is_pro = response.get('is_pro', False)
+            problematic_account_type = response.get('account_type', 'unknown')
+            problematic_subscription = response.get('subscription_type', 'none')
             subscription_expires = response.get('subscription_expires')
             
-            print(f"   User is Pro: {is_pro}")
-            if is_pro:
-                print(f"   Subscription type: {subscription_type}")
-                print(f"   Expires: {subscription_expires}")
+            print(f"   📊 RESULTS for {self.problematic_email}:")
+            print(f"      - is_pro: {problematic_is_pro}")
+            print(f"      - account_type: {problematic_account_type}")
+            print(f"      - subscription_type: {problematic_subscription}")
+            print(f"      - expires: {subscription_expires}")
+            
+            if not problematic_is_pro:
+                print("   🚨 CRITICAL FINDING: User is NOT Pro!")
+                print("   💡 This explains the 'Token invalide' error")
             else:
-                print("   ❌ CRITICAL ISSUE: User is not Pro - this explains the magic link failure!")
-                return False, {"issue": "user_not_pro", "email": self.problematic_email}
+                print("   ✅ User IS Pro - need deeper investigation")
         else:
-            print("   ❌ CRITICAL ISSUE: Cannot check Pro status for this email")
+            print("   ❌ CRITICAL ISSUE: Cannot check Pro status")
             return False, {"issue": "status_check_failed", "email": self.problematic_email}
         
-        # Step 2: Test magic link request for this specific email
-        print(f"\n   Step 2: Testing magic link request for {self.problematic_email}...")
+        # Step 2: Magic Link Request Test for problematic email
+        print(f"\n   🔍 Step 2: Magic Link Request Test for {self.problematic_email}")
         login_data = {"email": self.problematic_email}
         
+        expected_status = 200 if problematic_is_pro else 404
         success, response = self.run_test(
-            "CRITICAL: Magic Link Request for oussama92.1@gmail.com",
+            "DIAGNOSTIC: Magic Link Request for oussama92.1@gmail.com",
             "POST",
             "auth/request-login",
-            200 if is_pro else 404,  # Should be 404 if not Pro
+            expected_status,
             data=login_data
         )
         
-        if is_pro and success:
-            print(f"   ✅ Magic link request successful for {self.problematic_email}")
-            message = response.get('message', '') if isinstance(response, dict) else ''
-            print(f"   Response: {message}")
-        elif not is_pro and success:
-            print(f"   ✅ Magic link correctly rejected for non-Pro user {self.problematic_email}")
-            print("   This explains why user gets 'Token invalide' - they're not Pro!")
-        else:
-            print(f"   ❌ Unexpected response for {self.problematic_email}")
-            return False, {"issue": "unexpected_response", "email": self.problematic_email}
+        if success and isinstance(response, dict):
+            message = response.get('message', '')
+            print(f"   📊 RESPONSE: {message}")
+            
+            if not problematic_is_pro and expected_status == 404:
+                print("   ✅ CONFIRMED: Magic link correctly rejected for non-Pro user")
+                print("   💡 This is the ROOT CAUSE of user's issue")
+            elif problematic_is_pro and expected_status == 200:
+                print("   ✅ Magic link request successful for Pro user")
+            else:
+                print("   ⚠️  Unexpected response pattern")
         
-        # Step 3: Compare with working email (oussama92.18@gmail.com)
-        print(f"\n   Step 3: Comparing with working email {self.pro_user_email}...")
+        # Step 3: Compare with Working Pro Email
+        print(f"\n   🔍 Step 3: Compare with Working Pro Email ({self.pro_user_email})")
         success_working, response_working = self.run_test(
-            "CRITICAL: Compare with Working Email",
+            "DIAGNOSTIC: Compare with Working Pro Email",
             "GET",
             f"user/status/{self.pro_user_email}",
             200
         )
         
+        working_is_pro = False
         if success_working and isinstance(response_working, dict):
-            is_pro_working = response_working.get('is_pro', False)
-            print(f"   {self.pro_user_email} is Pro: {is_pro_working}")
+            working_is_pro = response_working.get('is_pro', False)
+            working_account_type = response_working.get('account_type', 'unknown')
+            working_subscription = response_working.get('subscription_type', 'none')
+            working_expires = response_working.get('subscription_expires')
             
-            if is_pro_working and not is_pro:
-                print("   ✅ ROOT CAUSE IDENTIFIED:")
-                print(f"   - {self.pro_user_email} is Pro (working)")
-                print(f"   - {self.problematic_email} is NOT Pro (failing)")
-                print("   - Magic links only work for Pro users")
-                print("   - User needs to purchase Pro subscription")
-                return True, {
-                    "root_cause": "user_not_pro",
-                    "problematic_email": self.problematic_email,
-                    "working_email": self.pro_user_email,
-                    "solution": "User needs Pro subscription"
-                }
-            elif is_pro and is_pro_working:
-                print("   ⚠️  Both emails are Pro - need deeper investigation")
-                return self.test_deeper_magic_link_investigation()
-        
-        # Step 4: Test token validation behavior
-        print(f"\n   Step 4: Testing token validation behavior...")
-        fake_token = f"{uuid.uuid4()}-magic-{int(time.time())}"
-        verify_data = {
-            "token": fake_token,
-            "device_id": self.device_id
-        }
-        
-        success, response = self.run_test(
-            "CRITICAL: Token Validation Test",
-            "POST",
-            "auth/verify-login",
-            400,
-            data=verify_data
-        )
-        
-        if success and isinstance(response, dict):
-            detail = response.get('detail', '')
-            print(f"   Token validation error message: {detail}")
+            print(f"   📊 RESULTS for {self.pro_user_email}:")
+            print(f"      - is_pro: {working_is_pro}")
+            print(f"      - account_type: {working_account_type}")
+            print(f"      - subscription_type: {working_subscription}")
+            print(f"      - expires: {working_expires}")
             
-            if 'invalide' in detail.lower():
-                print("   ✅ Getting expected 'Token invalide' error message")
+            # Test magic link for working email
+            success_magic, response_magic = self.run_test(
+                "DIAGNOSTIC: Magic Link Request for Working Email",
+                "POST",
+                "auth/request-login",
+                200,
+                data={"email": self.pro_user_email}
+            )
+            
+            if success_magic:
+                print(f"   ✅ Magic link works for {self.pro_user_email}")
             else:
-                print(f"   ⚠️  Different error message: {detail}")
+                print(f"   ❌ Magic link failed for {self.pro_user_email}")
         
-        return True, {"investigation_completed": True}
+        # Step 4: Token Architecture Verification
+        print(f"\n   🔍 Step 4: Token Architecture Verification")
+        
+        # Test various token validation scenarios
+        test_tokens = [
+            ("invalid-token", "Simple invalid token"),
+            ("", "Empty token"),
+            (f"{uuid.uuid4()}-magic-{int(time.time())}", "Valid format but non-existent token"),
+            (f"{uuid.uuid4()}", "UUID only"),
+        ]
+        
+        for token, description in test_tokens:
+            verify_data = {
+                "token": token,
+                "device_id": self.device_id
+            }
+            
+            success, response = self.run_test(
+                f"DIAGNOSTIC: Token Validation - {description}",
+                "POST",
+                "auth/verify-login",
+                400,
+                data=verify_data
+            )
+            
+            if success and isinstance(response, dict):
+                detail = response.get('detail', '')
+                print(f"   📊 Token '{token[:20]}...' -> Error: {detail}")
+        
+        # Step 5: Rapid Magic Link Requests (Database Investigation)
+        print(f"\n   🔍 Step 5: Database Investigation - Rapid Requests")
+        
+        # Make multiple rapid requests to see consistent behavior
+        for i in range(3):
+            success, response = self.run_test(
+                f"DIAGNOSTIC: Rapid Request {i+1} for {self.problematic_email}",
+                "POST",
+                "auth/request-login",
+                expected_status,
+                data={"email": self.problematic_email}
+            )
+            
+            if success and isinstance(response, dict):
+                message = response.get('message', '')
+                print(f"   📊 Request {i+1}: {message}")
+            
+            time.sleep(0.2)  # Small delay
+        
+        # Final Analysis and Conclusion
+        print(f"\n   🎯 FINAL ANALYSIS:")
+        print("   " + "="*60)
+        
+        if not problematic_is_pro and working_is_pro:
+            print("   ✅ ROOT CAUSE IDENTIFIED:")
+            print(f"   - {self.problematic_email} is NOT Pro (is_pro: false)")
+            print(f"   - {self.pro_user_email} IS Pro (is_pro: true)")
+            print("   - Magic links are Pro-only features")
+            print("   - 'Token invalide' error is EXPECTED behavior for non-Pro users")
+            print("   - This is NOT a bug - it's a feature restriction")
+            print("\n   💡 SOLUTION:")
+            print(f"   - User {self.problematic_email} needs to purchase Pro subscription")
+            print("   - Once Pro, magic links will work correctly")
+            
+            return True, {
+                "root_cause": "user_not_pro",
+                "problematic_email": self.problematic_email,
+                "problematic_is_pro": problematic_is_pro,
+                "working_email": self.pro_user_email,
+                "working_is_pro": working_is_pro,
+                "solution": "User needs Pro subscription",
+                "is_bug": False,
+                "explanation": "Magic links are Pro-only features"
+            }
+        elif problematic_is_pro and working_is_pro:
+            print("   ⚠️  BOTH USERS ARE PRO - DEEPER INVESTIGATION NEEDED:")
+            print(f"   - {self.problematic_email} is Pro but magic links fail")
+            print(f"   - {self.pro_user_email} is Pro and magic links work")
+            print("   - This suggests a technical issue, not feature restriction")
+            
+            return self.test_deeper_magic_link_investigation()
+        else:
+            print("   ❌ UNEXPECTED SCENARIO:")
+            print(f"   - {self.problematic_email} Pro status: {problematic_is_pro}")
+            print(f"   - {self.pro_user_email} Pro status: {working_is_pro}")
+            
+            return False, {
+                "issue": "unexpected_pro_status_combination",
+                "problematic_is_pro": problematic_is_pro,
+                "working_is_pro": working_is_pro
+            }
     
     def test_deeper_magic_link_investigation(self):
         """Deeper investigation if both emails are Pro"""
