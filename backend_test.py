@@ -1757,7 +1757,7 @@ class LeMaitreMotAPITester:
             print(f"   ❌ API logo endpoint is not accessible: /{api_logo_url}")
             return False, {
                 "logo_filename": logo_filename,
-                "api_logo_url": f"/{api_logo_url}",
+                "api_logo_url": f"/api/{api_logo_url}",
                 "api_accessible": False,
                 "error": "api_logo_url_not_accessible"
             }
