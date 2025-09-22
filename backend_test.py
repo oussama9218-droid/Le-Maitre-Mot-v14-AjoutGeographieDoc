@@ -1714,6 +1714,54 @@ class LeMaitreMotAPITester:
             print("   ⚠️  No logo files found to test endpoint")
             return False, {"error": "no_logo_files"}
     
+    def test_logo_api_endpoint_access(self):
+        """Test the new /api/logos/ endpoint"""
+        print("\n🔍 LOGO INVESTIGATION: Testing /api/logos/ endpoint...")
+        
+        import os
+        import glob
+        
+        logos_dir = "/app/backend/uploads/logos"
+        user_email_pattern = self.pro_user_email.replace('@', '_').replace('.', '_')
+        logo_pattern = f"{logos_dir}/logo_{user_email_pattern}_*.png"
+        logo_files = glob.glob(logo_pattern)
+        
+        if not logo_files:
+            print("   ❌ No logo files found to test API endpoint")
+            return False, {"error": "no_logo_files_for_api_test"}
+        
+        # Get the latest logo file
+        latest_logo = max(logo_files, key=os.path.getmtime)
+        logo_filename = os.path.basename(latest_logo)
+        
+        # Test the new API endpoint
+        api_logo_url = f"api/logos/{logo_filename}"
+        
+        print(f"   Testing API logo URL: /{api_logo_url}")
+        
+        success, response = self.run_test(
+            "LOGO: API Logos Endpoint Access",
+            "GET",
+            api_logo_url,
+            200
+        )
+        
+        if success:
+            print(f"   ✅ API logo endpoint is accessible: /{api_logo_url}")
+            return True, {
+                "logo_filename": logo_filename,
+                "api_logo_url": f"/{api_logo_url}",
+                "api_accessible": True
+            }
+        else:
+            print(f"   ❌ API logo endpoint is not accessible: /{api_logo_url}")
+            return False, {
+                "logo_filename": logo_filename,
+                "api_logo_url": f"/{api_logo_url}",
+                "api_accessible": False,
+                "error": "api_logo_url_not_accessible"
+            }
+
     def test_logo_comprehensive_investigation(self):
         """Comprehensive logo display investigation for oussama92.18@gmail.com"""
         print("\n" + "="*80)
