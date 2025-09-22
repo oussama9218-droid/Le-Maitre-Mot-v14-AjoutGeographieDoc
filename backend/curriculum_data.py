@@ -253,3 +253,67 @@ def build_prompt_context(subject, level, chapter):
         "chapitre": chapter,
         "prompt_intro": f"Tu es un professeur de {subject} pour le niveau {level}, chapitre : {chapter}"
     }
+
+def process_math_content_for_pdf(text: str) -> str:
+    """Convert LaTeX mathematical expressions to MathML for PDF rendering"""
+    if not text:
+        return text
+    
+    try:
+        # Regex patterns for common LaTeX expressions
+        import re
+        
+        # Pattern for fractions: \frac{numerator}{denominator}
+        frac_pattern = r'\\frac\{([^}]+)\}\{([^}]+)\}'
+        
+        # Pattern for square roots: \sqrt{content}
+        sqrt_pattern = r'\\sqrt\{([^}]+)\}'
+        
+        # Pattern for powers: x^{exponent}
+        power_pattern = r'([a-zA-Z0-9]+)\^\{([^}]+)\}'
+        
+        def convert_frac(match):
+            """Convert \frac{a}{b} to MathML"""
+            numerator = match.group(1)
+            denominator = match.group(2)
+            try:
+                latex_expr = f"\\frac{{{numerator}}}{{{denominator}}}"
+                mathml = latex2mathml.converter.convert(latex_expr)
+                return mathml
+            except Exception as e:
+                logger.warning(f"Failed to convert fraction {match.group(0)}: {e}")
+                return f"{numerator}/{denominator}"  # Fallback
+        
+        def convert_sqrt(match):
+            """Convert \sqrt{content} to MathML"""
+            content = match.group(1)
+            try:
+                latex_expr = f"\\sqrt{{{content}}}"
+                mathml = latex2mathml.converter.convert(latex_expr)
+                return mathml
+            except Exception as e:
+                logger.warning(f"Failed to convert sqrt {match.group(0)}: {e}")
+                return f"√({content})"  # Fallback
+        
+        def convert_power(match):
+            """Convert x^{exp} to MathML"""
+            base = match.group(1)
+            exponent = match.group(2)
+            try:
+                latex_expr = f"{base}^{{{exponent}}}"
+                mathml = latex2mathml.converter.convert(latex_expr)
+                return mathml
+            except Exception as e:
+                logger.warning(f"Failed to convert power {match.group(0)}: {e}")
+                return f"{base}^{exponent}"  # Fallback
+        
+        # Apply conversions
+        result = re.sub(frac_pattern, convert_frac, text)
+        result = re.sub(sqrt_pattern, convert_sqrt, result)
+        result = re.sub(power_pattern, convert_power, result)
+        
+        return result
+        
+    except Exception as e:
+        logger.error(f"Error processing math content for PDF: {e}")
+        return text  # Return original text on error
