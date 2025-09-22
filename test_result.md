@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Test the specific magic link issue with email oussama92.1@gmail.com that user reported. User received magic link email successfully but when clicking link: 'Token invalide' error. No access possible to the application."
+user_problem_statement: "Investigate logo display issue for user oussama92.18@gmail.com. User reports that logo image is not displaying despite being saved. Screenshot shows empty logo area in 'Personnalisation du document (Pro)' section."
 
 backend:
   - task: "Magic Link Issue Investigation - oussama92.1@gmail.com"
