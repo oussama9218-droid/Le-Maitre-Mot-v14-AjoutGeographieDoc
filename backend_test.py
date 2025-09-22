@@ -10282,28 +10282,51 @@ Résultat final.''',
         return geometry_passed, geometry_total
 
 if __name__ == "__main__":
-    # Check if we should run specific tests
-    import sys
-    if len(sys.argv) > 1 and sys.argv[1] == "race-condition":
-        run_magic_link_race_condition_tests()
-        sys.exit(0)
-    elif len(sys.argv) > 1 and sys.argv[1] == "logo":
-        tester = LeMaitreMotAPITester()
-        tester.run_logo_investigation_only()
-        sys.exit(0)
-    
     tester = LeMaitreMotAPITester()
     
+    # Check command line arguments for specific test modes
+    if len(sys.argv) > 1:
+        test_mode = sys.argv[1].lower()
+        
+        if test_mode == "math":
+            # Run mathematical expressions rendering tests
+            tester.run_math_rendering_tests()
+        elif test_mode == "curriculum":
+            # Run only curriculum fix tests
+            tester.run_curriculum_fix_tests()
+        elif test_mode == "auth":
+            # Run only authentication tests
+            tester.run_authentication_tests()
+        elif test_mode == "logo":
+            # Run only logo investigation
+            tester.run_logo_investigation_only()
+        elif test_mode == "magic":
+            # Run magic link investigation
+            tester.run_magic_link_investigation()
+        elif test_mode == "security":
+            # Run critical security tests
+            tester.run_critical_security_tests()
+        elif test_mode == "template":
+            # Run template personalization tests
+            tester.run_template_personalization_tests()
+        elif test_mode == "subscription":
+            # Run subscription management tests
+            tester.run_subscription_management_tests()
+        elif test_mode == "race-condition":
+            # Legacy support for race condition tests
+            run_magic_link_race_condition_tests()
+        else:
+            print(f"Unknown test mode: {test_mode}")
+            print("Available modes: math, curriculum, auth, logo, magic, security, template, subscription")
+        sys.exit(0)
+    
+    # Run all tests if no specific mode specified
     print("🚀 Starting Le Maître Mot API Testing Suite")
     print("=" * 60)
     
-    # PRIORITY: Run new curriculum tests first
-    print("\n📚 PRIORITY: New Curriculum Data Structure Tests")
-    curriculum_passed, curriculum_total = tester.run_new_curriculum_tests()
-    
-    # Run magic link investigation
-    print("\n🚨 Magic Link Investigation for oussama92.1@gmail.com")
-    investigation_passed, investigation_total = tester.run_magic_link_investigation()
+    # Run mathematical expressions rendering tests
+    print("\n🧮 MATHEMATICAL EXPRESSIONS RENDERING TESTS")
+    math_passed, math_total = tester.run_math_rendering_tests()
     
     # Run basic functionality tests
     basic_tests = [
@@ -10360,14 +10383,14 @@ if __name__ == "__main__":
     print("\n" + "="*60)
     print("📊 FINAL TEST SUMMARY")
     print("="*60)
-    print(f"🚨 MAGIC LINK INVESTIGATION: {investigation_passed}/{investigation_total} passed")
+    print(f"🧮 Mathematical Rendering Tests: {math_passed}/{math_total} passed")
     print(f"🔧 Basic Tests: {tester.tests_passed}/{tester.tests_run} passed")
     print(f"🔐 Authentication Tests: {auth_passed}/{auth_total} passed")
     print(f"🔒 Critical Security Tests: {critical_passed}/{critical_total} passed")
     print(f"🎨 Template Tests: {template_passed}/{template_total} passed")
     
-    total_passed = tester.tests_passed + auth_passed + critical_passed + template_passed + investigation_passed
-    total_tests = tester.tests_run + auth_total + critical_total + template_total + investigation_total
+    total_passed = tester.tests_passed + auth_passed + critical_passed + template_passed + math_passed
+    total_tests = tester.tests_run + auth_total + critical_total + template_total + math_total
     
     print(f"🎯 OVERALL: {total_passed}/{total_tests} tests passed ({total_passed/total_tests*100:.1f}%)")
     
