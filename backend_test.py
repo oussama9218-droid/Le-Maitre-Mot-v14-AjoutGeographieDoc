@@ -1804,6 +1804,12 @@ class LeMaitreMotAPITester:
         success, result = self.test_logo_endpoint_functionality()
         investigation_results['endpoint_functionality'] = {'success': success, 'result': result}
         
+        # Step 6: API Logos Endpoint Test
+        print("\n6. API LOGOS ENDPOINT TEST")
+        print("-" * 40)
+        success, result = self.test_logo_api_endpoint_access()
+        investigation_results['api_endpoint'] = {'success': success, 'result': result}
+        
         # Analysis and Summary
         print("\n" + "="*80)
         print("📊 LOGO INVESTIGATION ANALYSIS")
