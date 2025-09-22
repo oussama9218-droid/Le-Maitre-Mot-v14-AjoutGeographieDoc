@@ -29,7 +29,8 @@ from curriculum_data import (
     get_available_subjects, 
     get_levels_for_subject, 
     get_all_chapters_for_level,
-    build_prompt_context
+    build_prompt_context,
+    process_math_content_for_pdf
 )
 
 ROOT_DIR = Path(__file__).parent
