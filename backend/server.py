@@ -2817,6 +2817,43 @@ def get_template_colors_and_fonts(template_config):
         }
     }
 
+@api_router.get("/logos/{filename}")
+async def serve_logo(filename: str):
+    """Serve logo files for Pro users"""
+    try:
+        # Validate filename to prevent directory traversal
+        if not filename or '..' in filename or '/' in filename:
+            raise HTTPException(status_code=400, detail="Nom de fichier invalide")
+        
+        # Check if file exists
+        logo_path = uploads_dir / "logos" / filename
+        if not logo_path.exists():
+            raise HTTPException(status_code=404, detail="Logo non trouvé")
+        
+        # Determine content type based on file extension
+        file_extension = filename.split('.')[-1].lower()
+        content_type_map = {
+            'png': 'image/png',
+            'jpg': 'image/jpeg',
+            'jpeg': 'image/jpeg',
+            'gif': 'image/gif',
+            'webp': 'image/webp'
+        }
+        
+        content_type = content_type_map.get(file_extension, 'application/octet-stream')
+        
+        return FileResponse(
+            path=str(logo_path),
+            media_type=content_type,
+            filename=filename
+        )
+        
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Error serving logo {filename}: {e}")
+        raise HTTPException(status_code=500, detail="Erreur lors du chargement du logo")
+
 @api_router.post("/export")
 @log_execution_time("export_pdf")
 async def export_pdf(request: ExportRequest, http_request: Request):
