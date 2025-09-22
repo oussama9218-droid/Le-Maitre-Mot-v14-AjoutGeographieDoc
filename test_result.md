@@ -593,7 +593,8 @@ metadata:
   run_ui: false
 
 test_plan:
-  current_focus: []
+  current_focus:
+    - "Mathematical expressions rendering system with LaTeX formatting and MathML conversion"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
