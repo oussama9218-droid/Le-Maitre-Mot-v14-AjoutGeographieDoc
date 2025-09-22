@@ -177,7 +177,7 @@ class LeMaitreMotAPITester:
         return success, response
 
     def test_new_curriculum_generation_cp(self):
-        """Test document generation with new CP level curriculum"""
+        """Test document generation with new CP level curriculum - CRITICAL FIX TEST"""
         test_data = {
             "matiere": "Mathématiques",
             "niveau": "CP",
@@ -189,9 +189,12 @@ class LeMaitreMotAPITester:
             "guest_id": self.guest_id
         }
         
-        print(f"   Testing CP level generation with: {test_data}")
+        print(f"   🔍 CRITICAL TEST: CP level generation with curriculum fix")
+        print(f"   Testing data: {test_data}")
+        print(f"   Expected: Should now pass validation (no more 400 'Chapitre non trouvé')")
+        
         success, response = self.run_test(
-            "Generate CP Document", 
+            "CURRICULUM FIX: Generate CP Document", 
             "POST", 
             "generate", 
             200, 
@@ -203,9 +206,10 @@ class LeMaitreMotAPITester:
             document = response.get('document')
             if document:
                 exercises = document.get('exercises', [])
-                print(f"   Generated CP document with {len(exercises)} exercises")
+                print(f"   ✅ CP document generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ✅ Curriculum validation fix WORKING for CP level")
                 
-                # Check for CP-appropriate content
+                # Check for CP-appropriate content and dynamic prompts
                 for i, exercise in enumerate(exercises[:1]):
                     enonce = exercise.get('enonce', '')
                     if enonce:
@@ -214,9 +218,18 @@ class LeMaitreMotAPITester:
                         cp_indicators = ['20', 'jusqu\'à 20', 'nombres', 'décomposer']
                         has_cp_content = any(indicator in enonce.lower() for indicator in cp_indicators)
                         if has_cp_content:
-                            print(f"   ✅ CP Exercise {i+1} has appropriate content")
+                            print(f"   ✅ CP Exercise {i+1} has appropriate content (dynamic prompts working)")
                         else:
                             print(f"   ⚠️  CP Exercise {i+1} may not be CP-appropriate")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ CP generation FAILED - curriculum validation fix NOT working")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+                if 'chapitre non trouvé' in error_detail.lower():
+                    print(f"   ❌ CRITICAL: Still getting 'Chapitre non trouvé' error - fix not applied")
         
         return success, response
 
