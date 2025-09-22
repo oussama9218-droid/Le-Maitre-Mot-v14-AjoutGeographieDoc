@@ -1735,7 +1735,7 @@ class LeMaitreMotAPITester:
         logo_filename = os.path.basename(latest_logo)
         
         # Test the new API endpoint
-        api_logo_url = f"api/logos/{logo_filename}"
+        api_logo_url = f"logos/{logo_filename}"
         
         print(f"   Testing API logo URL: /{api_logo_url}")
         
