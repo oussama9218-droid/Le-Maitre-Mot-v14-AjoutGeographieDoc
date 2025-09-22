@@ -1338,11 +1338,16 @@ async def generate_exercises_with_ai(matiere: str, niveau: str, chapitre: str, t
     level_guide = niveau_guidance.get(niveau, "Adapter au niveau demandé")
     chapter_guide = chapter_examples.get(chapitre, {}).get(niveau, "Respecter le programme officiel")
     
-    # Subject-specific instructions
+    # Build dynamic prompt context
+    prompt_context = build_prompt_context(matiere, niveau, chapitre)
+    
+    # Subject-specific instructions with dynamic prompt
     subject_instructions = {
         "Mathématiques": f"""
-En tant qu'enseignant de mathématiques et expert en conception d'exercices, crée {nb_exercices} exercices pour un élève de {niveau} en {matiere}, sur le chapitre suivant: "{chapitre}". 
-Chaque exercice doit avoir une difficulté {difficulte}.
+{prompt_context['prompt_intro']}. 
+
+Crée {nb_exercices} exercices pour un élève de {niveau} en {matiere}, sur le chapitre suivant: "{chapitre}". 
+Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français pour ce niveau et cette compétence.
 
 **Instructions cruciales** :
 1. Utilise des **valeurs numériques différentes et variées** pour chaque exercice (pas de répétition des mêmes données).
