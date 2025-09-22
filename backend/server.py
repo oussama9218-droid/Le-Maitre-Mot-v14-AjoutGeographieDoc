@@ -1345,12 +1345,23 @@ async def generate_exercises_with_ai(matiere: str, niveau: str, chapitre: str, t
     
     # Math formatting rules for consistent LaTeX output
     MATH_FORMATTING_RULE = """
-RÈGLE MATHÉMATIQUES OBLIGATOIRE:
+RÈGLE MATHÉMATIQUES OBLIGATOIRE - RESPECTER ABSOLUMENT:
 - Toutes les fractions: \\frac{numérateur}{dénominateur} 
 - Toutes les puissances: x^{exposant}
 - Toutes les racines: \\sqrt{contenu}
-- INTERDICTION: HTML (<sup>, <sub>, <math>), séparateurs (-->, /), pseudo-LaTeX
-- Exemple: \\frac{7}{8} + \\frac{4}{5} = \\frac{35+32}{40} = \\frac{67}{40}
+- INTERDICTION ABSOLUE: "X de Y", "X par Y", "X/Y", HTML (<sup>, <sub>, <math>), séparateurs (-->, /)
+
+EXEMPLES CORRECTS:
+✅ \\frac{7}{8} + \\frac{4}{5} = \\frac{35+32}{40} = \\frac{67}{40}
+✅ Calculer \\frac{15}{20} et simplifier
+✅ Résoudre \\frac{2x}{5} = \\frac{3}{10}
+
+EXEMPLES INTERDITS:
+❌ 7 de 8, 7 par 8, 7/8
+❌ 15 de 20, 2x par 5
+❌ <sup>7</sup>/<sub>8</sub>
+
+CRITIQUE: Utilise UNIQUEMENT la notation LaTeX \\frac{}{} pour TOUTES les fractions sans exception.
 """
     
     # Subject-specific instructions with dynamic prompt
