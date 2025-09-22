@@ -9731,28 +9731,6 @@ Résultat final.''',
         print(f"\n🔺 Geometric Schema PDF Tests: {geometry_passed}/{geometry_total} passed")
         return geometry_passed, geometry_total
 
-    def run_logo_investigation_only(self):
-        """Run only the logo investigation tests"""
-        print("🔍 Starting Logo Display Investigation...")
-        print(f"Base URL: {self.base_url}")
-        print(f"API URL: {self.api_url}")
-        print(f"Investigating user: {self.pro_user_email}")
-        print("="*60)
-        
-        # Run comprehensive logo investigation
-        success, results = self.test_logo_comprehensive_investigation()
-        
-        print("\n" + "="*60)
-        print("📊 LOGO INVESTIGATION SUMMARY")
-        print("="*60)
-        
-        if success:
-            print("✅ LOGO INVESTIGATION COMPLETED - No critical issues found")
-        else:
-            print("❌ LOGO INVESTIGATION COMPLETED - Issues identified")
-        
-        return success, results
-
 if __name__ == "__main__":
     # Check if we should run specific tests
     import sys
