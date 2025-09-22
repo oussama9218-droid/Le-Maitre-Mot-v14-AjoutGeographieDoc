@@ -176,6 +176,239 @@ class LeMaitreMotAPITester:
         
         return success, response
 
+    def test_new_curriculum_generation_cp(self):
+        """Test document generation with new CP level curriculum"""
+        test_data = {
+            "matiere": "Mathématiques",
+            "niveau": "CP",
+            "chapitre": "Décomposer et représenter les nombres entiers jusqu'à 20",
+            "type_doc": "exercices",
+            "difficulte": "facile",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Testing CP level generation with: {test_data}")
+        success, response = self.run_test(
+            "Generate CP Document", 
+            "POST", 
+            "generate", 
+            200, 
+            data=test_data,
+            timeout=60
+        )
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   Generated CP document with {len(exercises)} exercises")
+                
+                # Check for CP-appropriate content
+                for i, exercise in enumerate(exercises[:1]):
+                    enonce = exercise.get('enonce', '')
+                    if enonce:
+                        print(f"   CP Exercise {i+1}: {enonce[:150]}...")
+                        # Check for numbers up to 20 (CP level)
+                        cp_indicators = ['20', 'jusqu\'à 20', 'nombres', 'décomposer']
+                        has_cp_content = any(indicator in enonce.lower() for indicator in cp_indicators)
+                        if has_cp_content:
+                            print(f"   ✅ CP Exercise {i+1} has appropriate content")
+                        else:
+                            print(f"   ⚠️  CP Exercise {i+1} may not be CP-appropriate")
+        
+        return success, response
+
+    def test_new_curriculum_generation_ce1(self):
+        """Test document generation with new CE1 level curriculum"""
+        test_data = {
+            "matiere": "Mathématiques",
+            "niveau": "CE1",
+            "chapitre": "Décomposer et représenter les nombres entiers jusqu'à 999",
+            "type_doc": "exercices",
+            "difficulte": "facile",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Testing CE1 level generation with: {test_data}")
+        success, response = self.run_test(
+            "Generate CE1 Document", 
+            "POST", 
+            "generate", 
+            200, 
+            data=test_data,
+            timeout=60
+        )
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   Generated CE1 document with {len(exercises)} exercises")
+                
+                # Check for CE1-appropriate content
+                for i, exercise in enumerate(exercises[:1]):
+                    enonce = exercise.get('enonce', '')
+                    if enonce:
+                        print(f"   CE1 Exercise {i+1}: {enonce[:150]}...")
+                        # Check for numbers up to 999 (CE1 level)
+                        ce1_indicators = ['999', 'jusqu\'à 999', 'centaines', 'décomposer']
+                        has_ce1_content = any(indicator in enonce.lower() for indicator in ce1_indicators)
+                        if has_ce1_content:
+                            print(f"   ✅ CE1 Exercise {i+1} has appropriate content")
+                        else:
+                            print(f"   ⚠️  CE1 Exercise {i+1} may not be CE1-appropriate")
+        
+        return success, response
+
+    def test_new_curriculum_generation_cm1(self):
+        """Test document generation with new CM1 level curriculum"""
+        test_data = {
+            "matiere": "Mathématiques",
+            "niveau": "CM1",
+            "chapitre": "Fractions",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Testing CM1 level generation with: {test_data}")
+        success, response = self.run_test(
+            "Generate CM1 Document", 
+            "POST", 
+            "generate", 
+            200, 
+            data=test_data,
+            timeout=60
+        )
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   Generated CM1 document with {len(exercises)} exercises")
+                
+                # Check for CM1-appropriate content
+                for i, exercise in enumerate(exercises[:1]):
+                    enonce = exercise.get('enonce', '')
+                    if enonce:
+                        print(f"   CM1 Exercise {i+1}: {enonce[:150]}...")
+                        # Check for fractions content (CM1 level)
+                        cm1_indicators = ['fraction', 'numérateur', 'dénominateur', '1/2', '1/3', '1/4']
+                        has_cm1_content = any(indicator in enonce.lower() for indicator in cm1_indicators)
+                        if has_cm1_content:
+                            print(f"   ✅ CM1 Exercise {i+1} has appropriate fraction content")
+                        else:
+                            print(f"   ⚠️  CM1 Exercise {i+1} may not have fraction content")
+        
+        return success, response
+
+    def test_dynamic_prompts_integration(self):
+        """Test dynamic prompts integration with different levels"""
+        print("\n🔍 Testing Dynamic Prompts Integration...")
+        
+        # Test different levels to verify dynamic prompt context
+        test_cases = [
+            {
+                "niveau": "CP",
+                "chapitre": "Addition et soustraction des nombres entiers jusqu'à 20",
+                "expected_context": "Tu es un professeur de Mathématiques pour le niveau CP"
+            },
+            {
+                "niveau": "CE2",
+                "chapitre": "Multiplication de nombres entiers",
+                "expected_context": "Tu es un professeur de Mathématiques pour le niveau CE2"
+            },
+            {
+                "niveau": "CM2",
+                "chapitre": "Nombres décimaux",
+                "expected_context": "Tu es un professeur de Mathématiques pour le niveau CM2"
+            },
+            {
+                "niveau": "3e",
+                "chapitre": "Théorème de Thalès",
+                "expected_context": "Tu es un professeur de Mathématiques pour le niveau 3e"
+            }
+        ]
+        
+        all_passed = True
+        for i, test_case in enumerate(test_cases):
+            test_data = {
+                "matiere": "Mathématiques",
+                "niveau": test_case["niveau"],
+                "chapitre": test_case["chapitre"],
+                "type_doc": "exercices",
+                "difficulte": "moyen",
+                "nb_exercices": 1,
+                "versions": ["A"],
+                "guest_id": self.guest_id
+            }
+            
+            print(f"\n   Test {i+1}: Dynamic prompt for {test_case['niveau']} - {test_case['chapitre']}")
+            success, response = self.run_test(
+                f"Dynamic Prompt Test {test_case['niveau']}", 
+                "POST", 
+                "generate", 
+                200, 
+                data=test_data,
+                timeout=60
+            )
+            
+            if success and isinstance(response, dict):
+                document = response.get('document')
+                if document:
+                    exercises = document.get('exercises', [])
+                    if exercises:
+                        exercise = exercises[0]
+                        enonce = exercise.get('enonce', '')
+                        
+                        # Check if the exercise content is appropriate for the level
+                        level_appropriate = self.check_level_appropriateness(test_case['niveau'], enonce)
+                        if level_appropriate:
+                            print(f"   ✅ Dynamic prompt working for {test_case['niveau']}")
+                        else:
+                            print(f"   ⚠️  Dynamic prompt may not be working for {test_case['niveau']}")
+                            all_passed = False
+                    else:
+                        print(f"   ❌ No exercises generated for {test_case['niveau']}")
+                        all_passed = False
+                else:
+                    print(f"   ❌ No document generated for {test_case['niveau']}")
+                    all_passed = False
+            else:
+                print(f"   ❌ Generation failed for {test_case['niveau']}")
+                all_passed = False
+        
+        return all_passed, {"dynamic_prompts_tested": True}
+
+    def check_level_appropriateness(self, niveau, enonce):
+        """Check if exercise content is appropriate for the given level"""
+        enonce_lower = enonce.lower()
+        
+        if niveau == "CP":
+            # CP should have simple numbers up to 20
+            cp_indicators = ['20', 'jusqu\'à 20', 'simple', 'facile']
+            return any(indicator in enonce_lower for indicator in cp_indicators)
+        elif niveau == "CE2":
+            # CE2 should have multiplication concepts
+            ce2_indicators = ['multiplication', 'multiplier', 'fois', 'table']
+            return any(indicator in enonce_lower for indicator in ce2_indicators)
+        elif niveau == "CM2":
+            # CM2 should have decimal numbers
+            cm2_indicators = ['décimal', 'virgule', ',', 'dixième', 'centième']
+            return any(indicator in enonce_lower for indicator in cm2_indicators)
+        elif niveau == "3e":
+            # 3e should have advanced concepts like Thalès
+            troisieme_indicators = ['thalès', 'proportionnalité', 'rapport', 'théorème']
+            return any(indicator in enonce_lower for indicator in troisieme_indicators)
+        
+        return True  # Default to true for other levels
+
     def test_get_documents(self):
         """Test getting user documents"""
         return self.run_test("Get Documents", "GET", f"documents?guest_id={self.guest_id}", 200)
