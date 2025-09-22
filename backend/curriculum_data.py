@@ -1,6 +1,11 @@
 # Curriculum data extracted from FlashExo Excel file
 # Structure: Matière -> Classe (Niveau) -> Chapitre Appli (Compétence)
 
+import latex2mathml.converter
+from logger import get_logger
+
+logger = get_logger()
+
 CURRICULUM_DATA = {
     "Mathématiques": {
         "CP": {
