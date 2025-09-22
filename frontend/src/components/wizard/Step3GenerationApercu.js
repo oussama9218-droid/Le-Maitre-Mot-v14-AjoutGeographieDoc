@@ -91,7 +91,7 @@ const Step3GenerationApercu = ({
 
               {isGenerating && (
                 <div className="text-center text-sm text-gray-600">
-                  <p>🤖 L'IA prépare vos exercices personnalisés...</p>
+                  <p>🤖 Le maître mot prépare vos exercices personnalisés...</p>
                   <p className="text-xs text-gray-500 mt-1">Cela peut prendre quelques secondes</p>
                 </div>
               )}

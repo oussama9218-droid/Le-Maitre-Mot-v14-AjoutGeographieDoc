@@ -1346,7 +1346,7 @@ async def generate_exercises_with_ai(matiere: str, niveau: str, chapitre: str, t
         "Mathématiques": f"""
 {prompt_context['prompt_intro']}. 
 
-Crée {nb_exercices} exercices pour un élève de {niveau} en {matiere}, sur le chapitre suivant: "{chapitre}". 
+Crée {nb_exercices} exercices pour un élève de {niveau} en {matiere}, en restant strictement sur le chapitre suivant: "{chapitre}". 
 Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français pour ce niveau et cette compétence.
 
 **Instructions cruciales** :
