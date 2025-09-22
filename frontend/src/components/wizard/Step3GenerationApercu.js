@@ -177,7 +177,9 @@ const Step3GenerationApercu = ({
                           <Shuffle className="h-4 w-4" />
                         </Button>
                       </div>
-                      <div className="text-gray-900 whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: exercise.enonce }}></div>
+                      <div className="text-gray-900 whitespace-pre-wrap">
+                        <MathRenderer content={exercise.enonce} />
+                      </div>
                       {/* Display geometric schema if present */}
                       {exercise.schema_img && (
                         <div className="mt-4 text-center">
