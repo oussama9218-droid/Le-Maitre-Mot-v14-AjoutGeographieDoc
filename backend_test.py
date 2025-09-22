@@ -234,7 +234,7 @@ class LeMaitreMotAPITester:
         return success, response
 
     def test_new_curriculum_generation_ce1(self):
-        """Test document generation with new CE1 level curriculum"""
+        """Test document generation with new CE1 level curriculum - CRITICAL FIX TEST"""
         test_data = {
             "matiere": "Mathématiques",
             "niveau": "CE1",
@@ -246,9 +246,12 @@ class LeMaitreMotAPITester:
             "guest_id": self.guest_id
         }
         
-        print(f"   Testing CE1 level generation with: {test_data}")
+        print(f"   🔍 CRITICAL TEST: CE1 level generation with curriculum fix")
+        print(f"   Testing data: {test_data}")
+        print(f"   Expected: Should now pass validation (no more 400 'Chapitre non trouvé')")
+        
         success, response = self.run_test(
-            "Generate CE1 Document", 
+            "CURRICULUM FIX: Generate CE1 Document", 
             "POST", 
             "generate", 
             200, 
@@ -260,9 +263,10 @@ class LeMaitreMotAPITester:
             document = response.get('document')
             if document:
                 exercises = document.get('exercises', [])
-                print(f"   Generated CE1 document with {len(exercises)} exercises")
+                print(f"   ✅ CE1 document generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ✅ Curriculum validation fix WORKING for CE1 level")
                 
-                # Check for CE1-appropriate content
+                # Check for CE1-appropriate content and dynamic prompts
                 for i, exercise in enumerate(exercises[:1]):
                     enonce = exercise.get('enonce', '')
                     if enonce:
@@ -271,9 +275,18 @@ class LeMaitreMotAPITester:
                         ce1_indicators = ['999', 'jusqu\'à 999', 'centaines', 'décomposer']
                         has_ce1_content = any(indicator in enonce.lower() for indicator in ce1_indicators)
                         if has_ce1_content:
-                            print(f"   ✅ CE1 Exercise {i+1} has appropriate content")
+                            print(f"   ✅ CE1 Exercise {i+1} has appropriate content (dynamic prompts working)")
                         else:
                             print(f"   ⚠️  CE1 Exercise {i+1} may not be CE1-appropriate")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ CE1 generation FAILED - curriculum validation fix NOT working")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+                if 'chapitre non trouvé' in error_detail.lower():
+                    print(f"   ❌ CRITICAL: Still getting 'Chapitre non trouvé' error - fix not applied")
         
         return success, response
 
