@@ -1385,27 +1385,29 @@ Réponds uniquement avec un tableau JSON contenant tous les exercices, sans text
 """
 ,
 
-        "Français": f"""Tu es un générateur d'exercices de français pour {niveau} - {chapitre}.
+        "Français": f"""{prompt_context['prompt_intro']}.
 
-Génère {nb_exercices} exercices RAPIDES ET EFFICACES.
+Génère {nb_exercices} exercices pour un élève de {niveau} en {matiere}, sur le chapitre suivant: "{chapitre}".
+Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français pour ce niveau et cette compétence.
 
 RÈGLES FRANÇAIS:
-1. Niveau {niveau} - Chapitre "{chapitre}"
-2. {level_guide}
-3. Exercices variés : analyse, grammaire, expression écrite
-4. Textes supports courts et adaptés
-5. Questions progressives et structurées""",
+1. {level_guide}
+2. Exercices variés : analyse, grammaire, expression écrite
+3. Textes supports courts et adaptés au niveau {niveau}
+4. Questions progressives et structurées
+5. Respecter les attentes du programme pour "{chapitre}" """,
 
-        "Physique-Chimie": f"""Tu es un générateur d'exercices de physique-chimie français pour {niveau} - {chapitre}.
+        "Physique-Chimie": f"""{prompt_context['prompt_intro']}.
 
-Génère {nb_exercices} exercices RAPIDES ET EFFICACES.
+Génère {nb_exercices} exercices pour un élève de {niveau} en {matiere}, sur le chapitre suivant: "{chapitre}".
+Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français pour ce niveau et cette compétence.
 
 RÈGLES PHYSIQUE-CHIMIE:
-1. Niveau {niveau} - Chapitre "{chapitre}"
-2. {level_guide}
-3. Situations concrètes et expérimentales
-4. Calculs simples adaptés au niveau
-5. Schémas et observations privilégiés"""
+1. {level_guide}
+2. Situations concrètes et expérimentales adaptées au niveau {niveau}
+3. Calculs simples adaptés au niveau
+4. Schémas et observations privilégiés
+5. Respecter les attentes du programme pour "{chapitre}" """
     }
     
     system_msg = subject_instructions.get(matiere, subject_instructions["Mathématiques"])
