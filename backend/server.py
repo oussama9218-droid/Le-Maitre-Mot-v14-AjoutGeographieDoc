@@ -2614,7 +2614,7 @@ async def save_user_template(
                 buffer.write(content)
             
             # Create URL (relative path for serving)
-            logo_url = f"/uploads/logos/{logo_filename}"
+            logo_url = f"/api/logos/{logo_filename}"
             logger.info(f"✅ Logo saved: {logo_path} -> {logo_url}")
         
         # Validate template style
