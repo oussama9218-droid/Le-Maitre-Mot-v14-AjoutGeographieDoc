@@ -1468,6 +1468,336 @@ class LeMaitreMotAPITester:
             
         return curriculum_passed, curriculum_total
 
+    # ========== LOGO DISPLAY INVESTIGATION TESTS ==========
+    
+    def test_logo_template_data_retrieval(self):
+        """Test template data retrieval for user oussama92.18@gmail.com"""
+        print("\n🔍 LOGO INVESTIGATION: Testing template data retrieval...")
+        
+        # First, check if user has Pro status
+        success, response = self.run_test(
+            "LOGO: Check Pro User Status",
+            "GET",
+            f"user/status/{self.pro_user_email}",
+            200
+        )
+        
+        if not success or not response.get('is_pro', False):
+            print("   ❌ User is not Pro - cannot test template functionality")
+            return False, {}
+        
+        print(f"   ✅ User {self.pro_user_email} is Pro")
+        
+        # Test template data retrieval (requires authentication)
+        # Since we don't have a valid session token, we'll test the endpoint structure
+        success, response = self.run_test(
+            "LOGO: Template Data Retrieval (No Auth)",
+            "GET",
+            "template/get",
+            401  # Should require authentication
+        )
+        
+        if success:
+            print("   ✅ Template endpoint correctly requires authentication")
+        else:
+            print("   ❌ Template endpoint authentication check failed")
+        
+        return success, response
+    
+    def test_logo_file_storage_check(self):
+        """Test if logo files exist in /app/backend/uploads/logos/ directory"""
+        print("\n🔍 LOGO INVESTIGATION: Checking logo file storage...")
+        
+        import os
+        import glob
+        
+        logos_dir = "/app/backend/uploads/logos"
+        user_email_pattern = self.pro_user_email.replace('@', '_').replace('.', '_')
+        
+        # Check if logos directory exists
+        if not os.path.exists(logos_dir):
+            print(f"   ❌ Logos directory does not exist: {logos_dir}")
+            return False, {"error": "logos_directory_missing"}
+        
+        print(f"   ✅ Logos directory exists: {logos_dir}")
+        
+        # Look for logo files for this user
+        logo_pattern = f"{logos_dir}/logo_{user_email_pattern}_*.png"
+        logo_files = glob.glob(logo_pattern)
+        
+        print(f"   Searching for logos with pattern: logo_{user_email_pattern}_*.png")
+        print(f"   Found {len(logo_files)} logo files for user")
+        
+        if logo_files:
+            for logo_file in logo_files:
+                file_size = os.path.getsize(logo_file)
+                file_name = os.path.basename(logo_file)
+                print(f"   ✅ Logo file: {file_name} ({file_size} bytes)")
+            
+            # Test file permissions
+            latest_logo = max(logo_files, key=os.path.getmtime)
+            if os.access(latest_logo, os.R_OK):
+                print(f"   ✅ Latest logo file is readable: {os.path.basename(latest_logo)}")
+                return True, {
+                    "logo_files_found": len(logo_files),
+                    "latest_logo": os.path.basename(latest_logo),
+                    "latest_logo_size": os.path.getsize(latest_logo)
+                }
+            else:
+                print(f"   ❌ Latest logo file is not readable: {os.path.basename(latest_logo)}")
+                return False, {"error": "logo_file_not_readable"}
+        else:
+            print(f"   ❌ No logo files found for user {self.pro_user_email}")
+            return False, {"error": "no_logo_files_found"}
+    
+    def test_logo_url_generation_and_access(self):
+        """Test logo URL generation and direct access"""
+        print("\n🔍 LOGO INVESTIGATION: Testing logo URL generation and access...")
+        
+        import os
+        import glob
+        
+        logos_dir = "/app/backend/uploads/logos"
+        user_email_pattern = self.pro_user_email.replace('@', '_').replace('.', '_')
+        logo_pattern = f"{logos_dir}/logo_{user_email_pattern}_*.png"
+        logo_files = glob.glob(logo_pattern)
+        
+        if not logo_files:
+            print("   ❌ No logo files found to test URL access")
+            return False, {"error": "no_logo_files_for_url_test"}
+        
+        # Get the latest logo file
+        latest_logo = max(logo_files, key=os.path.getmtime)
+        logo_filename = os.path.basename(latest_logo)
+        
+        # Test logo URL construction (should be /uploads/logos/{filename})
+        logo_url = f"/uploads/logos/{logo_filename}"
+        full_logo_url = f"{self.base_url}{logo_url}"
+        
+        print(f"   Testing logo URL: {logo_url}")
+        print(f"   Full URL: {full_logo_url}")
+        
+        # Test direct access to logo URL
+        success, response = self.run_test(
+            "LOGO: Direct Logo URL Access",
+            "GET",
+            full_logo_url,
+            200
+        )
+        
+        if success:
+            print(f"   ✅ Logo URL is accessible: {logo_url}")
+            return True, {
+                "logo_filename": logo_filename,
+                "logo_url": logo_url,
+                "url_accessible": True
+            }
+        else:
+            print(f"   ❌ Logo URL is not accessible: {logo_url}")
+            return False, {
+                "logo_filename": logo_filename,
+                "logo_url": logo_url,
+                "url_accessible": False,
+                "error": "logo_url_not_accessible"
+            }
+    
+    def test_logo_database_template_check(self):
+        """Test database template check by attempting to access template data"""
+        print("\n🔍 LOGO INVESTIGATION: Testing database template data...")
+        
+        # We can't directly access the database, but we can test the API endpoints
+        # that would reveal if template data exists
+        
+        # Test template styles endpoint (public)
+        success, response = self.run_test(
+            "LOGO: Template Styles Endpoint",
+            "GET",
+            "template/styles",
+            200
+        )
+        
+        if success and isinstance(response, dict):
+            styles = response.get('styles', {})
+            print(f"   ✅ Template styles available: {list(styles.keys())}")
+            
+            # Check if styles have the expected structure
+            for style_id, style_data in styles.items():
+                if 'name' in style_data and 'description' in style_data:
+                    print(f"   ✅ Style '{style_id}': {style_data['name']}")
+                else:
+                    print(f"   ⚠️  Style '{style_id}' missing required fields")
+        else:
+            print("   ❌ Template styles endpoint failed")
+            return False, {}
+        
+        # Test template get endpoint (requires auth, should return 401)
+        success, response = self.run_test(
+            "LOGO: Template Get Endpoint Structure",
+            "GET",
+            "template/get",
+            401  # Should require authentication
+        )
+        
+        if success:
+            print("   ✅ Template get endpoint exists and requires authentication")
+        else:
+            print("   ❌ Template get endpoint structure issue")
+        
+        return True, {"template_endpoints_working": True}
+    
+    def test_logo_endpoint_functionality(self):
+        """Test logo serving endpoint functionality"""
+        print("\n🔍 LOGO INVESTIGATION: Testing logo serving functionality...")
+        
+        # The logos are served via StaticFiles mount at /uploads
+        # Let's test if the uploads endpoint is working
+        
+        success, response = self.run_test(
+            "LOGO: Uploads Directory Access",
+            "GET",
+            f"{self.base_url}/uploads/",
+            200  # Should be accessible
+        )
+        
+        if success:
+            print("   ✅ Uploads directory is accessible")
+        else:
+            print("   ❌ Uploads directory is not accessible")
+        
+        # Test specific logo file access if we have logo files
+        import os
+        import glob
+        
+        logos_dir = "/app/backend/uploads/logos"
+        user_email_pattern = self.pro_user_email.replace('@', '_').replace('.', '_')
+        logo_pattern = f"{logos_dir}/logo_{user_email_pattern}_*.png"
+        logo_files = glob.glob(logo_pattern)
+        
+        if logo_files:
+            latest_logo = max(logo_files, key=os.path.getmtime)
+            logo_filename = os.path.basename(latest_logo)
+            
+            # Test direct file access via uploads mount
+            logo_url = f"{self.base_url}/uploads/logos/{logo_filename}"
+            
+            try:
+                import requests
+                response = requests.get(logo_url, timeout=10)
+                
+                if response.status_code == 200:
+                    content_type = response.headers.get('content-type', '')
+                    content_length = len(response.content)
+                    
+                    print(f"   ✅ Logo file accessible via uploads mount")
+                    print(f"   Content-Type: {content_type}")
+                    print(f"   Content-Length: {content_length} bytes")
+                    
+                    if 'image' in content_type:
+                        print("   ✅ Correct image content type")
+                        return True, {
+                            "logo_accessible": True,
+                            "content_type": content_type,
+                            "content_length": content_length,
+                            "logo_url": f"/uploads/logos/{logo_filename}"
+                        }
+                    else:
+                        print(f"   ⚠️  Unexpected content type: {content_type}")
+                        return False, {"error": "unexpected_content_type"}
+                else:
+                    print(f"   ❌ Logo file not accessible: HTTP {response.status_code}")
+                    return False, {"error": f"http_{response.status_code}"}
+                    
+            except Exception as e:
+                print(f"   ❌ Error accessing logo file: {e}")
+                return False, {"error": str(e)}
+        else:
+            print("   ⚠️  No logo files found to test endpoint")
+            return False, {"error": "no_logo_files"}
+    
+    def test_logo_comprehensive_investigation(self):
+        """Comprehensive logo display investigation for oussama92.18@gmail.com"""
+        print("\n" + "="*80)
+        print("🔍 COMPREHENSIVE LOGO DISPLAY INVESTIGATION")
+        print("="*80)
+        print(f"INVESTIGATING: Logo display issue for user {self.pro_user_email}")
+        print("REPORTED ISSUE: Logo image not displaying despite being saved")
+        print("SCREENSHOT: Empty logo area in 'Personnalisation du document (Pro)' section")
+        print("="*80)
+        
+        investigation_results = {}
+        
+        # Step 1: Template Data Retrieval
+        print("\n1. TEMPLATE DATA RETRIEVAL TEST")
+        print("-" * 40)
+        success, result = self.test_logo_template_data_retrieval()
+        investigation_results['template_data'] = {'success': success, 'result': result}
+        
+        # Step 2: Logo File Storage Check
+        print("\n2. LOGO FILE STORAGE CHECK")
+        print("-" * 40)
+        success, result = self.test_logo_file_storage_check()
+        investigation_results['file_storage'] = {'success': success, 'result': result}
+        
+        # Step 3: Logo URL Generation and Access
+        print("\n3. LOGO URL GENERATION AND ACCESS")
+        print("-" * 40)
+        success, result = self.test_logo_url_generation_and_access()
+        investigation_results['url_access'] = {'success': success, 'result': result}
+        
+        # Step 4: Database Template Check
+        print("\n4. DATABASE TEMPLATE CHECK")
+        print("-" * 40)
+        success, result = self.test_logo_database_template_check()
+        investigation_results['database_check'] = {'success': success, 'result': result}
+        
+        # Step 5: Logo Endpoint Functionality
+        print("\n5. LOGO ENDPOINT FUNCTIONALITY")
+        print("-" * 40)
+        success, result = self.test_logo_endpoint_functionality()
+        investigation_results['endpoint_functionality'] = {'success': success, 'result': result}
+        
+        # Analysis and Summary
+        print("\n" + "="*80)
+        print("📊 LOGO INVESTIGATION ANALYSIS")
+        print("="*80)
+        
+        # Analyze results
+        issues_found = []
+        working_components = []
+        
+        for component, data in investigation_results.items():
+            if data['success']:
+                working_components.append(component)
+                print(f"✅ {component.upper().replace('_', ' ')}: Working")
+            else:
+                issues_found.append(component)
+                error = data['result'].get('error', 'Unknown error')
+                print(f"❌ {component.upper().replace('_', ' ')}: {error}")
+        
+        print(f"\n📈 SUMMARY:")
+        print(f"Working components: {len(working_components)}/5")
+        print(f"Issues found: {len(issues_found)}/5")
+        
+        if len(issues_found) == 0:
+            print("\n🎉 NO ISSUES FOUND - Logo system appears to be working correctly")
+            print("💡 RECOMMENDATION: Check frontend logo loading logic")
+        elif 'file_storage' in issues_found:
+            print("\n🚨 CRITICAL ISSUE: Logo files are missing from storage")
+            print("💡 RECOMMENDATION: Check logo upload process")
+        elif 'url_access' in issues_found:
+            print("\n🚨 CRITICAL ISSUE: Logo URLs are not accessible")
+            print("💡 RECOMMENDATION: Check StaticFiles mount configuration")
+        elif 'endpoint_functionality' in issues_found:
+            print("\n🚨 CRITICAL ISSUE: Logo serving endpoint not working")
+            print("💡 RECOMMENDATION: Check uploads directory permissions")
+        else:
+            print("\n⚠️  PARTIAL ISSUES: Some components not working as expected")
+            print("💡 RECOMMENDATION: Check authentication and database configuration")
+        
+        print("\n" + "="*80)
+        
+        return len(issues_found) == 0, investigation_results
+
     def run_authentication_tests(self):
         """Run comprehensive authentication system tests"""
         print("\n" + "="*60)
