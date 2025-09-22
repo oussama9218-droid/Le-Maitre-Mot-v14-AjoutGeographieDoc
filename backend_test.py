@@ -131,7 +131,7 @@ class LeMaitreMotAPITester:
         return success, response
 
     def test_generate_document(self):
-        """Test document generation with French mathematics curriculum"""
+        """Test document generation with French mathematics curriculum - REGRESSION TEST"""
         test_data = {
             "matiere": "Mathématiques",
             "niveau": "6e",
@@ -143,9 +143,10 @@ class LeMaitreMotAPITester:
             "guest_id": self.guest_id
         }
         
+        print(f"   🔍 REGRESSION TEST: 6e level generation (should still work after curriculum fix)")
         print(f"   Generating document with: {test_data}")
         success, response = self.run_test(
-            "Generate Document", 
+            "CURRICULUM FIX: Generate 6e Document (Regression)", 
             "POST", 
             "generate", 
             200, 
@@ -158,7 +159,8 @@ class LeMaitreMotAPITester:
             if document:
                 self.generated_document_id = document.get('id')
                 exercises = document.get('exercises', [])
-                print(f"   Generated document with {len(exercises)} exercises")
+                print(f"   ✅ 6e document generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ✅ REGRESSION TEST PASSED - existing functionality still works")
                 print(f"   Document ID: {self.generated_document_id}")
                 
                 # Check if exercises are in French
@@ -173,6 +175,15 @@ class LeMaitreMotAPITester:
                             print(f"   ✅ Exercise {i+1} appears to be in French")
                         else:
                             print(f"   ⚠️  Exercise {i+1} may not be in French")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ 6e generation FAILED - REGRESSION DETECTED")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+                if 'chapitre non trouvé' in error_detail.lower():
+                    print(f"   ❌ CRITICAL: 6e level also failing - curriculum fix broke existing functionality")
         
         return success, response
 
