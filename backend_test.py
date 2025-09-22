@@ -4033,6 +4033,134 @@ class LeMaitreMotAPITester:
         
         return weasyprint_passed, weasyprint_total
 
+    def test_curriculum_data_functions(self):
+        """Test curriculum data functions directly"""
+        print("\n🔍 Testing Curriculum Data Functions...")
+        
+        try:
+            # Import curriculum functions
+            import sys
+            sys.path.append('/app/backend')
+            from curriculum_data import (
+                get_available_subjects, 
+                get_levels_for_subject, 
+                get_all_chapters_for_level,
+                build_prompt_context
+            )
+            
+            # Test 1: Available subjects
+            subjects = get_available_subjects()
+            print(f"   Available subjects: {subjects}")
+            if 'Mathématiques' in subjects:
+                print("   ✅ Mathématiques subject found")
+            else:
+                print("   ❌ Mathématiques subject missing")
+                return False, {}
+            
+            # Test 2: Levels for Mathématiques
+            levels = get_levels_for_subject('Mathématiques')
+            print(f"   Mathématiques levels: {levels}")
+            
+            expected_new_levels = ['CP', 'CE1', 'CE2', 'CM1', 'CM2']
+            found_new_levels = [level for level in expected_new_levels if level in levels]
+            print(f"   New levels found: {found_new_levels}")
+            
+            if len(found_new_levels) >= 3:
+                print("   ✅ New curriculum levels integrated")
+            else:
+                print("   ❌ Missing new curriculum levels")
+                return False, {}
+            
+            # Test 3: Chapters for specific levels
+            test_levels = ['CP', 'CE1', 'CM1', '6e', '3e']
+            for level in test_levels:
+                if level in levels:
+                    chapters = get_all_chapters_for_level('Mathématiques', level)
+                    print(f"   {level} has {len(chapters)} chapters")
+                    
+                    # Test specific expected chapters
+                    if level == 'CP':
+                        expected = "Décomposer et représenter les nombres entiers jusqu'à 20"
+                        if expected in chapters:
+                            print(f"   ✅ Found CP chapter: {expected}")
+                        else:
+                            print(f"   ❌ Missing CP chapter: {expected}")
+                    elif level == 'CE1':
+                        expected = "Décomposer et représenter les nombres entiers jusqu'à 999"
+                        if expected in chapters:
+                            print(f"   ✅ Found CE1 chapter: {expected}")
+                        else:
+                            print(f"   ❌ Missing CE1 chapter: {expected}")
+                    elif level == 'CM1':
+                        expected_chapters = ["Nombres entiers", "Fractions"]
+                        found_chapters = [ch for ch in expected_chapters if ch in chapters]
+                        if len(found_chapters) >= 1:
+                            print(f"   ✅ Found CM1 chapters: {found_chapters}")
+                        else:
+                            print(f"   ❌ Missing CM1 chapters: {expected_chapters}")
+            
+            # Test 4: Dynamic prompt context
+            test_contexts = [
+                ('Mathématiques', 'CP', 'Addition et soustraction des nombres entiers jusqu\'à 20'),
+                ('Mathématiques', 'CE1', 'Multiplication de nombres entiers'),
+                ('Mathématiques', 'CM1', 'Fractions'),
+                ('Mathématiques', '3e', 'Théorème de Thalès')
+            ]
+            
+            for matiere, niveau, chapitre in test_contexts:
+                context = build_prompt_context(matiere, niveau, chapitre)
+                expected_prompt = f"Tu es un professeur de {matiere} pour le niveau {niveau}, chapitre : {chapitre}"
+                
+                if context['prompt_intro'] == expected_prompt:
+                    print(f"   ✅ Dynamic prompt correct for {niveau}: {chapitre}")
+                else:
+                    print(f"   ❌ Dynamic prompt incorrect for {niveau}")
+                    print(f"      Expected: {expected_prompt}")
+                    print(f"      Got: {context['prompt_intro']}")
+                    return False, {}
+            
+            print("   ✅ All curriculum data functions working correctly")
+            return True, {"curriculum_functions_tested": True}
+            
+        except ImportError as e:
+            print(f"   ❌ Cannot import curriculum functions: {e}")
+            return False, {"error": "import_failed"}
+        except Exception as e:
+            print(f"   ❌ Error testing curriculum functions: {e}")
+            return False, {"error": str(e)}
+
+    def run_new_curriculum_tests(self):
+        """Run comprehensive tests for new curriculum data structure"""
+        print("\n" + "="*60)
+        print("📚 NEW CURRICULUM DATA STRUCTURE TESTS")
+        print("="*60)
+        
+        curriculum_tests = [
+            ("Curriculum Data Functions", self.test_curriculum_data_functions),
+            ("Catalog with New Levels", self.test_catalog_endpoint),
+            ("CP Level Generation", self.test_new_curriculum_generation_cp),
+            ("CE1 Level Generation", self.test_new_curriculum_generation_ce1),
+            ("CM1 Level Generation", self.test_new_curriculum_generation_cm1),
+            ("Dynamic Prompts Integration", self.test_dynamic_prompts_integration)
+        ]
+        
+        curriculum_passed = 0
+        curriculum_total = len(curriculum_tests)
+        
+        for test_name, test_func in curriculum_tests:
+            try:
+                success, _ = test_func()
+                if success:
+                    curriculum_passed += 1
+                    print(f"✅ {test_name} passed")
+                else:
+                    print(f"❌ {test_name} failed")
+            except Exception as e:
+                print(f"❌ {test_name} failed with exception: {e}")
+        
+        print(f"\n📚 New Curriculum Tests: {curriculum_passed}/{curriculum_total} passed")
+        return curriculum_passed, curriculum_total
+
 def run_magic_link_race_condition_tests():
     """Run specific tests for the magic link race condition bug fix"""
     tester = LeMaitreMotAPITester()
