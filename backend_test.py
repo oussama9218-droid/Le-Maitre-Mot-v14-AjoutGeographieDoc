@@ -1737,7 +1737,7 @@ class LeMaitreMotAPITester:
         # Test the new API endpoint
         api_logo_url = f"logos/{logo_filename}"
         
-        print(f"   Testing API logo URL: /{api_logo_url}")
+        print(f"   Testing API logo URL: /api/{api_logo_url}")
         
         success, response = self.run_test(
             "LOGO: API Logos Endpoint Access",
