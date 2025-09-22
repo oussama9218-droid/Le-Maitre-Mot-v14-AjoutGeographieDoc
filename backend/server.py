@@ -2818,6 +2818,7 @@ def get_template_colors_and_fonts(template_config):
     }
 
 @api_router.get("/logos/{filename}")
+@api_router.head("/logos/{filename}")
 async def serve_logo(filename: str):
     """Serve logo files for Pro users"""
     try:
