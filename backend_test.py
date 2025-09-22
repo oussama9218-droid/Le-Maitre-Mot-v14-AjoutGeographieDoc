@@ -9287,8 +9287,12 @@ if __name__ == "__main__":
     print("🚀 Starting Le Maître Mot API Testing Suite")
     print("=" * 60)
     
-    # PRIORITY: Run magic link investigation first
-    print("\n🚨 PRIORITY: Magic Link Investigation for oussama92.1@gmail.com")
+    # PRIORITY: Run new curriculum tests first
+    print("\n📚 PRIORITY: New Curriculum Data Structure Tests")
+    curriculum_passed, curriculum_total = tester.run_new_curriculum_tests()
+    
+    # Run magic link investigation
+    print("\n🚨 Magic Link Investigation for oussama92.1@gmail.com")
     investigation_passed, investigation_total = tester.run_magic_link_investigation()
     
     # Run basic functionality tests
