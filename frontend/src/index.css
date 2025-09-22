@@ -2,6 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Math Renderer Styles */
+.math-renderer {
+  line-height: 1.6;
+}
+
+.math-fallback {
+  font-family: 'Times New Roman', serif;
+  color: #1f2937;
+}
+
+.math-fallback sup {
+  font-size: 0.7em;
+  vertical-align: super;
+}
+
+.math-fallback sub {
+  font-size: 0.7em;
+  vertical-align: sub;
+}
+
+/* KaTeX integration */
+.katex {
+  font-size: 1em !important;
+}
+
+.katex-display {
+  margin: 0.5em 0 !important;
+}
+
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
