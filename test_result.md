@@ -576,10 +576,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Wizard Interface Critical Bug Fixes"
+    - "Logo display fix and wizard functionality after curriculum data changes"
   stuck_tasks: []
   test_all: false
-  test_priority: "critical_first"
+  test_priority: "high_first"
 
 frontend:
   - task: "Wizard Navigation and Flow"
