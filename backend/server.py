@@ -23,6 +23,13 @@ from geometry_renderer import geometry_renderer
 from render_schema import schema_renderer
 import requests
 from logger import get_logger, log_execution_time, log_ai_generation, log_schema_processing, log_user_context, log_quota_check
+from curriculum_data import (
+    CURRICULUM_DATA, 
+    get_available_subjects, 
+    get_levels_for_subject, 
+    get_all_chapters_for_level,
+    build_prompt_context
+)
 
 ROOT_DIR = Path(__file__).parent
 TEMPLATES_DIR = ROOT_DIR / 'templates'
