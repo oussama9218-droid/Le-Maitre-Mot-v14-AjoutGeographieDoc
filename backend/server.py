@@ -1341,6 +1341,16 @@ async def generate_exercises_with_ai(matiere: str, niveau: str, chapitre: str, t
     # Build dynamic prompt context
     prompt_context = build_prompt_context(matiere, niveau, chapitre)
     
+    # Math formatting rules for consistent LaTeX output
+    MATH_FORMATTING_RULE = """
+RÈGLE MATHÉMATIQUES OBLIGATOIRE:
+- Toutes les fractions: \\frac{numérateur}{dénominateur} 
+- Toutes les puissances: x^{exposant}
+- Toutes les racines: \\sqrt{contenu}
+- INTERDICTION: HTML (<sup>, <sub>, <math>), séparateurs (-->, /), pseudo-LaTeX
+- Exemple: \\frac{7}{8} + \\frac{4}{5} = \\frac{35+32}{40} = \\frac{67}{40}
+"""
+    
     # Subject-specific instructions with dynamic prompt
     subject_instructions = {
         "Mathématiques": f"""
@@ -1348,6 +1358,8 @@ async def generate_exercises_with_ai(matiere: str, niveau: str, chapitre: str, t
 
 Crée {nb_exercices} exercices pour un élève de {niveau} en {matiere}, en restant strictement sur le chapitre suivant: "{chapitre}". 
 Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français pour ce niveau et cette compétence.
+
+{MATH_FORMATTING_RULE}
 
 **Instructions cruciales** :
 1. Utilise des **valeurs numériques différentes et variées** pour chaque exercice (pas de répétition des mêmes données).
