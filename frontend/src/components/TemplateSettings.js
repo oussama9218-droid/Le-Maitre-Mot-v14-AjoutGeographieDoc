@@ -254,7 +254,7 @@ const TemplateSettings = ({ isPro, sessionToken, onTemplateChange }) => {
       <CardContent className="space-y-6">
         {/* Logo Upload */}
         <div className="space-y-2">
-          <Label>Logo de l'établissement</Label>
+          {!logoPreview && <Label>Logo de l'établissement</Label>}
           <div
             className={`relative border-2 border-dashed rounded-lg p-6 text-center transition-colors ${
               dragOver ? 'border-blue-400 bg-blue-50' : 'border-gray-300 hover:border-gray-400'
@@ -267,7 +267,7 @@ const TemplateSettings = ({ isPro, sessionToken, onTemplateChange }) => {
               <div className="space-y-2">
                 <img 
                   src={logoPreview} 
-                  alt="Logo preview" 
+                  alt="Logo de l'établissement" 
                   className="mx-auto h-16 w-auto object-contain"
                 />
                 <p className="text-sm text-gray-600">
