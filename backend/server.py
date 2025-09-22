@@ -2550,7 +2550,15 @@ async def get_user_template(request: Request):
         
         # Convert to UserTemplate object
         template = UserTemplate(**template_doc)
-        return template.dict()
+        template_dict = template.dict()
+        
+        # Migrate old logo URLs to new endpoint format
+        if template_dict.get('logo_url') and template_dict['logo_url'].startswith('/uploads/logos/'):
+            filename = template_dict['logo_url'].split('/')[-1]
+            template_dict['logo_url'] = f"/api/logos/{filename}"
+            logger.info(f"🔄 Migrated logo URL for {user_email}: /uploads/logos/{filename} -> /api/logos/{filename}")
+        
+        return template_dict
         
     except HTTPException:
         raise
