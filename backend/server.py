@@ -1991,14 +1991,16 @@ async def root():
 
 @api_router.get("/catalog")
 async def get_catalog():
-    """Get the curriculum catalog"""
+    """Get the curriculum catalog with new hierarchical structure"""
     catalog = []
     for matiere, niveaux in CURRICULUM_DATA.items():
         levels = []
-        for niveau, chapitres in niveaux.items():
+        for niveau, themes in niveaux.items():
+            # Flatten all chapters from all themes for the level
+            all_chapters = get_all_chapters_for_level(matiere, niveau)
             levels.append({
                 "name": niveau,
-                "chapters": chapitres
+                "chapters": all_chapters
             })
         catalog.append({
             "name": matiere,
