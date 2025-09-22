@@ -291,7 +291,7 @@ class LeMaitreMotAPITester:
         return success, response
 
     def test_new_curriculum_generation_cm1(self):
-        """Test document generation with new CM1 level curriculum"""
+        """Test document generation with new CM1 level curriculum - CRITICAL FIX TEST"""
         test_data = {
             "matiere": "Mathématiques",
             "niveau": "CM1",
@@ -303,9 +303,12 @@ class LeMaitreMotAPITester:
             "guest_id": self.guest_id
         }
         
-        print(f"   Testing CM1 level generation with: {test_data}")
+        print(f"   🔍 CRITICAL TEST: CM1 level generation with curriculum fix")
+        print(f"   Testing data: {test_data}")
+        print(f"   Expected: Should now pass validation (no more 400 'Chapitre non trouvé')")
+        
         success, response = self.run_test(
-            "Generate CM1 Document", 
+            "CURRICULUM FIX: Generate CM1 Document", 
             "POST", 
             "generate", 
             200, 
@@ -317,9 +320,10 @@ class LeMaitreMotAPITester:
             document = response.get('document')
             if document:
                 exercises = document.get('exercises', [])
-                print(f"   Generated CM1 document with {len(exercises)} exercises")
+                print(f"   ✅ CM1 document generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ✅ Curriculum validation fix WORKING for CM1 level")
                 
-                # Check for CM1-appropriate content
+                # Check for CM1-appropriate content and dynamic prompts
                 for i, exercise in enumerate(exercises[:1]):
                     enonce = exercise.get('enonce', '')
                     if enonce:
@@ -328,9 +332,18 @@ class LeMaitreMotAPITester:
                         cm1_indicators = ['fraction', 'numérateur', 'dénominateur', '1/2', '1/3', '1/4']
                         has_cm1_content = any(indicator in enonce.lower() for indicator in cm1_indicators)
                         if has_cm1_content:
-                            print(f"   ✅ CM1 Exercise {i+1} has appropriate fraction content")
+                            print(f"   ✅ CM1 Exercise {i+1} has appropriate fraction content (dynamic prompts working)")
                         else:
                             print(f"   ⚠️  CM1 Exercise {i+1} may not have fraction content")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ CM1 generation FAILED - curriculum validation fix NOT working")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+                if 'chapitre non trouvé' in error_detail.lower():
+                    print(f"   ❌ CRITICAL: Still getting 'Chapitre non trouvé' error - fix not applied")
         
         return success, response
 
