@@ -76,7 +76,7 @@ class LeMaitreMotAPITester:
         return self.run_test("Root API", "GET", "", 200)
 
     def test_catalog_endpoint(self):
-        """Test the catalog endpoint"""
+        """Test the catalog endpoint with new curriculum structure"""
         success, response = self.run_test("Catalog", "GET", "catalog", 200)
         if success and isinstance(response, dict):
             catalog = response.get('catalog', [])
@@ -86,9 +86,48 @@ class LeMaitreMotAPITester:
                     if subject.get('name') == 'Mathématiques':
                         levels = subject.get('levels', [])
                         print(f"   Mathématiques has {len(levels)} levels")
+                        
+                        # Check for new levels from Excel data
+                        expected_new_levels = ['CP', 'CE1', 'CE2', 'CM1', 'CM2']
+                        found_new_levels = []
+                        
                         for level in levels:
+                            level_name = level.get('name')
                             chapters = level.get('chapters', [])
-                            print(f"     {level.get('name')}: {len(chapters)} chapters")
+                            print(f"     {level_name}: {len(chapters)} chapters")
+                            
+                            if level_name in expected_new_levels:
+                                found_new_levels.append(level_name)
+                                
+                            # Test specific Excel data chapters
+                            if level_name == 'CP':
+                                expected_cp_chapter = "Décomposer et représenter les nombres entiers jusqu'à 20"
+                                if any(expected_cp_chapter in str(chapter) for chapter in chapters):
+                                    print(f"     ✅ Found CP Excel chapter: {expected_cp_chapter}")
+                                else:
+                                    print(f"     ❌ Missing CP Excel chapter: {expected_cp_chapter}")
+                                    
+                            elif level_name == 'CE1':
+                                expected_ce1_chapter = "Décomposer et représenter les nombres entiers jusqu'à 999"
+                                if any(expected_ce1_chapter in str(chapter) for chapter in chapters):
+                                    print(f"     ✅ Found CE1 Excel chapter: {expected_ce1_chapter}")
+                                else:
+                                    print(f"     ❌ Missing CE1 Excel chapter: {expected_ce1_chapter}")
+                                    
+                            elif level_name == 'CM1':
+                                expected_cm1_chapters = ["Nombres entiers", "Fractions"]
+                                for expected_chapter in expected_cm1_chapters:
+                                    if any(expected_chapter in str(chapter) for chapter in chapters):
+                                        print(f"     ✅ Found CM1 Excel chapter: {expected_chapter}")
+                                    else:
+                                        print(f"     ❌ Missing CM1 Excel chapter: {expected_chapter}")
+                        
+                        print(f"   New levels found: {found_new_levels}")
+                        if len(found_new_levels) >= 3:
+                            print("   ✅ New curriculum levels successfully integrated")
+                        else:
+                            print("   ❌ Missing some new curriculum levels")
+                            
         return success, response
 
     def test_generate_document(self):
