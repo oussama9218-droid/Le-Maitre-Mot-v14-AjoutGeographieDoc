@@ -1829,8 +1829,8 @@ class LeMaitreMotAPITester:
                 print(f"❌ {component.upper().replace('_', ' ')}: {error}")
         
         print(f"\n📈 SUMMARY:")
-        print(f"Working components: {len(working_components)}/5")
-        print(f"Issues found: {len(issues_found)}/5")
+        print(f"Working components: {len(working_components)}/6")
+        print(f"Issues found: {len(issues_found)}/6")
         
         if len(issues_found) == 0:
             print("\n🎉 NO ISSUES FOUND - Logo system appears to be working correctly")
