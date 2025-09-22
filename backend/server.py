@@ -2976,6 +2976,8 @@ async def export_pdf(request: ExportRequest, http_request: Request):
             for exercise in doc['exercises']:
                 if 'enonce' in exercise and exercise['enonce']:
                     exercise['enonce'] = process_exercise_content(exercise['enonce'])
+                    # Convert LaTeX math to MathML for PDF rendering
+                    exercise['enonce'] = process_math_content_for_pdf(exercise['enonce'])
                 
                 # NEW: Generate SVG for schema if present in donnees
                 if exercise.get('donnees') and isinstance(exercise['donnees'], dict):
