@@ -4,6 +4,7 @@ import { Button } from "../ui/button";
 import { Badge } from "../ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/tabs";
 import { FileText, Loader2, Shuffle, Zap } from "lucide-react";
+import MathRenderer from "../MathRenderer";
 
 const Step3GenerationApercu = ({
   // Sélections actuelles
