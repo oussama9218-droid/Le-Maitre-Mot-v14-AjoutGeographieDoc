@@ -3263,11 +3263,17 @@ async def export_pdf_advanced(request: EnhancedExportRequest, http_request: Requ
                 if exercise.get('solution'):
                     if exercise['solution'].get('resultat'):
                         exercise['solution']['resultat'] = process_exercise_content(exercise['solution']['resultat'])
+                        # Convert LaTeX math to MathML for PDF rendering
+                        exercise['solution']['resultat'] = process_math_content_for_pdf(exercise['solution']['resultat'])
                         
                     if exercise['solution'].get('etapes') and isinstance(exercise['solution']['etapes'], list):
-                        exercise['solution']['etapes'] = [
-                            process_exercise_content(step) for step in exercise['solution']['etapes']
-                        ]
+                        processed_steps = []
+                        for step in exercise['solution']['etapes']:
+                            processed_step = process_exercise_content(step)
+                            # Convert LaTeX math to MathML for PDF rendering
+                            processed_step = process_math_content_for_pdf(processed_step)
+                            processed_steps.append(processed_step)
+                        exercise['solution']['etapes'] = processed_steps
         
         # Load user template configuration
         template_config = {}
