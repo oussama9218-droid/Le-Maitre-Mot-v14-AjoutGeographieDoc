@@ -2195,14 +2195,17 @@ async def get_usage_analytics(request: Request, days: int = 30):
 async def generate_document(request: GenerateRequest):
     """Generate a document with exercises"""
     try:
-        # Validate the curriculum selection
-        if request.matiere not in CURRICULUM_DATA:
+        # Validate the curriculum selection using new structure
+        available_subjects = get_available_subjects()
+        if request.matiere not in available_subjects:
             raise HTTPException(status_code=400, detail="Matière non supportée")
         
-        if request.niveau not in CURRICULUM_DATA[request.matiere]:
+        available_levels = get_levels_for_subject(request.matiere)
+        if request.niveau not in available_levels:
             raise HTTPException(status_code=400, detail="Niveau non supporté pour cette matière")
         
-        if request.chapitre not in CURRICULUM_DATA[request.matiere][request.niveau]:
+        available_chapters = get_all_chapters_for_level(request.matiere, request.niveau)
+        if request.chapitre not in available_chapters:
             raise HTTPException(status_code=400, detail="Chapitre non trouvé pour ce niveau")
         
         # Generate exercises
