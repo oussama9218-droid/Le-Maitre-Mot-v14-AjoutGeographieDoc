@@ -1414,6 +1414,60 @@ class LeMaitreMotAPITester:
         
         return all_passed, {}
 
+    def run_curriculum_fix_tests(self):
+        """Run focused tests for the curriculum data validation fix"""
+        print("\n" + "="*80)
+        print("🎯 CURRICULUM DATA VALIDATION FIX TESTS")
+        print("="*80)
+        print("CONTEXT: Testing FIXED curriculum data validation in document generation")
+        print("BUG FIX: Fixed chapter validation to use new curriculum_data.py functions")
+        print("EXPECTED: All generation tests should pass validation (no more 400 'Chapitre non trouvé')")
+        print("="*80)
+        
+        curriculum_tests = [
+            ("Catalog Integration Check", self.test_catalog_endpoint),
+            ("CP Level Generation Test", self.test_new_curriculum_generation_cp),
+            ("CE1 Level Generation Test", self.test_new_curriculum_generation_ce1),
+            ("CM1 Level Generation Test", self.test_new_curriculum_generation_cm1),
+            ("6e Level Regression Test", self.test_generate_document),
+            ("Dynamic Prompts Verification", self.test_dynamic_prompts_integration)
+        ]
+        
+        curriculum_passed = 0
+        curriculum_total = len(curriculum_tests)
+        
+        for test_name, test_func in curriculum_tests:
+            print(f"\n{'='*60}")
+            print(f"🔍 {test_name}")
+            print(f"{'='*60}")
+            try:
+                success, response = test_func()
+                if success:
+                    curriculum_passed += 1
+                    print(f"✅ {test_name} PASSED")
+                else:
+                    print(f"❌ {test_name} FAILED")
+                    if isinstance(response, dict) and 'detail' in response:
+                        print(f"   Error detail: {response['detail']}")
+            except Exception as e:
+                print(f"❌ {test_name} failed with exception: {e}")
+        
+        print(f"\n{'='*80}")
+        print(f"🎯 CURRICULUM FIX TEST RESULTS: {curriculum_passed}/{curriculum_total} passed")
+        print(f"{'='*80}")
+        
+        if curriculum_passed == curriculum_total:
+            print("🎉 ALL CURRICULUM FIX TESTS PASSED!")
+            print("✅ Chapter validation fix is working correctly")
+            print("✅ New curriculum levels (CP, CE1, CM1) are generating documents")
+            print("✅ Dynamic prompts are properly contextualized")
+            print("✅ Existing 6e level continues working (no regression)")
+        else:
+            print("❌ SOME CURRICULUM FIX TESTS FAILED")
+            print("⚠️  Chapter validation fix may not be fully working")
+            
+        return curriculum_passed, curriculum_total
+
     def run_authentication_tests(self):
         """Run comprehensive authentication system tests"""
         print("\n" + "="*60)
