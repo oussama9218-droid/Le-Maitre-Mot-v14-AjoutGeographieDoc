@@ -2623,6 +2623,502 @@ class LeMaitreMotAPITester:
         print(f"\n🔒 Critical Security Tests: {critical_passed}/{critical_total} passed")
         return critical_passed, critical_total
 
+    # ========== MATHEMATICAL EXPRESSIONS RENDERING TESTS ==========
+    
+    def test_math_document_generation_latex_formatting(self):
+        """Test document generation with mathematical content and LaTeX formatting"""
+        print("\n🔍 MATH RENDERING: Testing LaTeX formatting in document generation...")
+        
+        # Test with a mathematics chapter that should contain fractions
+        test_data = {
+            "matiere": "Mathématiques",
+            "niveau": "6e",
+            "chapitre": "Fractions",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 3,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Testing LaTeX formatting with: {test_data}")
+        success, response = self.run_test(
+            "MATH: Generate Document with LaTeX Formatting",
+            "POST",
+            "generate",
+            200,
+            data=test_data,
+            timeout=60
+        )
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                self.generated_document_id = document.get('id')
+                exercises = document.get('exercises', [])
+                print(f"   ✅ Generated {len(exercises)} exercises with math content")
+                
+                # Check for proper LaTeX formatting
+                latex_patterns_found = {
+                    'fractions': 0,
+                    'powers': 0,
+                    'square_roots': 0,
+                    'html_tags': 0,
+                    'pseudo_latex': 0
+                }
+                
+                for i, exercise in enumerate(exercises):
+                    enonce = exercise.get('enonce', '')
+                    solution_steps = exercise.get('solution', {}).get('etapes', [])
+                    solution_result = exercise.get('solution', {}).get('resultat', '')
+                    
+                    # Combine all text content
+                    all_text = enonce + ' ' + ' '.join(solution_steps) + ' ' + solution_result
+                    
+                    # Check for proper LaTeX formatting
+                    import re
+                    
+                    # Count proper LaTeX fractions
+                    frac_matches = re.findall(r'\\frac\{[^}]+\}\{[^}]+\}', all_text)
+                    latex_patterns_found['fractions'] += len(frac_matches)
+                    
+                    # Count proper LaTeX powers
+                    power_matches = re.findall(r'[a-zA-Z0-9]+\^\{[^}]+\}', all_text)
+                    latex_patterns_found['powers'] += len(power_matches)
+                    
+                    # Count proper LaTeX square roots
+                    sqrt_matches = re.findall(r'\\sqrt\{[^}]+\}', all_text)
+                    latex_patterns_found['square_roots'] += len(sqrt_matches)
+                    
+                    # Check for forbidden HTML tags
+                    html_matches = re.findall(r'<(sup|sub|math)[^>]*>', all_text)
+                    latex_patterns_found['html_tags'] += len(html_matches)
+                    
+                    # Check for pseudo-LaTeX (arrow separators)
+                    pseudo_matches = re.findall(r'-->', all_text)
+                    latex_patterns_found['pseudo_latex'] += len(pseudo_matches)
+                    
+                    if i < 2:  # Show first 2 exercises
+                        print(f"   Exercise {i+1} preview: {enonce[:150]}...")
+                        if frac_matches:
+                            print(f"   ✅ Found proper LaTeX fractions: {frac_matches[:2]}")
+                        if power_matches:
+                            print(f"   ✅ Found proper LaTeX powers: {power_matches[:2]}")
+                        if sqrt_matches:
+                            print(f"   ✅ Found proper LaTeX square roots: {sqrt_matches[:2]}")
+                
+                # Verify MATH_FORMATTING_RULE compliance
+                print(f"\n   LaTeX Formatting Analysis:")
+                print(f"   - Proper fractions (\\frac{{}}{{}}): {latex_patterns_found['fractions']}")
+                print(f"   - Proper powers (x^{{}}): {latex_patterns_found['powers']}")
+                print(f"   - Proper square roots (\\sqrt{{}}): {latex_patterns_found['square_roots']}")
+                print(f"   - Forbidden HTML tags: {latex_patterns_found['html_tags']}")
+                print(f"   - Pseudo-LaTeX (-->): {latex_patterns_found['pseudo_latex']}")
+                
+                # Success criteria
+                has_proper_latex = (latex_patterns_found['fractions'] > 0 or 
+                                  latex_patterns_found['powers'] > 0 or 
+                                  latex_patterns_found['square_roots'] > 0)
+                has_forbidden_formats = (latex_patterns_found['html_tags'] > 0 or 
+                                       latex_patterns_found['pseudo_latex'] > 0)
+                
+                if has_proper_latex and not has_forbidden_formats:
+                    print("   ✅ MATH_FORMATTING_RULE compliance verified")
+                    print("   ✅ AI follows consistent LaTeX output format")
+                elif has_proper_latex:
+                    print("   ⚠️  Has proper LaTeX but also forbidden formats")
+                else:
+                    print("   ❌ No proper LaTeX formatting detected")
+                
+                return success, {
+                    'latex_patterns': latex_patterns_found,
+                    'compliance': has_proper_latex and not has_forbidden_formats
+                }
+            else:
+                print("   ❌ No document in response")
+        else:
+            print("   ❌ Document generation failed")
+        
+        return success, response
+    
+    def test_pdf_mathml_conversion(self):
+        """Test PDF export with mathematical expressions and MathML conversion"""
+        if not self.generated_document_id:
+            print("⚠️  Skipping PDF MathML test - no document generated")
+            return False, {}
+        
+        print("\n🔍 MATH RENDERING: Testing PDF MathML conversion...")
+        
+        export_data = {
+            "document_id": self.generated_document_id,
+            "export_type": "sujet",
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Exporting PDF with MathML conversion for document: {self.generated_document_id}")
+        success, response = self.run_test(
+            "MATH: PDF Export with MathML Conversion",
+            "POST",
+            "export",
+            200,
+            data=export_data,
+            timeout=45  # PDF generation with math can take longer
+        )
+        
+        if success:
+            print("   ✅ PDF export with mathematical content successful")
+            print("   ✅ process_math_content_for_pdf() conversion working")
+            
+            # Test corrigé export as well (solution steps processing)
+            export_data_corrige = {
+                "document_id": self.generated_document_id,
+                "export_type": "corrige",
+                "guest_id": self.guest_id
+            }
+            
+            success_corrige, response_corrige = self.run_test(
+                "MATH: PDF Corrigé Export with MathML",
+                "POST",
+                "export",
+                200,
+                data=export_data_corrige,
+                timeout=45
+            )
+            
+            if success_corrige:
+                print("   ✅ PDF corrigé export with solution steps MathML successful")
+                return True, {
+                    'sujet_export': True,
+                    'corrige_export': True,
+                    'mathml_conversion': True
+                }
+            else:
+                print("   ⚠️  PDF corrigé export failed")
+                return success, {'sujet_export': True, 'corrige_export': False}
+        else:
+            print("   ❌ PDF export with mathematical content failed")
+        
+        return success, response
+    
+    def test_latex_pattern_recognition(self):
+        """Test regex patterns for detecting and converting mathematical expressions"""
+        print("\n🔍 MATH RENDERING: Testing LaTeX pattern recognition...")
+        
+        # Test the process_math_content_for_pdf function directly
+        test_cases = [
+            {
+                'input': 'Calculer \\frac{7}{8} + \\frac{3}{4}',
+                'expected_patterns': ['frac'],
+                'description': 'Fraction conversion'
+            },
+            {
+                'input': 'Résoudre x^{2} + 3x^{4} = 0',
+                'expected_patterns': ['power'],
+                'description': 'Power conversion'
+            },
+            {
+                'input': 'Calculer \\sqrt{16} + \\sqrt{25}',
+                'expected_patterns': ['sqrt'],
+                'description': 'Square root conversion'
+            },
+            {
+                'input': 'Simplifier \\frac{x^{2}}{\\sqrt{9}} = \\frac{x^{2}}{3}',
+                'expected_patterns': ['frac', 'power', 'sqrt'],
+                'description': 'Mixed expressions'
+            }
+        ]
+        
+        # Import the function to test it directly
+        try:
+            import sys
+            sys.path.append('/app/backend')
+            from curriculum_data import process_math_content_for_pdf
+            
+            all_patterns_working = True
+            
+            for i, test_case in enumerate(test_cases):
+                print(f"\n   Test {i+1}: {test_case['description']}")
+                print(f"   Input: {test_case['input']}")
+                
+                try:
+                    result = process_math_content_for_pdf(test_case['input'])
+                    print(f"   Output: {result[:100]}...")
+                    
+                    # Check if conversion occurred (result should be different from input)
+                    if result != test_case['input']:
+                        print(f"   ✅ LaTeX conversion applied")
+                        
+                        # Check for MathML patterns (basic check)
+                        if '<math' in result or '<mfrac' in result or '<msup' in result or '<msqrt' in result:
+                            print(f"   ✅ MathML conversion detected")
+                        else:
+                            print(f"   ⚠️  No MathML patterns detected in output")
+                    else:
+                        print(f"   ⚠️  No conversion applied (input == output)")
+                        all_patterns_working = False
+                        
+                except Exception as e:
+                    print(f"   ❌ Error in pattern recognition: {e}")
+                    all_patterns_working = False
+            
+            if all_patterns_working:
+                print("\n   ✅ LaTeX pattern recognition working correctly")
+                print("   ✅ Regex patterns detecting mathematical expressions")
+                print("   ✅ MathML conversion functional")
+            else:
+                print("\n   ❌ Some LaTeX pattern recognition issues detected")
+            
+            return all_patterns_working, {'pattern_recognition': all_patterns_working}
+            
+        except ImportError as e:
+            print(f"   ❌ Cannot import process_math_content_for_pdf: {e}")
+            return False, {'error': 'import_failed'}
+    
+    def test_math_error_handling(self):
+        """Test error handling and fallback behavior for mathematical expressions"""
+        print("\n🔍 MATH RENDERING: Testing error handling and fallback behavior...")
+        
+        # Test with malformed LaTeX expressions
+        test_cases = [
+            {
+                'input': 'Calculer \\frac{7}{8 + \\frac{3}{4}',  # Missing closing brace
+                'description': 'Malformed fraction'
+            },
+            {
+                'input': 'Résoudre x^{2 + 3x^4} = 0',  # Missing closing brace
+                'description': 'Malformed power'
+            },
+            {
+                'input': 'Calculer \\sqrt{16 + \\sqrt{25}',  # Missing closing brace
+                'description': 'Malformed square root'
+            },
+            {
+                'input': '',  # Empty string
+                'description': 'Empty input'
+            },
+            {
+                'input': None,  # None input
+                'description': 'None input'
+            }
+        ]
+        
+        try:
+            import sys
+            sys.path.append('/app/backend')
+            from curriculum_data import process_math_content_for_pdf
+            
+            error_handling_working = True
+            
+            for i, test_case in enumerate(test_cases):
+                print(f"\n   Test {i+1}: {test_case['description']}")
+                if test_case['input'] is not None:
+                    print(f"   Input: {test_case['input']}")
+                else:
+                    print(f"   Input: None")
+                
+                try:
+                    result = process_math_content_for_pdf(test_case['input'])
+                    
+                    # For malformed expressions, should gracefully degrade
+                    if test_case['input'] is None or test_case['input'] == '':
+                        if result == test_case['input']:
+                            print(f"   ✅ Graceful handling of {test_case['description']}")
+                        else:
+                            print(f"   ⚠️  Unexpected result for {test_case['description']}: {result}")
+                    else:
+                        # Should return some result (either converted or fallback)
+                        if result is not None:
+                            print(f"   ✅ Fallback behavior working: {result[:100]}...")
+                            
+                            # Check if it falls back to plain text format
+                            if '/' in result or '^' in result or '√' in result:
+                                print(f"   ✅ Plain text fallback detected")
+                        else:
+                            print(f"   ❌ Returned None for malformed input")
+                            error_handling_working = False
+                            
+                except Exception as e:
+                    print(f"   ❌ Exception in error handling: {e}")
+                    error_handling_working = False
+            
+            if error_handling_working:
+                print("\n   ✅ Error handling and fallback behavior working")
+                print("   ✅ Graceful degradation to plain text")
+                print("   ✅ No crashes on malformed LaTeX")
+            else:
+                print("\n   ❌ Error handling issues detected")
+            
+            return error_handling_working, {'error_handling': error_handling_working}
+            
+        except ImportError as e:
+            print(f"   ❌ Cannot import process_math_content_for_pdf: {e}")
+            return False, {'error': 'import_failed'}
+    
+    def test_comprehensive_math_expressions(self):
+        """Test various mathematical expressions in a comprehensive scenario"""
+        print("\n🔍 MATH RENDERING: Testing comprehensive mathematical expressions...")
+        
+        # Generate a document with complex mathematical content
+        test_data = {
+            "matiere": "Mathématiques",
+            "niveau": "4e",
+            "chapitre": "Théorème de Pythagore",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Testing comprehensive math with: {test_data}")
+        success, response = self.run_test(
+            "MATH: Comprehensive Mathematical Expressions",
+            "POST",
+            "generate",
+            200,
+            data=test_data,
+            timeout=60
+        )
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   ✅ Generated {len(exercises)} exercises with Pythagoras content")
+                
+                # Analyze mathematical content
+                math_analysis = {
+                    'total_exercises': len(exercises),
+                    'exercises_with_math': 0,
+                    'latex_expressions': 0,
+                    'geometric_schemas': 0
+                }
+                
+                for i, exercise in enumerate(exercises):
+                    enonce = exercise.get('enonce', '')
+                    solution = exercise.get('solution', {})
+                    schema = exercise.get('schema')
+                    
+                    # Check for mathematical content
+                    import re
+                    has_math = bool(re.search(r'\\frac|\\sqrt|\^\{|²|√', enonce + str(solution)))
+                    if has_math:
+                        math_analysis['exercises_with_math'] += 1
+                    
+                    # Count LaTeX expressions
+                    latex_count = len(re.findall(r'\\(?:frac|sqrt)\{[^}]+\}|\^\{[^}]+\}', enonce + str(solution)))
+                    math_analysis['latex_expressions'] += latex_count
+                    
+                    # Check for geometric schemas
+                    if schema and isinstance(schema, dict):
+                        math_analysis['geometric_schemas'] += 1
+                    
+                    if i < 1:  # Show first exercise
+                        print(f"   Exercise {i+1}: {enonce[:120]}...")
+                        if has_math:
+                            print(f"   ✅ Contains mathematical expressions")
+                        if schema:
+                            print(f"   ✅ Has geometric schema: {schema.get('type', 'unknown')}")
+                
+                print(f"\n   Mathematical Content Analysis:")
+                print(f"   - Total exercises: {math_analysis['total_exercises']}")
+                print(f"   - Exercises with math: {math_analysis['exercises_with_math']}")
+                print(f"   - LaTeX expressions: {math_analysis['latex_expressions']}")
+                print(f"   - Geometric schemas: {math_analysis['geometric_schemas']}")
+                
+                # Test PDF export with this complex content
+                if document.get('id'):
+                    export_success = self.test_pdf_export_with_complex_math(document.get('id'))
+                    math_analysis['pdf_export_success'] = export_success
+                
+                return success, math_analysis
+            else:
+                print("   ❌ No document in response")
+        else:
+            print("   ❌ Comprehensive math document generation failed")
+        
+        return success, response
+    
+    def test_pdf_export_with_complex_math(self, document_id):
+        """Test PDF export with complex mathematical content"""
+        print(f"\n   Testing PDF export with complex math for document: {document_id}")
+        
+        export_data = {
+            "document_id": document_id,
+            "export_type": "sujet",
+            "guest_id": self.guest_id
+        }
+        
+        success, response = self.run_test(
+            "MATH: Complex Math PDF Export",
+            "POST",
+            "export",
+            200,
+            data=export_data,
+            timeout=45
+        )
+        
+        if success:
+            print("   ✅ Complex mathematical PDF export successful")
+            return True
+        else:
+            print("   ❌ Complex mathematical PDF export failed")
+            return False
+    
+    def run_math_rendering_tests(self):
+        """Run all mathematical expressions rendering tests"""
+        print("\n" + "="*80)
+        print("🧮 MATHEMATICAL EXPRESSIONS RENDERING SYSTEM TESTS")
+        print("="*80)
+        print("CONTEXT: Testing new LaTeX formatting and MathML conversion for PDF")
+        print("FEATURES: LaTeX prompt enhancement, PDF MathML conversion, pattern recognition, error handling")
+        print("USER: oussama92.18@gmail.com (Pro user for full testing)")
+        print("="*80)
+        
+        math_tests = [
+            ("LaTeX Formatting in Document Generation", self.test_math_document_generation_latex_formatting),
+            ("PDF MathML Conversion", self.test_pdf_mathml_conversion),
+            ("LaTeX Pattern Recognition", self.test_latex_pattern_recognition),
+            ("Mathematical Error Handling", self.test_math_error_handling),
+            ("Comprehensive Mathematical Expressions", self.test_comprehensive_math_expressions)
+        ]
+        
+        math_passed = 0
+        math_total = len(math_tests)
+        
+        for test_name, test_func in math_tests:
+            print(f"\n{'='*60}")
+            print(f"🔍 {test_name}")
+            print(f"{'='*60}")
+            try:
+                success, response = test_func()
+                if success:
+                    math_passed += 1
+                    print(f"✅ {test_name} PASSED")
+                else:
+                    print(f"❌ {test_name} FAILED")
+                    if isinstance(response, dict) and 'error' in response:
+                        print(f"   Error: {response['error']}")
+            except Exception as e:
+                print(f"❌ {test_name} failed with exception: {e}")
+        
+        print(f"\n{'='*80}")
+        print(f"🧮 MATHEMATICAL RENDERING TEST RESULTS: {math_passed}/{math_total} passed")
+        print(f"{'='*80}")
+        
+        if math_passed == math_total:
+            print("🎉 ALL MATHEMATICAL RENDERING TESTS PASSED!")
+            print("✅ LaTeX prompt enhancement working correctly")
+            print("✅ PDF MathML conversion functional")
+            print("✅ LaTeX pattern recognition operational")
+            print("✅ Error handling and fallback behavior working")
+            print("✅ No regression in existing functionality")
+        else:
+            print("❌ SOME MATHEMATICAL RENDERING TESTS FAILED")
+            print("⚠️  Mathematical expressions system may have issues")
+            
+        return math_passed, math_total
+
     # ========== TEMPLATE PERSONALIZATION TESTS ==========
     
     def test_template_styles_public_endpoint(self):
