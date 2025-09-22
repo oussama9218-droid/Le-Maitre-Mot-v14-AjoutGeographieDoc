@@ -268,6 +268,16 @@ def process_math_content_for_pdf(text: str) -> str:
         # Regex patterns for common LaTeX expressions
         import re
         
+        # CRITICAL FIX: Convert broken fraction formats to LaTeX FIRST
+        # Fix "X de Y" patterns
+        text = re.sub(r'(\d+)\s+de\s+(\d+)', r'\\frac{\1}{\2}', text)
+        # Fix "X par Y" patterns  
+        text = re.sub(r'(\d+)\s+par\s+(\d+)', r'\\frac{\1}{\2}', text)
+        # Fix simple "X/Y" patterns (but preserve URLs)
+        text = re.sub(r'(?<!http:)(?<!https:)(\d+)/(\d+)', r'\\frac{\1}{\2}', text)
+        
+        logger.info(f"🔧 Fixed broken fraction formats in text: {text[:100]}...")
+        
         # Pattern for fractions: \frac{numerator}{denominator}
         frac_pattern = r'\\frac\{([^}]+)\}\{([^}]+)\}'
         
