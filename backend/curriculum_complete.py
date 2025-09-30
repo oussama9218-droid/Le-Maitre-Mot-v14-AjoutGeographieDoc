@@ -273,9 +273,9 @@ CURRICULUM_DATA_COMPLETE = {
         }
     },
 
-    # 🔄 COMING SOON - Octobre 2025
+    # 🔄 COMING SOON - Octobre 2025 (TEMPORAIREMENT ACTIVÉ POUR TESTS)
     "Français": {
-        "status": "coming_soon",
+        "status": "active",
         "expected": "Octobre 2025",
         "description": "Grammaire, vocabulaire, expression écrite, compréhension de lecture",
         "features": ["grammar_analysis", "text_comprehension", "writing_exercises"],
