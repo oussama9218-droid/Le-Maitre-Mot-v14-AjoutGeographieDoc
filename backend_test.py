@@ -11421,44 +11421,6 @@ Résultat final.''',
         
         return False, {}
 
-    def run_feature_flag_tests(self):
-        """Run comprehensive feature flag system tests"""
-        print("\n" + "="*80)
-        print("🗺️ FEATURE FLAG SYSTEM TESTS - PRIORITY")
-        print("="*80)
-        print("CONTEXT: Testing transformation to French educational platform with 23 subjects")
-        print("STRATEGY: 'Tout afficher, griser ce qui n'est pas prêt'")
-        print("="*80)
-        
-        feature_flag_tests = [
-            ("API Catalog Extended", self.test_feature_flag_catalog_extended),
-            ("Feature Flag Validation Generate", self.test_feature_flag_validation_generate),
-            ("Roadmap Endpoint", self.test_roadmap_endpoint),
-            ("Backward Compatibility", self.test_backward_compatibility_validation),
-            ("Volume Data Scale-up", self.test_volume_data_scale_up),
-        ]
-        
-        ff_passed = 0
-        ff_total = len(feature_flag_tests)
-        
-        for test_name, test_func in feature_flag_tests:
-            try:
-                print(f"\n{'='*60}")
-                print(f"🔍 {test_name}")
-                print(f"{'='*60}")
-                
-                success, _ = test_func()
-                if success:
-                    ff_passed += 1
-                    print(f"✅ {test_name}: PASSED")
-                else:
-                    print(f"❌ {test_name}: FAILED")
-            except Exception as e:
-                print(f"❌ {test_name}: FAILED with exception: {e}")
-        
-        print(f"\n🗺️ Feature Flag Tests: {ff_passed}/{ff_total} passed")
-        return ff_passed, ff_total
-
     def test_feature_flag_catalog_extended(self):
         """Test API Catalog Extended - Vérifier les 23 matières avec feature flags"""
         print("\n🗺️ Testing FEATURE FLAG CATALOG EXTENDED - 23 matières avec statuts...")
