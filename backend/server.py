@@ -1503,17 +1503,88 @@ RÈGLES FRANÇAIS:
 4. Questions progressives et structurées
 5. Respecter les attentes du programme pour "{chapitre}" """,
 
-        "Physique-Chimie": f"""{prompt_context['prompt_intro']}.
+        "Physique-Chimie": f"""
+{prompt_context['prompt_intro']}. 
 
-Génère {nb_exercices} exercices pour un élève de {niveau} en {matiere}, sur le chapitre suivant: "{chapitre}".
-Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français pour ce niveau et cette compétence.
+Crée {nb_exercices} exercices de Physique-Chimie pour un élève de {niveau} sur le chapitre: "{chapitre}".
+Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français.
 
-RÈGLES PHYSIQUE-CHIMIE:
-1. {level_guide}
-2. Situations concrètes et expérimentales adaptées au niveau {niveau}
-3. Calculs simples adaptés au niveau
-4. Schémas et observations privilégiés
-5. Respecter les attentes du programme pour "{chapitre}" """
+RÈGLES PHYSIQUE-CHIMIE OBLIGATOIRES:
+- Utilise des SITUATIONS CONCRÈTES et EXPÉRIMENTALES adaptées au niveau {niveau}
+- Propose des CALCULS SIMPLES avec unités (m, kg, s, J, V, A, etc.)
+- Privilégie l'OBSERVATION et l'EXPÉRIMENTATION
+- Utilise le VOCABULAIRE SCIENTIFIQUE approprié au niveau
+- Les réponses doivent être en 2-3 étapes maximum
+- Donne des valeurs numériques RÉALISTES et VARIÉES
+
+EXEMPLES par chapitre:
+- "Organisation et transformations de la matière" : mélanges, corps purs, réactions chimiques, atomes/molécules
+- "Mouvements et interactions" : vitesse, forces, frottements, gravité 
+- "L'énergie et ses conversions" : énergie cinétique, potentielle, thermique, électrique
+- "Des signaux pour observer et communiquer" : lumière, son, signaux électriques
+
+FORMAT JSON REQUIS:
+{{
+    "exercises": [
+        {{
+            "type": "experimental",
+            "enonce": "Énoncé avec situation expérimentale concrète",
+            "icone": "atom",
+            "solution": {{
+                "etapes": ["Étape 1: Méthode/formule", "Étape 2: Application numérique"],
+                "resultat": "Résultat final avec unité"
+            }},
+            "difficulte": "{difficulte}",
+            "bareme": [
+                {{"etape": "Méthode", "points": 1.5}},
+                {{"etape": "Calcul", "points": 1.5}},
+                {{"etape": "Résultat", "points": 1.0}}
+            ]
+        }}
+    ]
+}}
+""",
+
+        "SVT": f"""
+{prompt_context['prompt_intro']}.
+
+Crée {nb_exercices} exercices de SVT pour un élève de {niveau} sur le chapitre: "{chapitre}".
+Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français.
+
+RÈGLES SVT OBLIGATOIRES:
+- Utilise des OBSERVATIONS et DONNÉES SCIENTIFIQUES réelles
+- Privilégie l'ANALYSE et le RAISONNEMENT SCIENTIFIQUE
+- Propose des SCHÉMAS BIOLOGIQUES simples quand pertinent 
+- Utilise le VOCABULAIRE SCIENTIFIQUE adapté au niveau {niveau}
+- Développe l'esprit critique et la démarche expérimentale
+- Les questions doivent favoriser la RÉFLEXION plus que le calcul
+
+EXEMPLES par chapitre:
+- "Le vivant et son évolution" : classification, reproduction, génétique, évolution
+- "Le corps humain et la santé" : nutrition, respiration, circulation, immunité
+- "La planète Terre, l'environnement" : géologie, écosystèmes, climat, biodiversité
+
+FORMAT JSON REQUIS:
+{{
+    "exercises": [
+        {{
+            "type": "analysis",
+            "enonce": "Énoncé avec observation/document scientifique à analyser",
+            "icone": "leaf",
+            "solution": {{
+                "etapes": ["Étape 1: Observation", "Étape 2: Analyse", "Étape 3: Conclusion"],
+                "resultat": "Conclusion scientifique argumentée"
+            }},
+            "difficulte": "{difficulte}",
+            "bareme": [
+                {{"etape": "Observation", "points": 1.0}},
+                {{"etape": "Analyse", "points": 2.0}},
+                {{"etape": "Conclusion", "points": 1.0}}
+            ]
+        }}
+    ]
+}}
+"""
     }
     
     system_msg = subject_instructions.get(matiere, subject_instructions["Mathématiques"])
