@@ -2553,19 +2553,7 @@ async def generate_document(request: GenerateRequest):
         if request.chapitre not in available_chapters:
             raise HTTPException(status_code=400, detail="Chapitre non trouvé pour ce niveau")
         
-        logger.info(
-            "🚀 Document generation started",
-            module_name="generation",
-            func_name="generate_document",
-            matiere=request.matiere,
-            niveau=request.niveau, 
-            chapitre=request.chapitre,
-            type_doc=request.type_doc,
-            difficulte=request.difficulte,
-            nb_exercices=request.nb_exercices,
-            guest_id=request.guest_id,
-            feature_flag_status="active"
-        )
+        logger.info(f"🚀 Document generation started - {request.matiere} {request.niveau} {request.chapitre} - {request.type_doc} - {request.difficulte} - {request.nb_exercices} exercises - guest_id: {request.guest_id}")
         
         exercises = await generate_exercises_with_ai(
             request.matiere,
