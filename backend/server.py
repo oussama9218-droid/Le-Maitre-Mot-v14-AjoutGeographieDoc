@@ -1962,7 +1962,7 @@ async def generate_fallback_exercises(matiere: str, niveau: str, chapitre: str, 
             "type": "text",
             "icone": "book-open"
         }
-        fallback_data = enrich_exercise_with_icon(fallback_data, chapitre)
+        fallback_data = enrich_exercise_with_icon(fallback_data, chapitre, matiere)
         
         exercise = Exercise(
             type="ouvert",
