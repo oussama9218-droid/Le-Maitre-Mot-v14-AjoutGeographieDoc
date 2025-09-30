@@ -32,6 +32,18 @@ from curriculum_data import (
     build_prompt_context,
     process_math_content_for_pdf
 )
+from curriculum_complete import (
+    CURRICULUM_DATA_COMPLETE, 
+    CURRICULUM_STATUS,
+    get_all_subjects_with_status,
+    get_active_subjects,
+    get_subject_by_name,
+    is_subject_active,
+    get_subjects_by_status,
+    get_curriculum_stats,
+    log_feature_flag_access,
+    process_math_content_for_pdf
+)
 
 ROOT_DIR = Path(__file__).parent
 TEMPLATES_DIR = ROOT_DIR / 'templates'
