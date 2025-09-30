@@ -1922,6 +1922,47 @@ JSON OBLIGATOIRE:
                     exercise_id=i+1
                 )
             
+            # THIRD PASS: Geographic document search for Geography exercises
+            if matiere.lower() == "géographie" and "document_attendu" in ex_data:
+                logger.info(
+                    "🗺️ Geographic document required, starting document search",
+                    module_name="generation",
+                    func_name="document_search",
+                    enonce_preview=enonce_clean[:100],
+                    document_type=ex_data["document_attendu"].get("type", "unknown")
+                )
+                
+                try:
+                    document_metadata = await search_educational_document(ex_data["document_attendu"])
+                    if document_metadata:
+                        # Add document to exercise data
+                        ex_data["document"] = document_metadata
+                        ex_data["type"] = "cartographic"  # Ensure type is set for Geography
+                        
+                        logger.info(
+                            "✅ Educational document found and attached",
+                            module_name="generation", 
+                            func_name="document_attachment",
+                            document_title=document_metadata.get("titre", "Unknown"),
+                            document_type=document_metadata.get("type", "Unknown"),
+                            licence=document_metadata.get("licence", {}).get("type", "Unknown"),
+                            exercise_id=i+1
+                        )
+                    else:
+                        logger.warning(
+                            "⚠️ No suitable geographic document found",
+                            module_name="generation",
+                            func_name="document_search_failure",
+                            requested_type=ex_data["document_attendu"].get("type", "unknown")
+                        )
+                except Exception as e:
+                    logger.error(
+                        f"❌ Error during document search: {e}",
+                        module_name="generation",
+                        func_name="document_search_error",
+                        exercise_id=i+1
+                    )
+            
             # Process the CLEANED enonce with centralized content processing
             processed_enonce = process_exercise_content(enonce_clean)
             
