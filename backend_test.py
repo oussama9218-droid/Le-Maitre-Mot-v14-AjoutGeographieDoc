@@ -10970,7 +10970,7 @@ if __name__ == "__main__":
             run_magic_link_race_condition_tests()
         else:
             print(f"Unknown test mode: {test_mode}")
-            print("Available modes: math, curriculum, auth, logo, magic, security, template, subscription")
+            print("Available modes: math, curriculum, newsubjects, auth, logo, magic, security, template, subscription")
         sys.exit(0)
     
     # Run all tests if no specific mode specified
