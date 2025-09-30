@@ -11041,13 +11041,14 @@ if __name__ == "__main__":
     print("📊 FINAL TEST SUMMARY")
     print("="*60)
     print(f"🧮 Mathematical Rendering Tests: {math_passed}/{math_total} passed")
+    print(f"🧪🌱 New Subjects Integration Tests: {newsubjects_passed}/{newsubjects_total} passed")
     print(f"🔧 Basic Tests: {tester.tests_passed}/{tester.tests_run} passed")
     print(f"🔐 Authentication Tests: {auth_passed}/{auth_total} passed")
     print(f"🔒 Critical Security Tests: {critical_passed}/{critical_total} passed")
     print(f"🎨 Template Tests: {template_passed}/{template_total} passed")
     
-    total_passed = tester.tests_passed + auth_passed + critical_passed + template_passed + math_passed
-    total_tests = tester.tests_run + auth_total + critical_total + template_total + math_total
+    total_passed = tester.tests_passed + auth_passed + critical_passed + template_passed + math_passed + newsubjects_passed
+    total_tests = tester.tests_run + auth_total + critical_total + template_total + math_total + newsubjects_total
     
     print(f"🎯 OVERALL: {total_passed}/{total_tests} tests passed ({total_passed/total_tests*100:.1f}%)")
     
