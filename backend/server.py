@@ -1603,35 +1603,8 @@ FORMAT JSON REQUIS:
     # Use the instruction (specialized or generic)
     # system_msg is already set above
     
-    
-    # Create LLM chat instance with faster model
-    chat = LlmChat(
-        api_key=emergent_key,
-        session_id=f"exercise_gen_{uuid.uuid4()}",
-        system_message=f"""{system_msg}
-
-JSON OBLIGATOIRE:
-{{
-  "exercises": [
-    {{
-      "type": "ouvert",
-      "enonce": "Énoncé concis et clair",
-      "difficulte": "{difficulte}",
-      "solution": {{
-        "etapes": ["Étape 1", "Étape 2"],
-        "resultat": "Résultat final"
-      }},
-      "bareme": [
-        {{"etape": "Méthode", "points": 2.0}},
-        {{"etape": "Résultat", "points": 2.0}}
-      ]
-    }}
-  ]
-}}"""
-    ).with_model("openai", "gpt-4o")
-    
-    # Create concise prompt for faster generation
-    examples = {
+    # Use the instruction (specialized or generic)
+    # system_msg is already set above
         # Mathématiques
         "Volumes": "Calculer volume pavé 4×3×2 cm",
         "Nombres relatifs": "Calculer -5 + 3 - (-2)",
