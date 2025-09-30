@@ -44,6 +44,7 @@ from curriculum_complete import (
     log_feature_flag_access,
     process_math_content_for_pdf
 )
+from document_search import search_educational_document
 
 ROOT_DIR = Path(__file__).parent
 TEMPLATES_DIR = ROOT_DIR / 'templates'
