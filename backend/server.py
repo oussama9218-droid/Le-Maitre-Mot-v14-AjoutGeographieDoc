@@ -1602,9 +1602,6 @@ FORMAT JSON REQUIS:
     
     # Use the instruction (specialized or generic)
     # system_msg is already set above
-    
-    # Use the instruction (specialized or generic)
-    # system_msg is already set above
     # GET THE SPECIALIZED INSTRUCTION FOR THE SUBJECT
     instruction = subject_instructions.get(matiere)
     
