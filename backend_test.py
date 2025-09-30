@@ -76,17 +76,24 @@ class LeMaitreMotAPITester:
         return self.run_test("Root API", "GET", "", 200)
 
     def test_catalog_endpoint(self):
-        """Test the catalog endpoint with new curriculum structure"""
+        """Test the catalog endpoint with new curriculum structure including Physique-Chimie and SVT"""
         success, response = self.run_test("Catalog", "GET", "catalog", 200)
         if success and isinstance(response, dict):
             catalog = response.get('catalog', [])
             if catalog:
                 print(f"   Found {len(catalog)} subjects")
+                
+                # Check for all three expected subjects
+                expected_subjects = ['Mathématiques', 'Physique-Chimie', 'SVT']
+                found_subjects = []
+                
                 for subject in catalog:
-                    if subject.get('name') == 'Mathématiques':
-                        levels = subject.get('levels', [])
-                        print(f"   Mathématiques has {len(levels)} levels")
-                        
+                    subject_name = subject.get('name')
+                    found_subjects.append(subject_name)
+                    levels = subject.get('levels', [])
+                    print(f"   {subject_name} has {len(levels)} levels")
+                    
+                    if subject_name == 'Mathématiques':
                         # Check for new levels from Excel data
                         expected_new_levels = ['CP', 'CE1', 'CE2', 'CM1', 'CM2']
                         found_new_levels = []
@@ -127,6 +134,57 @@ class LeMaitreMotAPITester:
                             print("   ✅ New curriculum levels successfully integrated")
                         else:
                             print("   ❌ Missing some new curriculum levels")
+                    
+                    elif subject_name == 'Physique-Chimie':
+                        # Check for Physique-Chimie specific chapters
+                        expected_pc_chapters = [
+                            "Organisation et transformations de la matière",
+                            "L'énergie et ses conversions",
+                            "Mouvements et interactions",
+                            "Des signaux pour observer et communiquer"
+                        ]
+                        found_pc_chapters = []
+                        
+                        for level in levels:
+                            level_name = level.get('name')
+                            chapters = level.get('chapters', [])
+                            for chapter in chapters:
+                                chapter_name = chapter if isinstance(chapter, str) else chapter.get('name', '')
+                                for expected_chapter in expected_pc_chapters:
+                                    if expected_chapter in chapter_name:
+                                        found_pc_chapters.append(expected_chapter)
+                                        print(f"     ✅ Found PC chapter: {expected_chapter} in {level_name}")
+                        
+                        print(f"   Physique-Chimie chapters found: {len(set(found_pc_chapters))}/{len(expected_pc_chapters)}")
+                    
+                    elif subject_name == 'SVT':
+                        # Check for SVT specific chapters
+                        expected_svt_chapters = [
+                            "Le vivant et son évolution",
+                            "Le corps humain et la santé",
+                            "La planète Terre, l'environnement et l'action humaine"
+                        ]
+                        found_svt_chapters = []
+                        
+                        for level in levels:
+                            level_name = level.get('name')
+                            chapters = level.get('chapters', [])
+                            for chapter in chapters:
+                                chapter_name = chapter if isinstance(chapter, str) else chapter.get('name', '')
+                                for expected_chapter in expected_svt_chapters:
+                                    if expected_chapter in chapter_name:
+                                        found_svt_chapters.append(expected_chapter)
+                                        print(f"     ✅ Found SVT chapter: {expected_chapter} in {level_name}")
+                        
+                        print(f"   SVT chapters found: {len(set(found_svt_chapters))}/{len(expected_svt_chapters)}")
+                
+                # Verify all three subjects are present
+                print(f"\n   Subjects found: {found_subjects}")
+                missing_subjects = [s for s in expected_subjects if s not in found_subjects]
+                if not missing_subjects:
+                    print("   ✅ All three subjects (Mathématiques, Physique-Chimie, SVT) found in catalog")
+                else:
+                    print(f"   ❌ Missing subjects: {missing_subjects}")
                             
         return success, response
 
