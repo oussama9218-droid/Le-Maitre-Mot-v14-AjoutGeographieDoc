@@ -2206,22 +2206,68 @@ async def root():
 
 @api_router.get("/catalog")
 async def get_catalog():
-    """Get the curriculum catalog with new hierarchical structure"""
+    """Get the complete curriculum catalog with feature flags"""
+    logger.info("🗺️ Catalog request - displaying all subjects with feature flags")
+    
+    # Get all subjects with their status and metadata
+    all_subjects = get_all_subjects_with_status()
+    
     catalog = []
-    for matiere, niveaux in CURRICULUM_DATA.items():
+    for matiere, subject_info in all_subjects.items():
+        # Get curriculum data
+        config = get_subject_by_name(matiere)
+        if not config:
+            continue
+            
         levels = []
-        for niveau, themes in niveaux.items():
-            # Flatten all chapters from all themes for the level
-            all_chapters = get_all_chapters_for_level(matiere, niveau)
-            levels.append({
-                "name": niveau,
-                "chapters": all_chapters
-            })
+        # Only populate levels for active subjects
+        if subject_info["status"] == "active" and config.get("data"):
+            for niveau, themes in config["data"].items():
+                # Flatten all chapters from all themes for the level
+                all_chapters = []
+                for theme, chapters in themes.items():
+                    all_chapters.extend(chapters)
+                    
+                levels.append({
+                    "name": niveau,
+                    "chapters": all_chapters
+                })
+        
         catalog.append({
             "name": matiere,
+            "status": subject_info["status"],
+            "status_info": subject_info["status_info"],
+            "expected": subject_info.get("expected", "TBD"),
+            "description": subject_info.get("description", ""),
+            "note": subject_info.get("note", ""),
+            "features": subject_info.get("features", []),
+            "chapter_count": subject_info["chapter_count"],
+            "level_count": subject_info["level_count"],
             "levels": levels
         })
-    return {"catalog": catalog}
+    
+    # Get curriculum statistics
+    stats = get_curriculum_stats()
+    
+    logger.info(
+        f"🗺️ Catalog served - {stats['total']['subjects']} subjects total, "
+        f"{stats['active']['subject_count']} active, "
+        f"{stats['total']['chapters']} chapters available"
+    )
+    
+    return {
+        "catalog": catalog,
+        "stats": stats,
+        "roadmap": {
+            "active": stats["active"]["subject_count"],
+            "coming_soon": stats["coming_soon"]["subject_count"], 
+            "planned": stats["planned"]["subject_count"],
+            "beta": stats["beta"]["subject_count"],
+            "future": stats["future"]["subject_count"],
+            "total_subjects": stats["total"]["subjects"],
+            "total_chapters": stats["total"]["chapters"]
+        }
+    }
 
 @api_router.get("/pricing")
 async def get_pricing():
