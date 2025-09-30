@@ -2269,6 +2269,74 @@ async def get_catalog():
         }
     }
 
+@api_router.get("/roadmap")
+async def get_roadmap():
+    """Get the public roadmap showing all subjects and their release timeline"""
+    logger.info("🗺️ Roadmap request - public transparency page")
+    
+    # Get subjects organized by status
+    roadmap_data = {}
+    for status in CURRICULUM_STATUS.keys():
+        subjects_for_status = get_subjects_by_status(status)
+        if subjects_for_status:
+            roadmap_data[status] = {
+                "status_info": CURRICULUM_STATUS[status],
+                "subjects": []
+            }
+            
+            for matiere, config in subjects_for_status.items():
+                chapter_count = 0
+                level_count = 0
+                if config.get("data"):
+                    level_count = len(config["data"])
+                    for level_data in config["data"].values():
+                        for chapters in level_data.values():
+                            chapter_count += len(chapters)
+                
+                roadmap_data[status]["subjects"].append({
+                    "name": matiere,
+                    "description": config.get("description", ""),
+                    "expected": config.get("expected", "TBD"),
+                    "note": config.get("note", ""),
+                    "features": config.get("features", []),
+                    "chapter_count": chapter_count,
+                    "level_count": level_count
+                })
+    
+    # Get global statistics
+    stats = get_curriculum_stats()
+    
+    return {
+        "roadmap": roadmap_data,
+        "stats": stats,
+        "phases": {
+            "phase_1": {
+                "title": "🔄 Octobre 2025 - Matières Littéraires",
+                "description": "Français et EMC avec prompts IA spécialisés", 
+                "subjects": ["Français", "EMC"],
+                "status": "coming_soon"
+            },
+            "phase_2": {
+                "title": "📋 Nov-Déc 2025 - Sciences Humaines",
+                "description": "Histoire, Géographie, SES avec supports documentaires",
+                "subjects": ["Histoire", "Géographie", "SES", "Philosophie"],
+                "status": "planned"
+            },
+            "phase_3": {
+                "title": "🧪 Jan-Mars 2026 - Matières Pratiques (Beta)",
+                "description": "Tests utilisateurs avec retours enseignants",
+                "subjects": ["EPS", "Enseignements artistiques", "Technologie"],
+                "status": "beta"
+            },
+            "phase_4": {
+                "title": "🔮 2026+ - Spécialités Avancées",
+                "description": "Matières complexes nécessitant outils spécialisés",
+                "subjects": ["Sciences numériques", "Spécialités lycée"],
+                "status": "future"
+            }
+        }
+    }
+
 @api_router.get("/pricing")
 async def get_pricing():
     """Get pricing packages"""
