@@ -465,7 +465,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "EMC": {
-        "status": "active",
+        "status": "coming_soon",
         "expected": "Octobre 2025",
         "description": "Réflexion civique, débats moraux, situations d'éthique",
         "features": ["civic_reflection", "moral_debates", "ethical_situations"],
