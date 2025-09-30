@@ -105,50 +105,53 @@
 user_problem_statement: "Transformer 'Le Maître Mot' en plateforme éducative complète avec système de feature flags pour 23 matières du système français (681 chapitres). Stratégie : 'Tout afficher, griser ce qui n'est pas prêt'. Implémentation feature flags (active/coming_soon/planned/beta/future), API catalog étendue, interface montrant toutes matières avec statuts, page roadmap publique."
 
 backend:
-  - task: "Intégration Physique-Chimie - Curriculum et prompts spécialisés"
+  - task: "Système Feature Flags - Architecture complète 23 matières"
     implemented: true
-    working: true
-    file: "curriculum_data.py, server.py"
+    working: "NA"
+    file: "curriculum_complete.py, server.py"
     stuck_count: 0
-    priority: "high"
-    needs_retesting: false
+    priority: "critical"
+    needs_retesting: true
     status_history:
         - working: "NA"
         - agent: "main"
-        - comment: "NOUVELLES MATIÈRES INTÉGRÉES: Ajout complet Physique-Chimie avec curriculum officiel français (5e-Terminale), prompts IA spécialisés avec règles EXPÉRIMENTALES, système d'icônes étendu (atom, flask, zap, battery, radio), fonction enrich_exercise_with_icon modifiée pour support matière-spécifique. Chapitres intégrés: Organisation et transformations de la matière, Mouvements et interactions, L'énergie et ses conversions, Des signaux pour observer et communiquer, Constitution et transformations de la matière, Mouvement et interactions, Ondes et signaux, L'énergie : conversions et transferts."
-        - working: true
-        - agent: "testing"
-        - comment: "🎉 PHYSIQUE-CHIMIE INTEGRATION COMPLETELY VERIFIED: Comprehensive testing of Physique-Chimie integration completed with 100% SUCCESS for required chapters. CRITICAL VERIFICATION: 1) ✅ CATALOG API INTEGRATION: Physique-Chimie appears in catalog with all required chapters across 6 levels (5e-Terminale), found all 4 expected chapters (Organisation et transformations de la matière, Mouvements et interactions, L'énergie et ses conversions, Des signaux pour observer et communiquer), 2) ✅ EXERCISE GENERATION WORKING: Successfully generated exercises for both required chapters - 'Organisation et transformations de la matière' (5e): 2 exercises generated in 9.34s with chemistry type and flask icons, 'L'énergie et ses conversions' (4e): 2 exercises generated in 5.41s with energy type and battery icons, 3) ✅ SPECIALIZED PROMPTS FUNCTIONAL: AI generates appropriate experimental/scientific content with vocabulary like 'expérience', 'observation', 'transformation', 'atome', 'molécule', 'réaction', content follows EXPÉRIMENTALES rules with concrete experimental situations, 4) ✅ ICON SYSTEM EXTENDED: Correct icon assignment verified - chemistry chapters get flask icons, energy chapters get battery icons, physics chapters get zap icons, waves chapters get radio icons, all PC-specific icons (atom, flask, zap, battery, radio) working correctly, 5) ✅ PERFORMANCE REQUIREMENTS MET: All generation times under 30 seconds (9.34s and 5.41s), fast response times maintained, 6) ✅ NO MATHEMATICS REGRESSION: Mathematics functionality unaffected by PC integration, existing math exercises still generate correctly with proper icons. CONCLUSION: Physique-Chimie integration is FULLY OPERATIONAL and production-ready with complete curriculum, specialized prompts, extended icon system, and excellent performance."
+        - comment: "SYSTÈME FEATURE FLAGS COMPLET DÉPLOYÉ: Nouveau module curriculum_complete.py avec 23 matières du système français (681 chapitres totaux). Architecture feature flags avec 5 statuts (active/coming_soon/planned/beta/future). Structure CURRICULUM_DATA_COMPLETE intégrant TOUTES les matières CSV avec métadonnées complètes (status, expected, description, features, note). Fonctions utilitaires: get_all_subjects_with_status(), is_subject_active(), get_subjects_by_status(), get_curriculum_stats(). Logging professionnel log_feature_flag_access()."
 
-  - task: "Intégration SVT - Curriculum et prompts spécialisés"  
+  - task: "API Catalog étendue - Support feature flags avec roadmap"
     implemented: true
-    working: true
-    file: "curriculum_data.py, server.py"
-    stuck_count: 0
-    priority: "high" 
-    needs_retesting: false
-    status_history:
-        - working: "NA"
-        - agent: "main"
-        - comment: "NOUVELLES MATIÈRES INTÉGRÉES: Ajout complet SVT avec curriculum officiel français (5e-Seconde), prompts IA spécialisés avec règles ANALYTIQUES, système d'icônes étendu (leaf, dna, mountain, globe, heart), fonction enrich_exercise_with_icon modifiée pour support matière-spécifique. Chapitres intégrés: La planète Terre l'environnement et l'action humaine, Le vivant et son évolution, Le corps humain et la santé, La Terre la vie et l'organisation du vivant, Les enjeux contemporains de la planète, Corps humain et santé."
-        - working: true
-        - agent: "testing"
-        - comment: "🎉 SVT INTEGRATION COMPLETELY VERIFIED: Comprehensive testing of SVT integration completed with 100% SUCCESS for required chapters. CRITICAL VERIFICATION: 1) ✅ CATALOG API INTEGRATION: SVT appears in catalog with all required chapters across 4 levels (5e-3e), found all 3 expected chapters (La planète Terre l'environnement et l'action humaine, Le vivant et son évolution, Le corps humain et la santé), 2) ✅ EXERCISE GENERATION WORKING: Successfully generated exercises for both required chapters - 'Le vivant et son évolution' (5e): 2 exercises generated in 10.32s with biology type and dna icons, 'Le corps humain et la santé' (4e): 2 exercises generated in 7.75s with health type and heart icons, 3) ✅ SPECIALIZED PROMPTS FUNCTIONAL: AI generates appropriate analytical/scientific content with vocabulary like 'analyser', 'observer', 'classer', 'espèce', 'classification', 'évolution', content follows ANALYTIQUES rules with scientific analysis and reasoning, 4) ✅ ICON SYSTEM EXTENDED: Correct icon assignment verified - biology chapters get dna icons, health chapters get heart icons, ecology chapters get globe icons, geology chapters get mountain icons, all SVT-specific icons (leaf, dna, mountain, globe, heart) working correctly, 5) ✅ PERFORMANCE REQUIREMENTS MET: All generation times under 30 seconds (10.32s and 7.75s), fast response times maintained, 6) ✅ NO MATHEMATICS REGRESSION: Mathematics functionality unaffected by SVT integration, existing math exercises still generate correctly. CONCLUSION: SVT integration is FULLY OPERATIONAL and production-ready with complete curriculum, specialized analytical prompts, extended icon system, and excellent performance."
-
-  - task: "Extension système d'icônes pour nouvelles matières"
-    implemented: true  
-    working: true
+    working: "NA" 
     file: "server.py"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "critical"
+    needs_retesting: true
     status_history:
-        - working: "NA" 
+        - working: "NA"
         - agent: "main"
-        - comment: "SYSTÈME D'ICÔNES ÉTENDU: EXERCISE_ICON_MAPPING enrichi avec 10 nouvelles icônes - Physique-Chimie: experimental/atom, physics/zap, chemistry/flask, energy/battery, waves/radio - SVT: analysis/leaf, biology/dna, geology/mountain, ecology/globe, health/heart. Mappings par chapitres spécifiques ajoutés. Fonction enrich_exercise_with_icon complètement refactorée avec logique prioritaire par matière."
-        - working: true
-        - agent: "testing"
-        - comment: "🎉 EXTENDED ICON SYSTEM COMPLETELY VERIFIED: Comprehensive testing of extended icon system completed with 86% SUCCESS RATE (6/7 tests passed). CRITICAL VERIFICATION: 1) ✅ PHYSIQUE-CHIMIE ICONS WORKING: All PC-specific icons correctly assigned - 'Organisation et transformations de la matière' → flask (chemistry), 'L'énergie et ses conversions' → battery (energy), 'Mouvements et interactions' → zap (physics), 'Des signaux pour observer et communiquer' → radio (waves), matière-specific logic functioning perfectly, 2) ✅ SVT ICONS WORKING: All SVT-specific icons correctly assigned - 'Le vivant et son évolution' → dna (biology), 'Le corps humain et la santé' → heart (health), matière-specific logic functioning perfectly, 3) ✅ ICON MAPPING LOGIC: enrich_exercise_with_icon function working correctly with priority-based assignment (matière-specific logic first, then chapter-based, then content-based), all 10 new icons (atom, flask, zap, battery, radio, leaf, dna, mountain, globe, heart) properly integrated, 4) ✅ MATHEMATICS ICONS PRESERVED: Existing math icons (triangle-ruler, calculator, function-square, bar-chart) still working correctly, no regression in mathematics icon assignment, 5) Minor: One test failed for SVT 6e level (not supported), but this is expected as SVT curriculum starts at 5e level. CONCLUSION: The extended icon system is FULLY OPERATIONAL and production-ready with correct assignment of all new subject-specific icons and preserved mathematics functionality."
+        - comment: "API CATALOG TRANSFORMÉE: Endpoint /catalog retourne maintenant TOUTES les 23 matières avec statuts complets (status, status_info, expected, description, note, features, chapter_count, level_count). Niveaux/chapitres peuplés uniquement pour matières actives. Statistiques globales intégrées (roadmap: active/coming_soon/planned/beta/future counts, total_subjects, total_chapters). Structure préserve compatibilité frontend."
+
+  - task: "Validation Feature Flags - Endpoint generate avec contrôle accès" 
+    implemented: true
+    working: "NA"
+    file: "server.py"
+    stuck_count: 0
+    priority: "critical" 
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "CONTRÔLE ACCÈS FEATURE FLAGS: Endpoint /generate modifié avec validation is_subject_active() AVANT génération. HTTP 423 (Locked) retourné pour matières non-actives avec détails complets (error, message, status, expected, emoji, available_subjects). Log feature flag access pour analytics. Génération limitée aux matières status='active' uniquement."
+
+  - task: "Endpoint Roadmap public - Transparence utilisateur"
+    implemented: true
+    working: "NA"
+    file: "server.py"
+    stuck_count: 0 
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "ROADMAP PUBLIQUE CRÉÉE: Nouvel endpoint /roadmap exposant toutes matières organisées par statut avec métadonnées (subjects_for_status avec description, expected, note, features, chapter_count). Phases timeline structurées (Phase 1: Oct 2025 Français/EMC, Phase 2: Nov-Dec 2025 Histoire/Géo/SES, Phase 3: Jan-Mar 2026 EPS/Arts/Techno Beta, Phase 4: 2026+ Spécialités). Stats globales incluses."
 
   - task: "Mathematical expressions rendering system with LaTeX formatting and MathML conversion"
     implemented: true
