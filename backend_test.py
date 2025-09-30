@@ -10944,6 +10944,9 @@ if __name__ == "__main__":
         elif test_mode == "curriculum":
             # Run only curriculum fix tests
             tester.run_curriculum_fix_tests()
+        elif test_mode == "newsubjects":
+            # Run only new subjects integration tests
+            tester.run_focused_new_subjects_tests()
         elif test_mode == "auth":
             # Run only authentication tests
             tester.run_authentication_tests()
