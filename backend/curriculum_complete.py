@@ -742,7 +742,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "SES": {
-        "status": "planned", 
+        "status": "active", 
         "expected": "Décembre 2025",
         "description": "Analyses économiques, sociologiques et politiques",
         "features": ["economic_analysis", "sociological_reasoning", "political_concepts"],
