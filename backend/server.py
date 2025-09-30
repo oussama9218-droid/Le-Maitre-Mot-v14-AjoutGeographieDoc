@@ -1599,10 +1599,10 @@ FORMAT JSON REQUIS:
 """
     }
     
-    logger.info(f"🤖 Using {'specialized' if matiere in subject_instructions else 'generic'} prompt for {matiere}")
     
     # Use the instruction (specialized or generic)
-    system_msg = instruction
+    # system_msg is already set above
+    
     
     # Create LLM chat instance with faster model
     chat = LlmChat(
