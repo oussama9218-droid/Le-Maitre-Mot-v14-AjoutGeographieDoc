@@ -959,9 +959,9 @@ CURRICULUM_DATA_COMPLETE = {
         }
     },
 
-    # 🔮 FUTURE - 2026+ (TEMPORAIREMENT ACTIVÉ POUR TESTS)
+    # 🔮 FUTURE - 2026+
     "Technologie": {
-        "status": "active",
+        "status": "future",
         "expected": "2026",
         "description": "Innovation, programmation, design technique",
         "features": ["technical_innovation", "programming_logic", "design_thinking"],
