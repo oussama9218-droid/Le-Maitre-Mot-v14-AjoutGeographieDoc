@@ -541,9 +541,9 @@ CURRICULUM_DATA_COMPLETE = {
         }
     },
 
-    # 📋 PLANNED - Nov-Déc 2025
+    # 📋 PLANNED - Nov-Déc 2025 (TEMPORAIREMENT ACTIVÉ POUR TESTS)
     "Histoire": {
-        "status": "planned",
+        "status": "active",
         "expected": "Novembre 2025",
         "description": "Chronologies, personnages historiques, causes et conséquences",
         "features": ["chronological_analysis", "historical_figures", "cause_effect"],
