@@ -2064,6 +2064,23 @@ class LeMaitreMotAPITester:
                 
         return integration_passed, integration_total
 
+    def run_focused_new_subjects_tests(self):
+        """Run only the new subjects integration tests (for focused testing)"""
+        print("🎯 Running FOCUSED New Subjects Integration Tests...")
+        print(f"Base URL: {self.base_url}")
+        print(f"Guest ID: {self.guest_id}")
+        
+        # Run only new subjects tests
+        passed, total = self.run_new_subjects_integration_tests()
+        
+        print(f"\n{'='*60}")
+        print("📊 FOCUSED TEST RESULTS")
+        print(f"{'='*60}")
+        print(f"New Subjects Tests: {passed}/{total} passed")
+        print(f"Success rate: {(passed/total)*100:.1f}%")
+        
+        return passed, total
+
     def run_curriculum_fix_tests(self):
         """Run focused tests for the curriculum data validation fix"""
         print("\n" + "="*80)
