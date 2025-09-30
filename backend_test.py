@@ -416,7 +416,526 @@ class LeMaitreMotAPITester:
         
         return success, response
 
-    def test_dynamic_prompts_integration(self):
+    def test_physique_chimie_generation_5e(self):
+        """Test Physique-Chimie exercise generation for 5e level - Organisation et transformations de la matière"""
+        test_data = {
+            "matiere": "Physique-Chimie",
+            "niveau": "5e",
+            "chapitre": "Organisation et transformations de la matière",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   🧪 Testing Physique-Chimie generation for 5e level")
+        print(f"   Chapter: {test_data['chapitre']}")
+        
+        start_time = time.time()
+        success, response = self.run_test(
+            "Physique-Chimie 5e Generation", 
+            "POST", 
+            "generate", 
+            200, 
+            data=test_data,
+            timeout=60
+        )
+        generation_time = time.time() - start_time
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   ✅ Physique-Chimie 5e generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ⏱️  Generation time: {generation_time:.2f} seconds")
+                
+                if generation_time > 30:
+                    print(f"   ⚠️  Generation time exceeds 30 seconds threshold")
+                else:
+                    print(f"   ✅ Generation time within 30 seconds threshold")
+                
+                # Check exercise content and icons
+                for i, exercise in enumerate(exercises):
+                    enonce = exercise.get('enonce', '')
+                    icone = exercise.get('icone', '')
+                    exercise_type = exercise.get('type', '')
+                    
+                    print(f"   Exercise {i+1}: Type={exercise_type}, Icon={icone}")
+                    print(f"   Content preview: {enonce[:150]}...")
+                    
+                    # Check for Physique-Chimie specific content
+                    pc_indicators = ['matière', 'transformation', 'chimique', 'atome', 'molécule', 'corps pur', 'mélange']
+                    has_pc_content = any(indicator in enonce.lower() for indicator in pc_indicators)
+                    if has_pc_content:
+                        print(f"   ✅ Exercise {i+1} has appropriate Physique-Chimie content")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} may not have specific PC content")
+                    
+                    # Check for correct icon assignment
+                    expected_pc_icons = ['atom', 'flask', 'zap', 'battery', 'radio']
+                    if icone in expected_pc_icons:
+                        print(f"   ✅ Exercise {i+1} has appropriate PC icon: {icone}")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} has unexpected icon: {icone}")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ Physique-Chimie 5e generation FAILED")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+        
+        return success, response
+
+    def test_physique_chimie_generation_4e(self):
+        """Test Physique-Chimie exercise generation for 4e level - L'énergie et ses conversions"""
+        test_data = {
+            "matiere": "Physique-Chimie",
+            "niveau": "4e",
+            "chapitre": "L'énergie et ses conversions",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   🧪 Testing Physique-Chimie generation for 4e level")
+        print(f"   Chapter: {test_data['chapitre']}")
+        
+        start_time = time.time()
+        success, response = self.run_test(
+            "Physique-Chimie 4e Generation", 
+            "POST", 
+            "generate", 
+            200, 
+            data=test_data,
+            timeout=60
+        )
+        generation_time = time.time() - start_time
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   ✅ Physique-Chimie 4e generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ⏱️  Generation time: {generation_time:.2f} seconds")
+                
+                if generation_time > 30:
+                    print(f"   ⚠️  Generation time exceeds 30 seconds threshold")
+                else:
+                    print(f"   ✅ Generation time within 30 seconds threshold")
+                
+                # Check exercise content and icons
+                for i, exercise in enumerate(exercises):
+                    enonce = exercise.get('enonce', '')
+                    icone = exercise.get('icone', '')
+                    exercise_type = exercise.get('type', '')
+                    
+                    print(f"   Exercise {i+1}: Type={exercise_type}, Icon={icone}")
+                    print(f"   Content preview: {enonce[:150]}...")
+                    
+                    # Check for energy-specific content
+                    energy_indicators = ['énergie', 'conversion', 'cinétique', 'potentielle', 'thermique', 'électrique', 'joule']
+                    has_energy_content = any(indicator in enonce.lower() for indicator in energy_indicators)
+                    if has_energy_content:
+                        print(f"   ✅ Exercise {i+1} has appropriate energy content")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} may not have specific energy content")
+                    
+                    # Check for energy icon (battery expected for energy chapter)
+                    if icone == 'battery':
+                        print(f"   ✅ Exercise {i+1} has correct energy icon: {icone}")
+                    elif icone in ['atom', 'flask', 'zap', 'radio']:
+                        print(f"   ✅ Exercise {i+1} has valid PC icon: {icone}")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} has unexpected icon: {icone}")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ Physique-Chimie 4e generation FAILED")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+        
+        return success, response
+
+    def test_svt_generation_5e(self):
+        """Test SVT exercise generation for 5e level - Le vivant et son évolution"""
+        test_data = {
+            "matiere": "SVT",
+            "niveau": "5e",
+            "chapitre": "Le vivant et son évolution",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   🌱 Testing SVT generation for 5e level")
+        print(f"   Chapter: {test_data['chapitre']}")
+        
+        start_time = time.time()
+        success, response = self.run_test(
+            "SVT 5e Generation", 
+            "POST", 
+            "generate", 
+            200, 
+            data=test_data,
+            timeout=60
+        )
+        generation_time = time.time() - start_time
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   ✅ SVT 5e generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ⏱️  Generation time: {generation_time:.2f} seconds")
+                
+                if generation_time > 30:
+                    print(f"   ⚠️  Generation time exceeds 30 seconds threshold")
+                else:
+                    print(f"   ✅ Generation time within 30 seconds threshold")
+                
+                # Check exercise content and icons
+                for i, exercise in enumerate(exercises):
+                    enonce = exercise.get('enonce', '')
+                    icone = exercise.get('icone', '')
+                    exercise_type = exercise.get('type', '')
+                    
+                    print(f"   Exercise {i+1}: Type={exercise_type}, Icon={icone}")
+                    print(f"   Content preview: {enonce[:150]}...")
+                    
+                    # Check for SVT biology content
+                    biology_indicators = ['vivant', 'évolution', 'espèce', 'classification', 'reproduction', 'génétique', 'adn', 'cellule']
+                    has_biology_content = any(indicator in enonce.lower() for indicator in biology_indicators)
+                    if has_biology_content:
+                        print(f"   ✅ Exercise {i+1} has appropriate biology content")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} may not have specific biology content")
+                    
+                    # Check for biology icon (dna expected for evolution chapter)
+                    if icone == 'dna':
+                        print(f"   ✅ Exercise {i+1} has correct biology icon: {icone}")
+                    elif icone in ['leaf', 'mountain', 'globe', 'heart']:
+                        print(f"   ✅ Exercise {i+1} has valid SVT icon: {icone}")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} has unexpected icon: {icone}")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ SVT 5e generation FAILED")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+        
+        return success, response
+
+    def test_svt_generation_4e(self):
+        """Test SVT exercise generation for 4e level - Le corps humain et la santé"""
+        test_data = {
+            "matiere": "SVT",
+            "niveau": "4e",
+            "chapitre": "Le corps humain et la santé",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   🌱 Testing SVT generation for 4e level")
+        print(f"   Chapter: {test_data['chapitre']}")
+        
+        start_time = time.time()
+        success, response = self.run_test(
+            "SVT 4e Generation", 
+            "POST", 
+            "generate", 
+            200, 
+            data=test_data,
+            timeout=60
+        )
+        generation_time = time.time() - start_time
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   ✅ SVT 4e generation SUCCESSFUL with {len(exercises)} exercises")
+                print(f"   ⏱️  Generation time: {generation_time:.2f} seconds")
+                
+                if generation_time > 30:
+                    print(f"   ⚠️  Generation time exceeds 30 seconds threshold")
+                else:
+                    print(f"   ✅ Generation time within 30 seconds threshold")
+                
+                # Check exercise content and icons
+                for i, exercise in enumerate(exercises):
+                    enonce = exercise.get('enonce', '')
+                    icone = exercise.get('icone', '')
+                    exercise_type = exercise.get('type', '')
+                    
+                    print(f"   Exercise {i+1}: Type={exercise_type}, Icon={icone}")
+                    print(f"   Content preview: {enonce[:150]}...")
+                    
+                    # Check for health-specific content
+                    health_indicators = ['corps', 'santé', 'nutrition', 'digestion', 'respiration', 'circulation', 'immunité', 'système']
+                    has_health_content = any(indicator in enonce.lower() for indicator in health_indicators)
+                    if has_health_content:
+                        print(f"   ✅ Exercise {i+1} has appropriate health content")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} may not have specific health content")
+                    
+                    # Check for health icon (heart expected for health chapter)
+                    if icone == 'heart':
+                        print(f"   ✅ Exercise {i+1} has correct health icon: {icone}")
+                    elif icone in ['leaf', 'dna', 'mountain', 'globe']:
+                        print(f"   ✅ Exercise {i+1} has valid SVT icon: {icone}")
+                    else:
+                        print(f"   ⚠️  Exercise {i+1} has unexpected icon: {icone}")
+            else:
+                print(f"   ❌ No document in response: {response}")
+        else:
+            print(f"   ❌ SVT 4e generation FAILED")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+        
+        return success, response
+
+    def test_icon_system_validation(self):
+        """Test the extended icon system for new subjects"""
+        print("\n🎨 Testing Extended Icon System for New Subjects...")
+        
+        # Test Physique-Chimie icons
+        pc_icon_tests = [
+            ("Physique-Chimie", "5e", "Organisation et transformations de la matière", ["flask", "atom"]),
+            ("Physique-Chimie", "4e", "L'énergie et ses conversions", ["battery"]),
+            ("Physique-Chimie", "4e", "Mouvements et interactions", ["zap"]),
+            ("Physique-Chimie", "3e", "Des signaux pour observer et communiquer", ["radio"])
+        ]
+        
+        # Test SVT icons
+        svt_icon_tests = [
+            ("SVT", "5e", "Le vivant et son évolution", ["dna"]),
+            ("SVT", "4e", "Le corps humain et la santé", ["heart"]),
+            ("SVT", "6e", "La planète Terre, l'environnement et l'action humaine", ["globe", "mountain"]),
+        ]
+        
+        all_icon_tests = pc_icon_tests + svt_icon_tests
+        icon_tests_passed = 0
+        
+        for matiere, niveau, chapitre, expected_icons in all_icon_tests:
+            test_data = {
+                "matiere": matiere,
+                "niveau": niveau,
+                "chapitre": chapitre,
+                "type_doc": "exercices",
+                "difficulte": "moyen",
+                "nb_exercices": 1,
+                "versions": ["A"],
+                "guest_id": self.guest_id
+            }
+            
+            print(f"\n   Testing {matiere} {niveau} - {chapitre}")
+            success, response = self.run_test(
+                f"Icon Test: {matiere} {niveau}",
+                "POST",
+                "generate",
+                200,
+                data=test_data,
+                timeout=60
+            )
+            
+            if success and isinstance(response, dict):
+                document = response.get('document')
+                if document:
+                    exercises = document.get('exercises', [])
+                    if exercises:
+                        exercise = exercises[0]
+                        icone = exercise.get('icone', '')
+                        exercise_type = exercise.get('type', '')
+                        
+                        if icone in expected_icons:
+                            print(f"   ✅ Correct icon assigned: {icone} (type: {exercise_type})")
+                            icon_tests_passed += 1
+                        else:
+                            print(f"   ⚠️  Unexpected icon: {icone}, expected one of: {expected_icons}")
+                    else:
+                        print(f"   ❌ No exercises generated")
+                else:
+                    print(f"   ❌ No document generated")
+            else:
+                print(f"   ❌ Generation failed")
+        
+        print(f"\n   Icon system tests: {icon_tests_passed}/{len(all_icon_tests)} passed")
+        return icon_tests_passed == len(all_icon_tests), {"icon_tests_passed": icon_tests_passed, "total_tests": len(all_icon_tests)}
+
+    def test_specialized_prompts_quality(self):
+        """Test that exercises respect specialized prompts for PC and SVT"""
+        print("\n📝 Testing Specialized Prompts Quality...")
+        
+        # Test Physique-Chimie experimental situations
+        pc_test_data = {
+            "matiere": "Physique-Chimie",
+            "niveau": "5e",
+            "chapitre": "Organisation et transformations de la matière",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 1,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Testing Physique-Chimie specialized prompts...")
+        success, response = self.run_test(
+            "PC Specialized Prompts",
+            "POST",
+            "generate",
+            200,
+            data=pc_test_data,
+            timeout=60
+        )
+        
+        pc_quality_passed = False
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                if exercises:
+                    exercise = exercises[0]
+                    enonce = exercise.get('enonce', '').lower()
+                    
+                    # Check for experimental/scientific vocabulary
+                    experimental_terms = ['expérience', 'observation', 'mesure', 'protocole', 'résultat', 'analyse', 'conclusion']
+                    scientific_terms = ['atome', 'molécule', 'réaction', 'transformation', 'corps pur', 'mélange']
+                    
+                    has_experimental = any(term in enonce for term in experimental_terms)
+                    has_scientific = any(term in enonce for term in scientific_terms)
+                    
+                    if has_experimental or has_scientific:
+                        print(f"   ✅ PC exercise uses appropriate scientific vocabulary")
+                        pc_quality_passed = True
+                    else:
+                        print(f"   ⚠️  PC exercise may lack experimental/scientific context")
+        
+        # Test SVT analytical approach
+        svt_test_data = {
+            "matiere": "SVT",
+            "niveau": "5e",
+            "chapitre": "Le vivant et son évolution",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 1,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"   Testing SVT specialized prompts...")
+        success, response = self.run_test(
+            "SVT Specialized Prompts",
+            "POST",
+            "generate",
+            200,
+            data=svt_test_data,
+            timeout=60
+        )
+        
+        svt_quality_passed = False
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                if exercises:
+                    exercise = exercises[0]
+                    enonce = exercise.get('enonce', '').lower()
+                    
+                    # Check for analytical/scientific vocabulary
+                    analytical_terms = ['analyser', 'observer', 'comparer', 'classer', 'déduire', 'expliquer']
+                    biological_terms = ['espèce', 'caractère', 'classification', 'évolution', 'adaptation', 'milieu']
+                    
+                    has_analytical = any(term in enonce for term in analytical_terms)
+                    has_biological = any(term in enonce for term in biological_terms)
+                    
+                    if has_analytical or has_biological:
+                        print(f"   ✅ SVT exercise uses appropriate analytical vocabulary")
+                        svt_quality_passed = True
+                    else:
+                        print(f"   ⚠️  SVT exercise may lack analytical/biological context")
+        
+        quality_tests_passed = sum([pc_quality_passed, svt_quality_passed])
+        print(f"\n   Specialized prompts quality: {quality_tests_passed}/2 passed")
+        return quality_tests_passed == 2, {"quality_tests_passed": quality_tests_passed}
+
+    def test_mathematics_regression(self):
+        """Test that Mathematics functionality is not affected by new subjects integration"""
+        print("\n🔄 Testing Mathematics Regression (No Impact from New Subjects)...")
+        
+        math_test_data = {
+            "matiere": "Mathématiques",
+            "niveau": "4e",
+            "chapitre": "Théorème de Pythagore",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        start_time = time.time()
+        success, response = self.run_test(
+            "Mathematics Regression Test",
+            "POST",
+            "generate",
+            200,
+            data=math_test_data,
+            timeout=60
+        )
+        generation_time = time.time() - start_time
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   ✅ Mathematics generation still working: {len(exercises)} exercises")
+                print(f"   ⏱️  Generation time: {generation_time:.2f} seconds")
+                
+                # Check that math exercises still have appropriate content and icons
+                for i, exercise in enumerate(exercises):
+                    enonce = exercise.get('enonce', '')
+                    icone = exercise.get('icone', '')
+                    exercise_type = exercise.get('type', '')
+                    
+                    print(f"   Math Exercise {i+1}: Type={exercise_type}, Icon={icone}")
+                    
+                    # Check for geometry content (Pythagore)
+                    geometry_terms = ['triangle', 'pythagore', 'hypoténuse', 'côté', 'angle', 'rectangle']
+                    has_geometry = any(term in enonce.lower() for term in geometry_terms)
+                    if has_geometry:
+                        print(f"   ✅ Math exercise {i+1} has appropriate geometry content")
+                    
+                    # Check for geometry icon
+                    if icone == 'triangle-ruler':
+                        print(f"   ✅ Math exercise {i+1} has correct geometry icon")
+                    elif icone in ['calculator', 'function-square', 'bar-chart']:
+                        print(f"   ✅ Math exercise {i+1} has valid math icon: {icone}")
+                
+                return True, {"regression_test_passed": True}
+            else:
+                print(f"   ❌ Mathematics regression test failed - no document generated")
+        else:
+            print(f"   ❌ Mathematics regression test failed")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+        
+        return False, {"regression_test_passed": False}
+
+    def dynamic_prompts_integration(self):
         """Test dynamic prompts integration with different levels"""
         print("\n🔍 Testing Dynamic Prompts Integration...")
         
