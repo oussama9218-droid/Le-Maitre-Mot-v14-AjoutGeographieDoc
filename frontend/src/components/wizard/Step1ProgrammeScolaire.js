@@ -14,8 +14,30 @@ const Step1ProgrammeScolaire = ({
   onMatiereChange,
   onNiveauChange,
   onChapitreChange,
-  isLoading = false
+  isLoading = false,
+  catalogStats = null  // Add catalog stats prop
 }) => {
+
+  // Helper function to get status emoji and styling
+  const getStatusDisplay = (matiere) => {
+    if (!matiere.status_info) return { emoji: "", className: "", tooltip: "" };
+    
+    const statusConfig = {
+      active: { className: "text-green-600", tooltip: "Disponible maintenant" },
+      coming_soon: { className: "text-orange-500", tooltip: `Disponible ${matiere.expected || 'bientôt'}` },
+      planned: { className: "text-blue-500", tooltip: `En développement - ${matiere.expected || 'TBD'}` },
+      beta: { className: "text-purple-500", tooltip: `Version test - ${matiere.expected || 'TBD'}` },
+      future: { className: "text-gray-400", tooltip: `Prochainement - ${matiere.expected || 'TBD'}` }
+    };
+    
+    const config = statusConfig[matiere.status] || statusConfig.future;
+    
+    return {
+      emoji: matiere.status_info.emoji,
+      className: config.className,
+      tooltip: `${config.tooltip} - ${matiere.description}${matiere.note ? ' (' + matiere.note + ')' : ''}`
+    };
+  };
   return (
     <Card className="shadow-lg border-0 bg-white/80 backdrop-blur-sm">
       <CardHeader className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
