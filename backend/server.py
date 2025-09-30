@@ -1596,6 +1596,63 @@ FORMAT JSON REQUIS:
         }}
     ]
 }}
+""",
+
+        "Géographie": f"""
+{prompt_context['prompt_intro']}.
+
+🗺️ SPÉCIALISTE GÉOGRAPHIE AVEC DOCUMENTS PÉDAGOGIQUES
+
+Crée {nb_exercices} exercices de Géographie pour un élève de {niveau} sur le chapitre: "{chapitre}".
+Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français.
+
+RÈGLES GÉOGRAPHIE OBLIGATOIRES:
+- Utilise des SITUATIONS GÉOGRAPHIQUES CONCRÈTES et RÉELLES
+- Privilégie la LECTURE DE CARTES et l'ANALYSE SPATIALE
+- Propose des exercices nécessitant un DOCUMENT CARTOGRAPHIQUE spécifique
+- Utilise le VOCABULAIRE GÉOGRAPHIQUE adapté au niveau {niveau}
+- Développe les compétences de LOCALISATION et ORIENTATION
+- Respecte les attendus du programme français pour "{chapitre}"
+
+WORKFLOW DEUX ÉTAPES AUTOMATIQUE:
+1. Génération de l'exercice avec spécification du document attendu
+2. Le système recherchera automatiquement le document pédagogique correspondant
+
+EXEMPLES par niveau:
+- 6e: "Se loger, travailler, se cultiver" → carte démographique France, planisphère continents/océans
+- 5e: "L'urbanisation du monde" → carte grandes métropoles mondiales
+- 4e: "Des espaces transformés par la mondialisation" → carte flux commerciaux
+- Lycée: cartes spécialisées IGN, INSEE, géopolitiques
+
+FORMAT JSON REQUIS:
+{{
+    "exercises": [
+        {{
+            "type": "cartographic",
+            "enonce": "Énoncé nécessitant l'analyse d'une carte ou document géographique",
+            "icone": "map",
+            "document_attendu": {{
+                "type": "carte_france | carte_monde | carte_europe | planisphere | carte_thematique",
+                "doit_afficher": ["éléments requis sur la carte"],
+                "langue": "français",
+                "echelle_preferee": "nationale | continentale | mondiale | locale",
+                "projection": "préférence si applicable",
+                "description": "Description précise du document nécessaire"
+            }},
+            "competences": ["Lire une carte", "Se repérer dans l'espace", "Analyser un document"],
+            "solution": {{
+                "etapes": ["Étape 1: Lecture du document", "Étape 2: Analyse géographique", "Étape 3: Conclusion spatiale"],
+                "resultat": "Réponse géographique argumentée avec références au document"
+            }},
+            "difficulte": "{difficulte}",
+            "bareme": [
+                {{"etape": "Lecture document", "points": 1.5}},
+                {{"etape": "Analyse spatiale", "points": 2.0}},
+                {{"etape": "Conclusion", "points": 1.5}}
+            ]
+        }}
+    ]
+}}
 """
     }
     
