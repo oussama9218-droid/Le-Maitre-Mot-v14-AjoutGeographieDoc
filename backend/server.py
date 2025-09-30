@@ -2447,8 +2447,31 @@ async def get_usage_analytics(request: Request, days: int = 30):
 
 @api_router.post("/generate")
 async def generate_document(request: GenerateRequest):
-    """Generate a document with exercises"""
+    """Generate a document with exercises - with feature flag validation"""
     try:
+        # FEATURE FLAG VALIDATION - Check if subject is active
+        if not is_subject_active(request.matiere):
+            subject_config = get_subject_by_name(request.matiere)
+            status = subject_config.get("status", "unknown") if subject_config else "unknown"
+            expected = subject_config.get("expected", "TBD") if subject_config else "TBD"
+            
+            log_feature_flag_access(request.matiere, status, "guest")
+            
+            raise HTTPException(
+                status_code=423,  # Locked
+                detail={
+                    "error": "subject_not_available",
+                    "message": f"La matière {request.matiere} n'est pas encore disponible",
+                    "status": status,
+                    "expected": expected,
+                    "emoji": CURRICULUM_STATUS.get(status, {}).get("emoji", "⏸️"),
+                    "available_subjects": list(get_active_subjects().keys())
+                }
+            )
+        
+        # Log active subject access
+        log_feature_flag_access(request.matiere, "active", "guest")
+        
         # Validate the curriculum selection using new structure
         available_subjects = get_available_subjects()
         if request.matiere not in available_subjects:
