@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Investigate logo display issue for user oussama92.18@gmail.com. User reports that logo image is not displaying despite being saved. Screenshot shows empty logo area in 'Personnalisation du document (Pro)' section."
+user_problem_statement: "Intégrer deux nouvelles matières (Physique-Chimie et SVT) avec curriculum officiel français, prompts IA spécialisés, système d'icônes étendu et types d'exercices adaptés. Tests requis sur génération d'exercices pour au moins 2 chapitres par matière."
 
 backend:
   - task: "Magic Link Issue Investigation - oussama92.1@gmail.com"
