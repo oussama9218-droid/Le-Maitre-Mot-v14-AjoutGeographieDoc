@@ -855,7 +855,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "Sciences et technologie": {
-        "status": "active",
+        "status": "beta",
         "expected": "Mars 2026",
         "description": "Approche interdisciplinaire sciences et technologie",
         "features": ["interdisciplinary_approach", "technological_projects", "scientific_method"],
