@@ -105,20 +105,41 @@
 user_problem_statement: "Intégrer deux nouvelles matières (Physique-Chimie et SVT) avec curriculum officiel français, prompts IA spécialisés, système d'icônes étendu et types d'exercices adaptés. Tests requis sur génération d'exercices pour au moins 2 chapitres par matière."
 
 backend:
-  - task: "Magic Link Issue Investigation - oussama92.1@gmail.com"
+  - task: "Intégration Physique-Chimie - Curriculum et prompts spécialisés"
     implemented: true
-    working: false
-    file: "server.py"
+    working: "NA"
+    file: "curriculum_data.py, server.py"
     stuck_count: 0
-    priority: "critical"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
         - working: "NA"
-        - agent: "user"
-        - comment: "USER REPORTED CRITICAL BUG: Email oussama92.1@gmail.com receives magic link email successfully but when clicking link gets 'Token invalide' error. No access possible to the application. This is preventing user from accessing Pro features."
-        - working: true
-        - agent: "testing"
-        - comment: "🚨 ROOT CAUSE IDENTIFIED: Comprehensive magic link investigation completed with definitive findings. CRITICAL DISCOVERY: User oussama92.1@gmail.com is NOT a Pro user (is_pro: false, account_type: guest). INVESTIGATION RESULTS: 1) ✅ PRO STATUS CHECK: GET /api/user/status/oussama92.1@gmail.com returns is_pro: false - user does not have active Pro subscription, 2) ✅ MAGIC LINK REQUEST BEHAVIOR: POST /api/auth/request-login returns 404 'Utilisateur Pro non trouvé ou abonnement expiré' - system correctly rejects non-Pro users, 3) ✅ COMPARISON WITH WORKING EMAIL: oussama92.18@gmail.com has active Pro subscription (monthly, expires 2025-10-15) and magic links work correctly, 4) ✅ TOKEN VALIDATION TESTING: All token validation tests return standard 'Token invalide' error message - token validation system working correctly, 5) ✅ DATABASE INVESTIGATION: Rapid magic link requests all fail with same error - consistent behavior indicating user is not in Pro users database, 6) ✅ BACKEND LOGS ANALYSIS: Backend logs show 'Magic token not found or already used' for test tokens and 'Utilisateur Pro non trouvé ou abonnement expiré' for the problematic email. CONCLUSION: The 'Token invalide' error is EXPECTED BEHAVIOR because magic links are only available to Pro users. User oussama92.1@gmail.com needs to purchase a Pro subscription to access magic link authentication. The system is working correctly - it's not a bug but a feature restriction."
+        - agent: "main"
+        - comment: "NOUVELLES MATIÈRES INTÉGRÉES: Ajout complet Physique-Chimie avec curriculum officiel français (5e-Terminale), prompts IA spécialisés avec règles EXPÉRIMENTALES, système d'icônes étendu (atom, flask, zap, battery, radio), fonction enrich_exercise_with_icon modifiée pour support matière-spécifique. Chapitres intégrés: Organisation et transformations de la matière, Mouvements et interactions, L'énergie et ses conversions, Des signaux pour observer et communiquer, Constitution et transformations de la matière, Mouvement et interactions, Ondes et signaux, L'énergie : conversions et transferts."
+
+  - task: "Intégration SVT - Curriculum et prompts spécialisés"  
+    implemented: true
+    working: "NA"
+    file: "curriculum_data.py, server.py"
+    stuck_count: 0
+    priority: "high" 
+    needs_retesting: true
+    status_history:
+        - working: "NA"
+        - agent: "main"
+        - comment: "NOUVELLES MATIÈRES INTÉGRÉES: Ajout complet SVT avec curriculum officiel français (5e-Seconde), prompts IA spécialisés avec règles ANALYTIQUES, système d'icônes étendu (leaf, dna, mountain, globe, heart), fonction enrich_exercise_with_icon modifiée pour support matière-spécifique. Chapitres intégrés: La planète Terre l'environnement et l'action humaine, Le vivant et son évolution, Le corps humain et la santé, La Terre la vie et l'organisation du vivant, Les enjeux contemporains de la planète, Corps humain et santé."
+
+  - task: "Extension système d'icônes pour nouvelles matières"
+    implemented: true  
+    working: "NA"
+    file: "server.py"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: true
+    status_history:
+        - working: "NA" 
+        - agent: "main"
+        - comment: "SYSTÈME D'ICÔNES ÉTENDU: EXERCISE_ICON_MAPPING enrichi avec 10 nouvelles icônes - Physique-Chimie: experimental/atom, physics/zap, chemistry/flask, energy/battery, waves/radio - SVT: analysis/leaf, biology/dna, geology/mountain, ecology/globe, health/heart. Mappings par chapitres spécifiques ajoutés. Fonction enrich_exercise_with_icon complètement refactorée avec logique prioritaire par matière."
 
   - task: "Mathematical expressions rendering system with LaTeX formatting and MathML conversion"
     implemented: true
