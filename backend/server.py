@@ -118,7 +118,21 @@ EXERCISE_ICON_MAPPING = {
     "Les enjeux contemporains de la planète": "mountain",
     "Corps humain et santé": "heart",
     
-    # Fallbacks par matière
+    # Géographie specific chapters
+    "Découvrir le(s) lieu(x) où j'habite": "map",
+    "Se loger, travailler, se cultiver, avoir des loisirs": "building-2",
+    "Satisfaire les besoins en énergie, en eau": "compass",
+    "Se déplacer - Moyens de transport": "map",
+    "Communiquer d'un bout à l'autre du monde": "globe",
+    "Mieux habiter - La ville de demain": "building-2",
+    "Mieux habiter - Les espaces ruraux": "mountain",
+    "L'urbanisation du monde": "building-2",
+    "Les mobilités humaines transnationales": "users",
+    "Des espaces transformés par la mondialisation": "globe",
+    "Sociétés et environnements : des équilibres fragiles": "compass",
+    "Territoires, populations et développement": "users",
+    "Des mobilités généralisées": "map",
+    "L'Afrique australe : un espace en profonde mutation": "compass",
     "Physique-Chimie": "atom",
     "SVT": "leaf",
     
