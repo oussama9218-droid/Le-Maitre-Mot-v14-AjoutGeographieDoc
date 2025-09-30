@@ -1988,15 +1988,15 @@ JSON OBLIGATOIRE:
             if "resultat" in solution:
                 solution["resultat"] = process_exercise_content(solution["resultat"])
             
-            # CRITICAL FIX: Preserve schema data and generate Base64 image
-            schema_data = ex_data.get("schema", None)
+            # CRITICAL FIX: Preserve geometric schema data and generate Base64 image
+            schema_data = ex_data.get("geometric_schema", None)
             donnees_to_store = None
             schema_img_base64 = None
             
             if schema_data is not None:
                 # Store schema in donnees for PDF processing
                 donnees_to_store = {"schema": schema_data}
-                logger.info(f"✅ Schema data preserved in donnees field: {schema_data.get('type', 'unknown')}")
+                logger.info(f"✅ Geometric schema data preserved in donnees field: {schema_data.get('type', 'unknown')}")
                 
                 # CRITICAL: Generate Base64 image for frontend immediately
                 schema_img_base64 = process_schema_to_base64(schema_data)
