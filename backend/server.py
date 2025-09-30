@@ -1890,7 +1890,7 @@ JSON OBLIGATOIRE:
                             
                             if schema_content is not None and isinstance(schema_content, dict) and "type" in schema_content:
                                 # Store schema in separate field - KEEP ENONCE PURE TEXT!
-                                ex_data["schema"] = schema_content
+                                ex_data["geometric_schema"] = schema_content
                                 ex_data["type"] = "geometry"
                                 
                                 log_schema_processing(
