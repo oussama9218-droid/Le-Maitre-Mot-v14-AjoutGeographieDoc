@@ -11946,12 +11946,16 @@ if __name__ == "__main__":
         elif test_mode == "subscription":
             # Run subscription management tests
             tester.run_subscription_management_tests()
+        elif test_mode == "feature_flags":
+            # Run feature flag system tests
+            passed, total = tester.run_feature_flag_tests()
+            print(f"\n🎯 Feature Flag Tests: {passed}/{total} passed")
         elif test_mode == "race-condition":
             # Legacy support for race condition tests
             run_magic_link_race_condition_tests()
         else:
             print(f"Unknown test mode: {test_mode}")
-            print("Available modes: math, curriculum, newsubjects, auth, logo, magic, security, template, subscription")
+            print("Available modes: math, curriculum, newsubjects, auth, logo, magic, security, template, subscription, feature_flags")
         sys.exit(0)
     
     # Run all tests if no specific mode specified
