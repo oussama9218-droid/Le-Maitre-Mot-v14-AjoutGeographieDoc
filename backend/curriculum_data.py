@@ -223,6 +223,85 @@ CURRICULUM_DATA = {
                 "Algorithmique et programmation"
             ]
         }
+    },
+    "Physique-Chimie": {
+        "5e": {
+            "Physique-Chimie": [
+                "Organisation et transformations de la matière",
+                "Mouvements et interactions",
+                "L'énergie et ses conversions",
+                "Des signaux pour observer et communiquer"
+            ]
+        },
+        "4e": {
+            "Physique-Chimie": [
+                "Organisation et transformations de la matière",
+                "Mouvements et interactions", 
+                "L'énergie et ses conversions",
+                "Des signaux pour observer et communiquer"
+            ]
+        },
+        "3e": {
+            "Physique-Chimie": [
+                "Organisation et transformations de la matière",
+                "Mouvements et interactions",
+                "L'énergie et ses conversions", 
+                "Des signaux pour observer et communiquer"
+            ]
+        },
+        "Seconde": {
+            "Physique-Chimie": [
+                "Constitution et transformations de la matière",
+                "Mouvement et interactions",
+                "Ondes et signaux"
+            ]
+        },
+        "Première": {
+            "Physique-Chimie": [
+                "Constitution et transformations de la matière",
+                "Mouvement et interactions",
+                "L'énergie : conversions et transferts",
+                "Ondes et signaux"
+            ]
+        },
+        "Terminale": {
+            "Physique-Chimie": [
+                "Constitution et transformations de la matière", 
+                "Mouvement et interactions",
+                "L'énergie : conversions et transferts",
+                "Ondes et signaux"
+            ]
+        }
+    },
+    "SVT": {
+        "5e": {
+            "Sciences de la vie et de la Terre": [
+                "La planète Terre, l'environnement et l'action humaine",
+                "Le vivant et son évolution",
+                "Le corps humain et la santé"
+            ]
+        },
+        "4e": {
+            "Sciences de la vie et de la Terre": [
+                "La planète Terre, l'environnement et l'action humaine",
+                "Le vivant et son évolution", 
+                "Le corps humain et la santé"
+            ]
+        },
+        "3e": {
+            "Sciences de la vie et de la Terre": [
+                "La planète Terre, l'environnement et l'action humaine",
+                "Le vivant et son évolution",
+                "Le corps humain et la santé"
+            ]
+        },
+        "Seconde": {
+            "Sciences de la vie et de la Terre": [
+                "La Terre, la vie et l'organisation du vivant",
+                "Les enjeux contemporains de la planète", 
+                "Corps humain et santé"
+            ]
+        }
     }
 }
 
