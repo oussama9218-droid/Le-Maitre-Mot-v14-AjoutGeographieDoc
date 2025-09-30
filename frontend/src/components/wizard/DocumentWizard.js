@@ -179,6 +179,7 @@ const DocumentWizard = ({
             onMatiereChange={onMatiereChange}
             onNiveauChange={onNiveauChange}
             onChapitreChange={onChapitreChange}
+            catalogStats={catalogStats}  // Pass catalog stats
             isLoading={isLoading}
           />
         );
