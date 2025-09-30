@@ -1639,7 +1639,10 @@ FORMAT JSON REQUIS:
 """
     }
     
-    system_msg = subject_instructions.get(matiere, subject_instructions["Mathématiques"])
+    logger.info(f"🤖 Using {'specialized' if matiere in subject_instructions else 'generic'} prompt for {matiere}")
+    
+    # Use the instruction (specialized or generic)
+    system_msg = instruction
     
     # Create LLM chat instance with faster model
     chat = LlmChat(
