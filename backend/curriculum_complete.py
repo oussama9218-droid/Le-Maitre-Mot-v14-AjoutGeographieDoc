@@ -1095,7 +1095,7 @@ def get_curriculum_stats():
 def log_feature_flag_access(subject_name: str, status: str, user_type: str = "guest"):
     """Log les accès aux matières selon leur statut"""
     logger.info(
-        f"🗺️ Feature flag access",
+        "🗺️ Feature flag access",
         module_name="curriculum",
         func_name="feature_flag_access", 
         subject=subject_name,
