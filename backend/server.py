@@ -2022,10 +2022,12 @@ JSON OBLIGATOIRE:
                 # Add icon and exercise type information
                 exercise_type=ex_data.get("type", "text"),
                 icone=ex_data.get("icone", EXERCISE_ICON_MAPPING["default"]),
-                # NEW: Clean schema field (separate from text)
-                schema=ex_data.get("schema", None),
+                # NEW: Clean geometric schema field (separate from text)
+                geometric_schema=ex_data.get("geometric_schema", None),
                 # CRITICAL: Base64 schema image for frontend
-                schema_img=schema_img_base64
+                schema_img=schema_img_base64,
+                # NEW: Geographic document for Geography exercises
+                document=ex_data.get("document", None)
             )
             exercises.append(exercise)
         
