@@ -10981,6 +10981,10 @@ if __name__ == "__main__":
     print("\n🧮 MATHEMATICAL EXPRESSIONS RENDERING TESTS")
     math_passed, math_total = tester.run_math_rendering_tests()
     
+    # Run new subjects integration tests
+    print("\n🧪🌱 NEW SUBJECTS INTEGRATION TESTS")
+    newsubjects_passed, newsubjects_total = tester.run_new_subjects_integration_tests()
+    
     # Run basic functionality tests
     basic_tests = [
         ("Root API", tester.test_root_endpoint),
