@@ -901,7 +901,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "EPS": {
-        "status": "beta",
+        "status": "active",
         "expected": "Mars 2026",
         "description": "Exercices théoriques sur le sport et l'activité physique",
         "features": ["sports_theory", "physical_preparation", "health_concepts"],
