@@ -275,7 +275,7 @@ CURRICULUM_DATA_COMPLETE = {
 
     # 🔄 COMING SOON - Octobre 2025
     "Français": {
-        "status": "coming_soon",
+        "status": "active",
         "expected": "Octobre 2025",
         "description": "Grammaire, vocabulaire, expression écrite, compréhension de lecture",
         "features": ["grammar_analysis", "text_comprehension", "writing_exercises"],
@@ -653,7 +653,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "Géographie": {
-        "status": "planned",
+        "status": "active",
         "expected": "Décembre 2025",
         "description": "Cartes interactives, données statistiques, études de cas",
         "features": ["interactive_maps", "statistical_data", "case_studies"],
