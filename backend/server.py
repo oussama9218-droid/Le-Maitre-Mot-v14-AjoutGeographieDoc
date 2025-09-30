@@ -448,10 +448,12 @@ class Exercise(BaseModel):
     # New fields for UI enhancement
     exercise_type: Optional[str] = "text"  # "geometry", "algebra", "statistics", "text"
     icone: Optional[str] = "book-open"  # Icon identifier for frontend
-    # NEW: Separate schema field (clean design)
-    schema: Optional[dict] = None  # Geometric schema data separate from text
+    # NEW: Separate geometric schema field (clean design) 
+    geometric_schema: Optional[dict] = None  # Geometric schema data separate from text
     # CRITICAL: Base64 schema image for frontend display
     schema_img: Optional[str] = None  # Base64 PNG image for web display
+    # NEW: Geographic document for Geography exercises
+    document: Optional[dict] = None  # Educational document metadata for Geography
 
 class Document(BaseModel):
     id: str = Field(default_factory=lambda: str(uuid.uuid4()))
