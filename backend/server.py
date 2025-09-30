@@ -1712,47 +1712,71 @@ FORMAT JSON REQUIS:
 """
         system_msg = instruction
     
-    prompt = f"""
-Génère {nb_exercices} exercices de {matiere} niveau {niveau} sur le chapitre: {chapitre}
-Difficulté: {difficulte}
+    # Create LLM chat instance with faster model
+    chat = LlmChat(
+        api_key=emergent_key,
+        session_id=f"exercise_gen_{uuid.uuid4()}",
+        system_message=f"""{system_msg}
 
-IMPORTANT: Réponds UNIQUEMENT en JSON valide, sans aucun texte avant ou après.
-
-JSON requis:
+JSON OBLIGATOIRE:
 {{
-    "exercises": [
-        {{
-            "enonce": "Énoncé complet de l'exercice avec données numériques. Exemple: {example}",
-            "type": "geometry",
-            "icone": "triangle-ruler",
-            "solution": {{
-                "etapes": ["Étape 1 détaillée", "Étape 2 détaillée"],
-                "resultat": "Résultat final avec unité"
-            }},
-            "difficulte": "{difficulte}",
-            "bareme": [
-                {{"etape": "Méthode", "points": 2.0}},
-                {{"etape": "Résultat", "points": 2.0}}
-            ]
-        }}
-    ]
-}}
-
-Types et icônes:
-- geometry/triangle-ruler: géométrie, figures
-- algebra/calculator: calculs, équations  
-- statistics/bar-chart: statistiques, données
-- experimental/atom: physique-chimie expérimentale
-- chemistry/flask: transformations chimiques
-- physics/zap: mouvements, forces
-- energy/battery: énergies, conversions
-- analysis/leaf: SVT analyse
-- biology/dna: vivant, évolution
-- ecology/globe: environnement, planète
-"""
+  "exercises": [
+    {{
+      "type": "ouvert",
+      "enonce": "Énoncé concis et clair",
+      "difficulte": "{difficulte}",
+      "solution": {{
+        "etapes": ["Étape 1", "Étape 2"],
+        "resultat": "Résultat final"
+      }},
+      "bareme": [
+        {{"etape": "Méthode", "points": 2.0}},
+        {{"etape": "Résultat", "points": 2.0}}
+      ]
+    }}
+  ]
+}}"""
+    ).with_model("openai", "gpt-4o")
+    
+    # Create concise prompt for faster generation
+    examples = {
+        # Mathématiques
+        "Volumes": "Calculer volume pavé 4×3×2 cm",
+        "Nombres relatifs": "Calculer -5 + 3 - (-2)",
+        "Fractions": "Calculer 2/3 + 1/4",
+        "Géométrie - Figures planes": "Calculer périmètre rectangle 5×3 cm",
+        
+        # Français
+        "Récits d'aventures": "Analyser un extrait de roman d'aventures",
+        "Grammaire - La phrase": "Identifier sujet et verbe dans une phrase",
+        "Conjugaison - Présent, passé, futur": "Conjuguer 'aller' au présent",
+        "Le voyage et l'aventure : pourquoi aller vers l'inconnu ?": "Analyser les motivations d'un personnage",
+        "Dire l'amour": "Étudier une strophe de poème lyrique",
+        "Se raconter, se représenter": "Analyser un passage autobiographique",
+        
+        # Physique-Chimie
+        "Organisation et transformations de la matière": "Identifier une transformation chimique",
+        "Constitution et transformations de la matière": "Analyser la composition d'un mélange", 
+        "Mouvements et interactions": "Calculer une vitesse moyenne",
+        "Mouvement et interactions": "Étudier les forces sur un objet",
+        "L'énergie et ses conversions": "Convertir différentes formes d'énergie",
+        "L'énergie : conversions et transferts": "Calculer l'énergie cinétique",
+        "Des signaux pour observer et communiquer": "Analyser la propagation de la lumière",
+        "Ondes et signaux": "Étudier les caractéristiques d'une onde",
+        
+        # SVT
+        "La planète Terre, l'environnement et l'action humaine": "Analyser l'impact humain sur un écosystème",
+        "Le vivant et son évolution": "Classer des espèces selon leurs caractères",
+        "Le corps humain et la santé": "Expliquer le mécanisme de la digestion",
+        "La Terre, la vie et l'organisation du vivant": "Observer des cellules au microscope",
+        "Les enjeux contemporains de la planète": "Étudier les changements climatiques",
+        "Corps humain et santé": "Analyser le système immunitaire"
+    }
+    
+    example = examples.get(chapitre, f"Exercice {chapitre}")
     
     try:
-        user_message = UserMessage(text=prompt)
+        user_message = UserMessage(text=f"Génère {nb_exercices} exercices. Exemple: {example}")
         
         # FIRST PASS: Generate the exercise content
         logger.debug("Starting first AI pass - exercise content generation")
