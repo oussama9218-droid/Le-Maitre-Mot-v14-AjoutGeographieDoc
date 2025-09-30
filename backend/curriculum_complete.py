@@ -929,7 +929,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "Enseignements artistiques": {
-        "status": "active",
+        "status": "beta",
         "expected": "Mars 2026",
         "description": "Arts plastiques et éducation musicale théoriques",
         "features": ["art_analysis", "music_theory", "creative_exercises"],
