@@ -251,6 +251,7 @@ function LoginVerify() {
 
 function MainApp() {
   const [catalog, setCatalog] = useState([]);
+  const [catalogStats, setCatalogStats] = useState(null); // Add catalog stats
   const [selectedMatiere, setSelectedMatiere] = useState("");
   const [selectedNiveau, setSelectedNiveau] = useState("");
   const [selectedChapitre, setSelectedChapitre] = useState("");
