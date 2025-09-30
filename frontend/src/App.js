@@ -350,6 +350,17 @@ function MainApp() {
     try {
       const response = await axios.get(`${API}/catalog`);
       setCatalog(response.data.catalog);
+      
+      // Store catalog stats if available
+      if (response.data.stats) {
+        setCatalogStats(response.data.stats);
+        console.log('📊 Curriculum stats loaded:', response.data.stats);
+      }
+      
+      // Log roadmap info if available  
+      if (response.data.roadmap) {
+        console.log('🗺️ Roadmap info:', response.data.roadmap);
+      }
     } catch (error) {
       console.error("Erreur lors du chargement du catalogue:", error);
     }
