@@ -110,51 +110,101 @@ EXERCISE_ICON_MAPPING = {
     "default": "book-open"
 }
 
-def enrich_exercise_with_icon(exercise_data: dict, chapitre: str) -> dict:
+def enrich_exercise_with_icon(exercise_data: dict, chapitre: str, matiere: str = None) -> dict:
     """
-    Professional cascading icon enrichment logic:
-    1. Priority: Use type from AI if provided and valid
-    2. Fallback: Use chapter-based mapping  
-    3. Detection: Analyze content for type hints
-    4. Default: Use generic icon
+    Professional cascading icon enrichment logic extended for Physique-Chimie and SVT:
+    1. Priority: Use matiere-specific logic first
+    2. Fallback: Use type from AI if provided and valid
+    3. Detection: Use chapter-based mapping  
+    4. Content: Analyze content for type hints
+    5. Default: Use generic icon
     """
+    logger = get_logger()
     
-    # Priority 1: Use type from AI if provided and valid
+    # Priority 1: Matiere-specific logic FIRST
+    if matiere == "Physique-Chimie":
+        logger.info(f"🧪 Enriching Physique-Chimie exercise for chapter: {chapitre}")
+        if any(word in chapitre.lower() for word in ["matière", "transformation", "constitution", "chimie"]):
+            exercise_data["type"] = "chemistry"
+            exercise_data["icone"] = "flask"
+        elif any(word in chapitre.lower() for word in ["énergie", "conversion", "transfert"]):
+            exercise_data["type"] = "energy"  
+            exercise_data["icone"] = "battery"
+        elif any(word in chapitre.lower() for word in ["mouvement", "interaction", "force"]):
+            exercise_data["type"] = "physics"
+            exercise_data["icone"] = "zap"
+        elif any(word in chapitre.lower() for word in ["signal", "onde", "communiquer"]):
+            exercise_data["type"] = "waves"
+            exercise_data["icone"] = "radio"
+        else:
+            exercise_data["type"] = "experimental"
+            exercise_data["icone"] = "atom"
+        logger.info(f"🧪 Assigned type: {exercise_data['type']}, icon: {exercise_data['icone']}")
+        return exercise_data
+            
+    elif matiere == "SVT":
+        logger.info(f"🌱 Enriching SVT exercise for chapter: {chapitre}")
+        if any(word in chapitre.lower() for word in ["vivant", "évolution", "génétique", "vie"]):
+            exercise_data["type"] = "biology"
+            exercise_data["icone"] = "dna"
+        elif any(word in chapitre.lower() for word in ["terre", "planète", "géologique", "enjeux"]):
+            exercise_data["type"] = "geology"
+            exercise_data["icone"] = "mountain"
+        elif any(word in chapitre.lower() for word in ["environnement", "écosystème", "action humaine"]):
+            exercise_data["type"] = "ecology"
+            exercise_data["icone"] = "globe"
+        elif any(word in chapitre.lower() for word in ["corps", "santé", "humain"]):
+            exercise_data["type"] = "health"
+            exercise_data["icone"] = "heart"
+        else:
+            exercise_data["type"] = "analysis"
+            exercise_data["icone"] = "leaf"
+        logger.info(f"🌱 Assigned type: {exercise_data['type']}, icon: {exercise_data['icone']}")
+        return exercise_data
+    
+    # Priority 2: Use type from AI if provided and valid (existing logic for Mathématiques)
     ai_type = exercise_data.get("type", "").lower()
     if ai_type in EXERCISE_ICON_MAPPING:
         exercise_data["icone"] = EXERCISE_ICON_MAPPING[ai_type]
         exercise_data["type"] = ai_type  # Ensure type is set
         return exercise_data
     
-    # Priority 2: Use chapter-based mapping
+    # Priority 3: Use chapter-based mapping
     if chapitre in EXERCISE_ICON_MAPPING:
         exercise_data["icone"] = EXERCISE_ICON_MAPPING[chapitre]
-        # Infer type from chapter
-        if any(geo_word in chapitre.lower() for geo_word in ["géométrie", "pythagore", "thalès", "trigonométrie", "triangle", "volume"]):
-            exercise_data["type"] = "geometry"
-        elif any(alg_word in chapitre.lower() for alg_word in ["équation", "fonction", "fraction", "algèbre", "calcul"]):
-            exercise_data["type"] = "algebra"
-        elif any(stat_word in chapitre.lower() for stat_word in ["statistique", "probabilité"]):
-            exercise_data["type"] = "statistics"
-        else:
-            exercise_data["type"] = "text"
+        # Infer type from chapter for Mathématiques
+        if matiere == "Mathématiques":
+            if any(geo_word in chapitre.lower() for geo_word in ["géométrie", "pythagore", "thalès", "trigonométrie", "triangle", "volume"]):
+                exercise_data["type"] = "geometry"
+            elif any(alg_word in chapitre.lower() for alg_word in ["équation", "fonction", "fraction", "algèbre", "calcul"]):
+                exercise_data["type"] = "algebra"
+            elif any(stat_word in chapitre.lower() for stat_word in ["statistique", "probabilité"]):
+                exercise_data["type"] = "statistics"
+            else:
+                exercise_data["type"] = "text"
         return exercise_data
     
-    # Priority 3: Content-based detection (for unknown chapters)
+    # Priority 4: Content-based detection (for unknown chapters) - mainly for Mathématiques
     enonce = exercise_data.get("enonce", "").lower()
-    if any(geo_word in enonce for geo_word in ["triangle", "cercle", "carré", "rectangle", "géométrique", "angle", "côté", "volume", "aire"]):
-        exercise_data["type"] = "geometry"
-        exercise_data["icone"] = "triangle-ruler"
-    elif any(alg_word in enonce for alg_word in ["équation", "fonction", "fraction", "calcul", "nombre", "résoudre", "simplifier"]):
-        exercise_data["type"] = "algebra" 
-        exercise_data["icone"] = "calculator"
-    elif any(stat_word in enonce for stat_word in ["statistique", "moyenne", "graphique", "données", "probabilité", "hasard"]):
-        exercise_data["type"] = "statistics"
-        exercise_data["icone"] = "bar-chart"
+    if matiere == "Mathématiques":
+        if any(geo_word in enonce for geo_word in ["triangle", "cercle", "carré", "rectangle", "géométrique", "angle", "côté", "volume", "aire"]):
+            exercise_data["type"] = "geometry"
+            exercise_data["icone"] = "triangle-ruler"
+        elif any(alg_word in enonce for alg_word in ["équation", "fonction", "fraction", "calcul", "nombre", "résoudre", "simplifier"]):
+            exercise_data["type"] = "algebra" 
+            exercise_data["icone"] = "calculator"
+        elif any(stat_word in enonce for stat_word in ["statistique", "moyenne", "graphique", "données", "probabilité", "hasard"]):
+            exercise_data["type"] = "statistics"
+            exercise_data["icone"] = "bar-chart"
+        else:
+            # Priority 5: Default fallback
+            exercise_data["type"] = "text"
+            exercise_data["icone"] = EXERCISE_ICON_MAPPING["default"]
     else:
-        # Priority 4: Default fallback
+        # For non-math subjects, use matiere fallback
+        fallback_icon = EXERCISE_ICON_MAPPING.get(matiere, EXERCISE_ICON_MAPPING["default"])
+        exercise_data["icone"] = fallback_icon
         exercise_data["type"] = "text"
-        exercise_data["icone"] = EXERCISE_ICON_MAPPING["default"]
     
     return exercise_data
 
