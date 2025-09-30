@@ -1699,8 +1699,8 @@ Types et icônes:
         # Convert to Exercise objects with professional content processing
         exercises = []
         for i, ex_data in enumerate(data.get("exercises", [])):
-            # Enrich with icon before processing
-            ex_data = enrich_exercise_with_icon(ex_data, chapitre)
+            # Enrich with icon before processing - PASS MATIERE FOR NEW SUBJECTS
+            ex_data = enrich_exercise_with_icon(ex_data, chapitre, matiere)
             
             # Get the raw enonce
             enonce = ex_data.get("enonce", "").strip()
