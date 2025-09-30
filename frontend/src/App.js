@@ -918,9 +918,10 @@ function MainApp() {
         {/* Document Wizard */}
         <DocumentWizard 
           // Curriculum data
-          matieres={catalog.map(m => m.name)}
+          matieres={catalog}  // Pass full catalog objects instead of just names
           niveaux={availableLevels.map(l => l.name)}
           chapitres={availableChapters}
+          catalogStats={catalogStats?.roadmap}  // Pass catalog stats
           // Current selections
           selectedMatiere={selectedMatiere}
           selectedNiveau={selectedNiveau}
