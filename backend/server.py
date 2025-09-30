@@ -1682,6 +1682,13 @@ Types et icônes:
 - geometry/triangle-ruler: géométrie, figures
 - algebra/calculator: calculs, équations  
 - statistics/bar-chart: statistiques, données
+- experimental/atom: physique-chimie expérimentale
+- chemistry/flask: transformations chimiques
+- physics/zap: mouvements, forces
+- energy/battery: énergies, conversions
+- analysis/leaf: SVT analyse
+- biology/dna: vivant, évolution
+- ecology/globe: environnement, planète
 """
     
     try:
