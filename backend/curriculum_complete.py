@@ -989,7 +989,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "Sciences numériques et technologie": {
-        "status": "active",
+        "status": "future",
         "expected": "2026",
         "description": "Informatique, numérique, algorithmes",
         "features": ["digital_literacy", "algorithmic_thinking", "data_analysis"],
