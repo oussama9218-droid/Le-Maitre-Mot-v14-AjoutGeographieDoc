@@ -630,9 +630,10 @@ metadata:
 
 test_plan:
   current_focus:
-    - "Intégration Physique-Chimie - Test génération 2 chapitres minimum"
-    - "Intégration SVT - Test génération 2 chapitres minimum" 
-    - "Extension système d'icônes - Validation affichage correct"
+    - "Système Feature Flags - Test API catalog avec 23 matières" 
+    - "Validation contrôle accès - Matières actives vs non-actives"
+    - "Interface utilisateur - Affichage statuts et tooltips"
+    - "Endpoint roadmap - Page publique transparence"
   stuck_tasks: []
   test_all: false
   test_priority: "high_first"
