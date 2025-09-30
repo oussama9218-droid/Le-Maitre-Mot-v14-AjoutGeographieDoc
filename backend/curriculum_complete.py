@@ -819,9 +819,9 @@ CURRICULUM_DATA_COMPLETE = {
         }
     },
 
-    # 🧪 BETA - Jan-Mars 2026
+    # 🧪 BETA - Jan-Mars 2026 (TEMPORAIREMENT ACTIVÉ POUR TESTS)
     "Questionner le monde": {
-        "status": "beta",
+        "status": "active",
         "expected": "Février 2026",
         "description": "Découverte scientifique et géographique pour les plus jeunes",
         "features": ["discovery_exercises", "simple_experiments", "world_exploration"],
