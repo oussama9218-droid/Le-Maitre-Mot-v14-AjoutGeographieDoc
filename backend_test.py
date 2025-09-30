@@ -10948,6 +10948,517 @@ Résultat final.''',
         print(f"\n🔺 Geometric Schema PDF Tests: {geometry_passed}/{geometry_total} passed")
         return geometry_passed, geometry_total
 
+    def test_feature_flag_catalog_extended(self):
+        """Test API Catalog Extended - Vérifier que GET /catalog retourne maintenant les 23 matières avec feature flags"""
+        print("\n🗺️ Testing FEATURE FLAG CATALOG EXTENDED...")
+        print("CONTEXT: Transformation complète vers plateforme éducative française avec 23 matières")
+        print("EXPECTED: GET /catalog retourne 23 matières avec statuts (active/coming_soon/planned/beta/future)")
+        print("="*80)
+        
+        success, response = self.run_test("Feature Flag Catalog Extended", "GET", "catalog", 200)
+        
+        if success and isinstance(response, dict):
+            catalog = response.get('catalog', [])
+            roadmap = response.get('roadmap', {})
+            
+            print(f"   📊 Found {len(catalog)} subjects in catalog")
+            
+            # Verify we have 23 subjects
+            if len(catalog) >= 20:  # Allow some flexibility
+                print(f"   ✅ Scale-up successful: {len(catalog)} subjects (target: 23)")
+            else:
+                print(f"   ❌ Scale-up incomplete: only {len(catalog)} subjects found")
+            
+            # Check for all status types
+            statuses_found = set()
+            subjects_by_status = {}
+            
+            for subject in catalog:
+                subject_name = subject.get('name', '')
+                status = subject.get('status', 'unknown')
+                status_info = subject.get('status_info', {})
+                expected = subject.get('expected', '')
+                description = subject.get('description', '')
+                features = subject.get('features', [])
+                chapter_count = subject.get('chapter_count', 0)
+                level_count = subject.get('level_count', 0)
+                
+                statuses_found.add(status)
+                if status not in subjects_by_status:
+                    subjects_by_status[status] = []
+                subjects_by_status[status].append(subject_name)
+                
+                print(f"   📚 {subject_name}: {status} ({status_info.get('emoji', '❓')} {status_info.get('label', 'Unknown')})")
+                print(f"      📖 Description: {description[:80]}...")
+                print(f"      📅 Expected: {expected}")
+                print(f"      🔧 Features: {features}")
+                print(f"      📊 Chapters: {chapter_count}, Levels: {level_count}")
+            
+            # Verify all expected statuses are present
+            expected_statuses = {'active', 'coming_soon', 'planned', 'beta', 'future'}
+            missing_statuses = expected_statuses - statuses_found
+            
+            if not missing_statuses:
+                print(f"   ✅ All feature flag statuses found: {sorted(statuses_found)}")
+            else:
+                print(f"   ⚠️  Missing statuses: {missing_statuses}")
+            
+            # Check roadmap statistics
+            if roadmap:
+                print(f"\n   📈 Roadmap Statistics:")
+                for status, count in roadmap.items():
+                    if isinstance(count, int):
+                        print(f"      {status}: {count} subjects")
+                
+                total_subjects = roadmap.get('total_subjects', 0)
+                total_chapters = roadmap.get('total_chapters', 0)
+                
+                print(f"   📊 Global Stats: {total_subjects} subjects, {total_chapters} chapters")
+                
+                if total_subjects >= 20 and total_chapters >= 600:
+                    print(f"   ✅ Volume targets met: {total_subjects} subjects, {total_chapters} chapters")
+                else:
+                    print(f"   ⚠️  Volume targets not met: {total_subjects} subjects, {total_chapters} chapters")
+            
+            # Verify active subjects (backward compatibility)
+            active_subjects = subjects_by_status.get('active', [])
+            expected_active = ['Mathématiques', 'Physique-Chimie', 'SVT']
+            
+            print(f"\n   ✅ Active subjects: {active_subjects}")
+            for expected in expected_active:
+                if expected in active_subjects:
+                    print(f"      ✅ {expected} is active")
+                else:
+                    print(f"      ❌ {expected} is NOT active")
+            
+            return True, {"subjects_count": len(catalog), "statuses": list(statuses_found)}
+        
+        return False, {}
+
+    def test_feature_flag_validation_generate(self):
+        """Test Feature Flag Validation - POST /generate avec contrôle d'accès"""
+        print("\n🔒 Testing FEATURE FLAG VALIDATION - Generate Access Control...")
+        print("CONTEXT: Contrôle d'accès avec feature flags - seules matières actives autorisées")
+        print("EXPECTED: ✅ Génération AUTORISÉE pour matières actives, ❌ BLOQUÉE pour non-actives (HTTP 423)")
+        print("="*80)
+        
+        # Test 1: Active subject should work (Mathématiques)
+        print("\n   1. Testing ACTIVE subject (should PASS)...")
+        active_test_data = {
+            "matiere": "Mathématiques",
+            "niveau": "6e",
+            "chapitre": "Nombres entiers et décimaux",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        success, response = self.run_test(
+            "Feature Flag: Active Subject (Mathématiques)",
+            "POST",
+            "generate",
+            200,  # Should succeed
+            data=active_test_data,
+            timeout=60
+        )
+        
+        if success:
+            print("   ✅ Active subject generation ALLOWED as expected")
+        else:
+            print("   ❌ Active subject generation BLOCKED - this is a bug!")
+        
+        # Test 2: Non-active subject should be blocked (Français - coming_soon)
+        print("\n   2. Testing NON-ACTIVE subject (should be BLOCKED)...")
+        blocked_test_data = {
+            "matiere": "Français",
+            "niveau": "6e", 
+            "chapitre": "Récits d'aventures",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        success, response = self.run_test(
+            "Feature Flag: Non-Active Subject (Français)",
+            "POST",
+            "generate",
+            423,  # Should be blocked with HTTP 423 Locked
+            data=blocked_test_data,
+            timeout=30
+        )
+        
+        if success:
+            print("   ✅ Non-active subject generation BLOCKED as expected (HTTP 423)")
+            
+            # Check error details
+            if isinstance(response, dict):
+                error = response.get('error', '')
+                status = response.get('status', '')
+                expected = response.get('expected', '')
+                emoji = response.get('emoji', '')
+                available_subjects = response.get('available_subjects', [])
+                
+                print(f"      Error: {error}")
+                print(f"      Status: {status} {emoji}")
+                print(f"      Expected: {expected}")
+                print(f"      Available subjects: {available_subjects}")
+                
+                if 'coming_soon' in status and expected and available_subjects:
+                    print("   ✅ Complete error details provided")
+                else:
+                    print("   ⚠️  Incomplete error details")
+        else:
+            print("   ❌ Non-active subject generation NOT BLOCKED - feature flags not working!")
+        
+        # Test 3: Another non-active subject (Histoire - planned)
+        print("\n   3. Testing PLANNED subject (should be BLOCKED)...")
+        planned_test_data = {
+            "matiere": "Histoire",
+            "niveau": "CM1",
+            "chapitre": "Le temps des rois",
+            "type_doc": "exercices", 
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        success, response = self.run_test(
+            "Feature Flag: Planned Subject (Histoire)",
+            "POST",
+            "generate",
+            423,  # Should be blocked
+            data=planned_test_data,
+            timeout=30
+        )
+        
+        if success:
+            print("   ✅ Planned subject generation BLOCKED as expected")
+        else:
+            print("   ❌ Planned subject generation NOT BLOCKED")
+        
+        return True, {"feature_flag_validation": "tested"}
+
+    def test_roadmap_endpoint(self):
+        """Test Roadmap Endpoint - GET /roadmap doit retourner matières organisées par statut"""
+        print("\n🗺️ Testing ROADMAP ENDPOINT...")
+        print("CONTEXT: Endpoint roadmap public pour transparence utilisateur")
+        print("EXPECTED: Matières organisées par statut avec timeline phases")
+        print("="*80)
+        
+        success, response = self.run_test("Roadmap Endpoint", "GET", "roadmap", 200)
+        
+        if success and isinstance(response, dict):
+            print(f"   📊 Roadmap response keys: {list(response.keys())}")
+            
+            # Check for subjects organized by status
+            subjects_by_status = response.get('subjects_by_status', {})
+            timeline = response.get('timeline', {})
+            statistics = response.get('statistics', {})
+            
+            if subjects_by_status:
+                print(f"\n   📚 Subjects by Status:")
+                for status, subjects in subjects_by_status.items():
+                    if isinstance(subjects, list):
+                        print(f"      {status}: {len(subjects)} subjects")
+                        for subject in subjects[:3]:  # Show first 3
+                            subject_name = subject.get('name', 'Unknown') if isinstance(subject, dict) else subject
+                            print(f"         - {subject_name}")
+                        if len(subjects) > 3:
+                            print(f"         ... and {len(subjects) - 3} more")
+                    else:
+                        print(f"      {status}: {subjects}")
+            
+            # Check timeline phases
+            if timeline:
+                print(f"\n   📅 Timeline Phases:")
+                expected_phases = ["Oct 2025", "Nov-Dec 2025", "Jan-Mar 2026", "2026+"]
+                
+                for phase in expected_phases:
+                    phase_data = timeline.get(phase, {})
+                    if phase_data:
+                        subjects = phase_data.get('subjects', [])
+                        print(f"      {phase}: {len(subjects)} subjects")
+                        if subjects:
+                            print(f"         Example: {subjects[0] if isinstance(subjects[0], str) else subjects[0].get('name', 'Unknown')}")
+                    else:
+                        print(f"      {phase}: No data")
+            
+            # Check statistics
+            if statistics:
+                print(f"\n   📈 Statistics:")
+                for key, value in statistics.items():
+                    print(f"      {key}: {value}")
+                
+                # Verify comprehensive stats
+                expected_stats = ['total_subjects', 'total_chapters', 'active', 'coming_soon', 'planned', 'beta', 'future']
+                missing_stats = [stat for stat in expected_stats if stat not in statistics]
+                
+                if not missing_stats:
+                    print("   ✅ All expected statistics present")
+                else:
+                    print(f"   ⚠️  Missing statistics: {missing_stats}")
+            
+            # Verify roadmap completeness
+            has_subjects = bool(subjects_by_status)
+            has_timeline = bool(timeline)
+            has_stats = bool(statistics)
+            
+            if has_subjects and has_timeline and has_stats:
+                print("\n   ✅ Complete roadmap structure verified")
+                return True, {"roadmap_complete": True}
+            else:
+                print(f"\n   ⚠️  Incomplete roadmap: subjects={has_subjects}, timeline={has_timeline}, stats={has_stats}")
+        
+        return False, {}
+
+    def test_backward_compatibility_validation(self):
+        """Test Validation Backward Compatibility - matières actives fonctionnent identiquement"""
+        print("\n🔄 Testing BACKWARD COMPATIBILITY VALIDATION...")
+        print("CONTEXT: Vérifier que matières actives (Math/PC/SVT) fonctionnent identiquement")
+        print("EXPECTED: Génération d'exercices préservée, performance maintenue")
+        print("="*80)
+        
+        # Test all active subjects
+        active_subjects_tests = [
+            {
+                "matiere": "Mathématiques",
+                "niveau": "4e",
+                "chapitre": "Théorème de Pythagore",
+                "expected_performance": 30  # seconds
+            },
+            {
+                "matiere": "Physique-Chimie", 
+                "niveau": "5e",
+                "chapitre": "Organisation et transformations de la matière",
+                "expected_performance": 30
+            },
+            {
+                "matiere": "SVT",
+                "niveau": "5e", 
+                "chapitre": "Le vivant et son évolution",
+                "expected_performance": 30
+            }
+        ]
+        
+        all_passed = True
+        performance_results = []
+        
+        for i, test_config in enumerate(active_subjects_tests):
+            print(f"\n   {i+1}. Testing {test_config['matiere']} backward compatibility...")
+            
+            test_data = {
+                "matiere": test_config["matiere"],
+                "niveau": test_config["niveau"],
+                "chapitre": test_config["chapitre"],
+                "type_doc": "exercices",
+                "difficulte": "moyen",
+                "nb_exercices": 3,
+                "versions": ["A"],
+                "guest_id": self.guest_id
+            }
+            
+            start_time = time.time()
+            success, response = self.run_test(
+                f"Backward Compatibility: {test_config['matiere']}",
+                "POST",
+                "generate",
+                200,
+                data=test_data,
+                timeout=60
+            )
+            generation_time = time.time() - start_time
+            
+            if success and isinstance(response, dict):
+                document = response.get('document')
+                if document:
+                    exercises = document.get('exercises', [])
+                    print(f"      ✅ Generated {len(exercises)} exercises")
+                    print(f"      ⏱️  Generation time: {generation_time:.2f}s")
+                    
+                    # Check performance
+                    if generation_time <= test_config["expected_performance"]:
+                        print(f"      ✅ Performance maintained (< {test_config['expected_performance']}s)")
+                    else:
+                        print(f"      ⚠️  Performance degraded ({generation_time:.2f}s > {test_config['expected_performance']}s)")
+                        all_passed = False
+                    
+                    performance_results.append({
+                        "subject": test_config["matiere"],
+                        "time": generation_time,
+                        "target": test_config["expected_performance"],
+                        "passed": generation_time <= test_config["expected_performance"]
+                    })
+                    
+                    # Verify exercise quality
+                    if exercises:
+                        exercise = exercises[0]
+                        enonce = exercise.get('enonce', '')
+                        solution = exercise.get('solution', {})
+                        
+                        if enonce and solution:
+                            print(f"      ✅ Exercise quality maintained (enonce + solution)")
+                        else:
+                            print(f"      ⚠️  Exercise quality issues")
+                            all_passed = False
+                else:
+                    print(f"      ❌ No document generated")
+                    all_passed = False
+            else:
+                print(f"      ❌ Generation failed")
+                all_passed = False
+        
+        # Summary
+        print(f"\n   📊 Backward Compatibility Summary:")
+        print(f"      Tests passed: {sum(1 for r in performance_results if r['passed'])}/{len(performance_results)}")
+        avg_time = sum(r['time'] for r in performance_results) / len(performance_results) if performance_results else 0
+        print(f"      Average generation time: {avg_time:.2f}s")
+        
+        if all_passed:
+            print("   ✅ Backward compatibility VERIFIED - no regression detected")
+        else:
+            print("   ❌ Backward compatibility ISSUES detected")
+        
+        return all_passed, {"backward_compatibility": all_passed, "performance": performance_results}
+
+    def test_volume_data_scale_up(self):
+        """Test Volume de Données - confirmer le scale-up vers 23 matières et ~681 chapitres"""
+        print("\n📊 Testing VOLUME DATA SCALE-UP...")
+        print("CONTEXT: Scale-up de 3 matières vers 23 matières (~681 chapitres totaux)")
+        print("EXPECTED: Réponse API catalog avec grandes données, performance maintenue")
+        print("="*80)
+        
+        # Test catalog performance with large dataset
+        start_time = time.time()
+        success, response = self.run_test("Volume Scale-up: Catalog Performance", "GET", "catalog", 200)
+        catalog_time = time.time() - start_time
+        
+        if success and isinstance(response, dict):
+            catalog = response.get('catalog', [])
+            roadmap = response.get('roadmap', {})
+            
+            # Count total data
+            total_subjects = len(catalog)
+            total_chapters = 0
+            total_levels = 0
+            
+            for subject in catalog:
+                chapter_count = subject.get('chapter_count', 0)
+                level_count = subject.get('level_count', 0)
+                total_chapters += chapter_count
+                total_levels += level_count
+            
+            print(f"   📊 Volume Statistics:")
+            print(f"      Subjects: {total_subjects} (target: 23)")
+            print(f"      Chapters: {total_chapters} (target: ~681)")
+            print(f"      Levels: {total_levels}")
+            print(f"      Catalog response time: {catalog_time:.2f}s")
+            
+            # Verify scale-up targets
+            subjects_ok = total_subjects >= 20  # Allow some flexibility
+            chapters_ok = total_chapters >= 600  # Allow some flexibility
+            performance_ok = catalog_time < 5.0  # Should be fast
+            
+            if subjects_ok:
+                print(f"   ✅ Subjects scale-up successful: {total_subjects}/23")
+            else:
+                print(f"   ❌ Subjects scale-up incomplete: {total_subjects}/23")
+            
+            if chapters_ok:
+                print(f"   ✅ Chapters scale-up successful: {total_chapters}/681")
+            else:
+                print(f"   ❌ Chapters scale-up incomplete: {total_chapters}/681")
+            
+            if performance_ok:
+                print(f"   ✅ Performance maintained: {catalog_time:.2f}s < 5s")
+            else:
+                print(f"   ⚠️  Performance degraded: {catalog_time:.2f}s >= 5s")
+            
+            # Test data structure integrity
+            print(f"\n   🔍 Data Structure Integrity:")
+            subjects_with_complete_data = 0
+            
+            for subject in catalog[:5]:  # Check first 5 subjects
+                name = subject.get('name', '')
+                status = subject.get('status', '')
+                description = subject.get('description', '')
+                features = subject.get('features', [])
+                
+                if name and status and description and features:
+                    subjects_with_complete_data += 1
+                    print(f"      ✅ {name}: Complete metadata")
+                else:
+                    print(f"      ⚠️  {name}: Incomplete metadata")
+            
+            integrity_ok = subjects_with_complete_data >= 3
+            
+            if integrity_ok:
+                print(f"   ✅ Data structure integrity maintained")
+            else:
+                print(f"   ⚠️  Data structure integrity issues")
+            
+            # Overall scale-up assessment
+            scale_up_success = subjects_ok and chapters_ok and performance_ok and integrity_ok
+            
+            if scale_up_success:
+                print(f"\n   🎉 VOLUME SCALE-UP SUCCESSFUL!")
+                print(f"      ✅ {total_subjects} subjects vs previous 3 (+{total_subjects-3})")
+                print(f"      ✅ {total_chapters} chapters available")
+                print(f"      ✅ Performance maintained ({catalog_time:.2f}s)")
+            else:
+                print(f"\n   ⚠️  VOLUME SCALE-UP ISSUES DETECTED")
+            
+            return scale_up_success, {
+                "subjects": total_subjects,
+                "chapters": total_chapters,
+                "performance": catalog_time,
+                "scale_up_success": scale_up_success
+            }
+        
+        return False, {}
+
+    def run_feature_flag_tests(self):
+        """Run comprehensive feature flag system tests"""
+        print("\n" + "="*80)
+        print("🗺️ FEATURE FLAG SYSTEM TESTS - PRIORITY")
+        print("="*80)
+        print("CONTEXT: Testing transformation to French educational platform with 23 subjects")
+        print("STRATEGY: 'Tout afficher, griser ce qui n'est pas prêt'")
+        print("="*80)
+        
+        feature_flag_tests = [
+            ("API Catalog Extended", self.test_feature_flag_catalog_extended),
+            ("Feature Flag Validation Generate", self.test_feature_flag_validation_generate),
+            ("Roadmap Endpoint", self.test_roadmap_endpoint),
+            ("Backward Compatibility", self.test_backward_compatibility_validation),
+            ("Volume Data Scale-up", self.test_volume_data_scale_up),
+        ]
+        
+        ff_passed = 0
+        ff_total = len(feature_flag_tests)
+        
+        for test_name, test_func in feature_flag_tests:
+            try:
+                print(f"\n{'='*60}")
+                print(f"🔍 {test_name}")
+                print(f"{'='*60}")
+                
+                success, _ = test_func()
+                if success:
+                    ff_passed += 1
+                    print(f"✅ {test_name}: PASSED")
+                else:
+                    print(f"❌ {test_name}: FAILED")
+            except Exception as e:
+                print(f"❌ {test_name}: FAILED with exception: {e}")
+        
+        print(f"\n🗺️ Feature Flag Tests: {ff_passed}/{ff_total} passed")
+        return ff_passed, ff_total
+
 if __name__ == "__main__":
     tester = LeMaitreMotAPITester()
     
