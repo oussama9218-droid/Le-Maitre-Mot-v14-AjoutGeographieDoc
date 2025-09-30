@@ -52,8 +52,13 @@ const Step1ProgrammeScolaire = ({
       <CardContent className="p-6 space-y-6">
         {/* Matière Selection */}
         <div className="space-y-2">
-          <Label htmlFor="matiere-select" className="text-sm font-medium text-gray-700">
+          <Label htmlFor="matiere-select" className="text-sm font-medium text-gray-700 flex items-center justify-between">
             📚 Matière
+            {catalogStats && (
+              <span className="text-xs text-gray-500">
+                {catalogStats.total_subjects} matières • {catalogStats.total_chapters} chapitres
+              </span>
+            )}
           </Label>
           <Select 
             value={selectedMatiere} 
@@ -64,13 +69,46 @@ const Step1ProgrammeScolaire = ({
               <SelectValue placeholder="Choisir une matière" />
             </SelectTrigger>
             <SelectContent>
-              {matieres.map((matiere) => (
-                <SelectItem key={matiere} value={matiere}>
-                  {matiere}
-                </SelectItem>
-              ))}
+              {matieres.map((matiere) => {
+                const statusDisplay = getStatusDisplay(matiere);
+                const isActive = matiere.status === 'active';
+                
+                return (
+                  <SelectItem 
+                    key={matiere.name} 
+                    value={matiere.name}
+                    disabled={!isActive}
+                    title={statusDisplay.tooltip}
+                    className={`${isActive ? '' : 'opacity-60'}`}
+                  >
+                    <div className="flex items-center justify-between w-full">
+                      <span>
+                        {statusDisplay.emoji} {matiere.name}
+                      </span>
+                      {!isActive && (
+                        <span className={`text-xs ${statusDisplay.className} ml-2`}>
+                          {matiere.expected || 'Bientôt'}
+                        </span>
+                      )}
+                      {isActive && matiere.chapter_count > 0 && (
+                        <span className="text-xs text-gray-400 ml-2">
+                          {matiere.chapter_count} ch.
+                        </span>
+                      )}
+                    </div>
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
+          
+          {/* Status legend */}
+          <div className="text-xs text-gray-500 mt-2 flex flex-wrap gap-3">
+            <span>✅ Disponible</span>
+            <span>🔄 Bientôt</span>
+            <span>📋 En cours</span>
+            <span>🧪 Test</span>
+          </div>
         </div>
 
         {/* Niveau Selection */}
