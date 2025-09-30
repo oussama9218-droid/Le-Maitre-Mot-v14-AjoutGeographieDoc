@@ -56,6 +56,20 @@ EXERCISE_ICON_MAPPING = {
     "probability": "dice-6",
     "text": "file-text",
     
+    # NOUVEAU - Physique-Chimie
+    "experimental": "atom",
+    "physics": "zap",
+    "chemistry": "flask",
+    "energy": "battery",
+    "waves": "radio",
+    
+    # NOUVEAU - SVT  
+    "analysis": "leaf",
+    "biology": "dna",
+    "geology": "mountain",
+    "ecology": "globe",
+    "health": "heart",
+    
     # Priority 2: By chapter (fallback)
     "Théorème de Pythagore": "triangle-ruler",
     "Théorème de Thalès": "triangle-ruler", 
@@ -70,10 +84,27 @@ EXERCISE_ICON_MAPPING = {
     "Probabilités": "dice-6",
     "Volumes": "cube",
     
-    # Physics-Chemistry icons (future expansion)
-    "Matière": "atom",
-    "Énergie": "zap",
-    "Forces": "magnet",
+    # Physique-Chimie specific chapters
+    "Organisation et transformations de la matière": "flask",
+    "Constitution et transformations de la matière": "flask",
+    "Mouvements et interactions": "zap", 
+    "Mouvement et interactions": "zap",
+    "L'énergie et ses conversions": "battery",
+    "L'énergie : conversions et transferts": "battery",
+    "Des signaux pour observer et communiquer": "radio",
+    "Ondes et signaux": "radio",
+    
+    # SVT specific chapters
+    "La planète Terre, l'environnement et l'action humaine": "globe",
+    "Le vivant et son évolution": "dna",
+    "Le corps humain et la santé": "heart",
+    "La Terre, la vie et l'organisation du vivant": "leaf",
+    "Les enjeux contemporains de la planète": "mountain",
+    "Corps humain et santé": "heart",
+    
+    # Fallbacks par matière
+    "Physique-Chimie": "atom",
+    "SVT": "leaf",
     
     # Priority 3: Default fallback
     "default": "book-open"
