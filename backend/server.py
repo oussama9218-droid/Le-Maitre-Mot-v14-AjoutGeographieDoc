@@ -1667,6 +1667,51 @@ JSON OBLIGATOIRE:
     
     example = examples.get(chapitre, f"Exercice {chapitre}")
     
+    # GET THE SPECIALIZED INSTRUCTION FOR THE SUBJECT
+    instruction = subject_instructions.get(matiere)
+    
+    if instruction:
+        # Use specialized prompt
+        logger.info(f"🤖 Using specialized prompt for {matiere}")
+        system_msg = instruction
+    else:
+        # Fallback: Create a generic prompt for subjects without specialized prompts
+        logger.warning(f"⚠️ No specialized prompt found for {matiere}, using generic prompt")
+        instruction = f"""
+{prompt_context['prompt_intro']}.
+
+Crée {nb_exercices} exercices de {matiere} pour un élève de {niveau} sur le chapitre: "{chapitre}".
+Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français.
+
+RÈGLES GÉNÉRALES:
+- Utilise un vocabulaire adapté au niveau {niveau}
+- Propose des questions variées et progressives
+- Inclus des situations concrètes quand pertinent
+- Structure tes réponses en étapes claires
+- Respecte les attentes pédagogiques françaises
+
+FORMAT JSON REQUIS:
+{{
+    "exercises": [
+        {{
+            "type": "general",
+            "enonce": "Énoncé de l'exercice adapté au niveau",
+            "icone": "book-open",
+            "solution": {{
+                "etapes": ["Étape 1: Méthode", "Étape 2: Application"],
+                "resultat": "Réponse finale expliquée"
+            }},
+            "difficulte": "{difficulte}",
+            "bareme": [
+                {{"etape": "Méthode", "points": 2.0}},
+                {{"etape": "Application", "points": 2.0}}
+            ]
+        }}
+    ]
+}}
+"""
+        system_msg = instruction
+    
     prompt = f"""
 Génère {nb_exercices} exercices de {matiere} niveau {niveau} sur le chapitre: {chapitre}
 Difficulté: {difficulte}
