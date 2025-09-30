@@ -14,6 +14,7 @@ const DocumentWizard = ({
   matieres,
   niveaux, 
   chapitres,
+  catalogStats,  // Add catalogStats prop
   // Current selections
   selectedMatiere,
   selectedNiveau,
