@@ -135,6 +135,7 @@ EXERCISE_ICON_MAPPING = {
     "L'Afrique australe : un espace en profonde mutation": "compass",
     "Physique-Chimie": "atom",
     "SVT": "leaf",
+    "Géographie": "map",
     
     # Priority 3: Default fallback
     "default": "book-open"
