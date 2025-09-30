@@ -193,6 +193,26 @@ def enrich_exercise_with_icon(exercise_data: dict, chapitre: str, matiere: str =
         logger.info(f"🌱 Assigned type: {exercise_data['type']}, icon: {exercise_data['icone']}")
         return exercise_data
     
+    elif matiere == "Géographie":
+        logger.info(f"🗺️ Enriching Géographie exercise for chapter: {chapitre}")
+        if any(word in chapitre.lower() for word in ["ville", "urbain", "habitat", "loger", "bâti"]):
+            exercise_data["type"] = "urban"
+            exercise_data["icone"] = "building-2"
+        elif any(word in chapitre.lower() for word in ["population", "démographi", "mobilité", "humain"]):
+            exercise_data["type"] = "demographic"
+            exercise_data["icone"] = "users"
+        elif any(word in chapitre.lower() for word in ["monde", "mondial", "mondialisation", "planète"]):
+            exercise_data["type"] = "geographic"
+            exercise_data["icone"] = "globe"
+        elif any(word in chapitre.lower() for word in ["territoire", "espace", "lieu", "région"]):
+            exercise_data["type"] = "geographic"
+            exercise_data["icone"] = "compass"
+        else:
+            exercise_data["type"] = "cartographic"
+            exercise_data["icone"] = "map"
+        logger.info(f"🗺️ Assigned type: {exercise_data['type']}, icon: {exercise_data['icone']}")
+        return exercise_data
+    
     # Priority 2: Use type from AI if provided and valid (existing logic for Mathématiques)
     ai_type = exercise_data.get("type", "").lower()
     if ai_type in EXERCISE_ICON_MAPPING:
