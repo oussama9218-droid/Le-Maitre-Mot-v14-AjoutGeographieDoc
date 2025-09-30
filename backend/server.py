@@ -1632,10 +1632,22 @@ JSON OBLIGATOIRE:
         "Se raconter, se représenter": "Analyser un passage autobiographique",
         
         # Physique-Chimie
-        "Matière, mouvement, énergie, information": "Classer des objets selon leur état",
         "Organisation et transformations de la matière": "Identifier une transformation chimique",
-        "Mouvement et interactions": "Décrire le mouvement d'un objet",
-        "L'énergie et ses conversions": "Identifier des formes d'énergie"
+        "Constitution et transformations de la matière": "Analyser la composition d'un mélange", 
+        "Mouvements et interactions": "Calculer une vitesse moyenne",
+        "Mouvement et interactions": "Étudier les forces sur un objet",
+        "L'énergie et ses conversions": "Convertir différentes formes d'énergie",
+        "L'énergie : conversions et transferts": "Calculer l'énergie cinétique",
+        "Des signaux pour observer et communiquer": "Analyser la propagation de la lumière",
+        "Ondes et signaux": "Étudier les caractéristiques d'une onde",
+        
+        # SVT
+        "La planète Terre, l'environnement et l'action humaine": "Analyser l'impact humain sur un écosystème",
+        "Le vivant et son évolution": "Classer des espèces selon leurs caractères",
+        "Le corps humain et la santé": "Expliquer le mécanisme de la digestion",
+        "La Terre, la vie et l'organisation du vivant": "Observer des cellules au microscope",
+        "Les enjeux contemporains de la planète": "Étudier les changements climatiques",
+        "Corps humain et santé": "Analyser le système immunitaire"
     }
     
     example = examples.get(chapitre, f"Exercice {chapitre}")
