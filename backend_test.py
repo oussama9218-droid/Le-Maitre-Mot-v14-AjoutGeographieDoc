@@ -1991,6 +1991,79 @@ class LeMaitreMotAPITester:
         
         return all_passed, {}
 
+    def run_new_subjects_integration_tests(self):
+        """Run comprehensive tests for Physique-Chimie and SVT integration"""
+        print("\n" + "="*80)
+        print("🎯 NEW SUBJECTS INTEGRATION TESTS - PHYSIQUE-CHIMIE & SVT")
+        print("="*80)
+        print("CONTEXT: Testing integration of new subjects with curriculum, prompts, and icons")
+        print("REQUIREMENTS:")
+        print("- Catalog API shows 3 subjects (Mathématiques + Physique-Chimie + SVT)")
+        print("- Generation works for PC: 'Organisation et transformations de la matière' (5e), 'L'énergie et ses conversions' (4e)")
+        print("- Generation works for SVT: 'Le vivant et son évolution' (5e), 'Le corps humain et la santé' (4e)")
+        print("- Correct icons assigned (PC: atom/flask/zap/battery/radio, SVT: leaf/dna/mountain/globe/heart)")
+        print("- Performance under 30 seconds, specialized prompts respected, no Math regression")
+        print("="*80)
+        
+        integration_tests = [
+            ("Catalog API - 3 Subjects Check", self.test_catalog_endpoint),
+            ("Physique-Chimie 5e Generation", self.test_physique_chimie_generation_5e),
+            ("Physique-Chimie 4e Generation", self.test_physique_chimie_generation_4e),
+            ("SVT 5e Generation", self.test_svt_generation_5e),
+            ("SVT 4e Generation", self.test_svt_generation_4e),
+            ("Icon System Validation", self.test_icon_system_validation),
+            ("Specialized Prompts Quality", self.test_specialized_prompts_quality),
+            ("Mathematics Regression Test", self.test_mathematics_regression)
+        ]
+        
+        integration_passed = 0
+        integration_total = len(integration_tests)
+        failed_tests = []
+        
+        for test_name, test_func in integration_tests:
+            print(f"\n{'='*60}")
+            print(f"🔍 {test_name}")
+            print(f"{'='*60}")
+            try:
+                success, response = test_func()
+                if success:
+                    integration_passed += 1
+                    print(f"✅ {test_name} PASSED")
+                else:
+                    failed_tests.append(test_name)
+                    print(f"❌ {test_name} FAILED")
+                    if isinstance(response, dict) and 'detail' in response:
+                        print(f"   Error detail: {response['detail']}")
+            except Exception as e:
+                failed_tests.append(test_name)
+                print(f"❌ {test_name} failed with exception: {e}")
+        
+        print(f"\n{'='*80}")
+        print(f"🎯 NEW SUBJECTS INTEGRATION TEST RESULTS: {integration_passed}/{integration_total} passed")
+        print(f"{'='*80}")
+        
+        if integration_passed == integration_total:
+            print("🎉 ALL NEW SUBJECTS INTEGRATION TESTS PASSED!")
+            print("✅ Physique-Chimie and SVT successfully integrated")
+            print("✅ Catalog shows all 3 subjects with proper chapters")
+            print("✅ Exercise generation working for required chapters")
+            print("✅ Icon system extended and working correctly")
+            print("✅ Specialized prompts producing quality content")
+            print("✅ No regression in Mathematics functionality")
+        else:
+            print("❌ SOME NEW SUBJECTS INTEGRATION TESTS FAILED")
+            print(f"⚠️  Failed tests: {failed_tests}")
+            if "Catalog API - 3 Subjects Check" in failed_tests:
+                print("🚨 CRITICAL: Catalog not showing new subjects")
+            if any("Generation" in test for test in failed_tests):
+                print("🚨 CRITICAL: Exercise generation failing for new subjects")
+            if "Icon System Validation" in failed_tests:
+                print("⚠️  Icon system may not be working correctly")
+            if "Mathematics Regression Test" in failed_tests:
+                print("🚨 CRITICAL: Mathematics functionality affected by integration")
+                
+        return integration_passed, integration_total
+
     def run_curriculum_fix_tests(self):
         """Run focused tests for the curriculum data validation fix"""
         print("\n" + "="*80)
