@@ -779,7 +779,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "Philosophie": {
-        "status": "planned",
+        "status": "active",
         "expected": "Janvier 2026",
         "description": "Réflexions conceptuelles, dissertations, commentaires de textes",
         "features": ["conceptual_analysis", "dissertation_structure", "text_commentary"],
