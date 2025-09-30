@@ -1381,47 +1381,7 @@ async def generate_exercises_with_ai(matiere: str, niveau: str, chapitre: str, t
         "3e": "Niveau avancé - préparation au lycée, concepts abstraits, démonstrations"
     }
     
-    # Get the specialized instruction for the subject
-    instruction = subject_instructions.get(matiere)
-    
-    if not instruction:
-        # Fallback: Create a generic prompt for subjects without specialized prompts
-        logger.warning(f"⚠️ No specialized prompt found for {matiere}, using generic prompt")
-        instruction = f"""
-{prompt_context['prompt_intro']}.
-
-Crée {nb_exercices} exercices de {matiere} pour un élève de {niveau} sur le chapitre: "{chapitre}".
-Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français.
-
-RÈGLES GÉNÉRALES:
-- Utilise un vocabulaire adapté au niveau {niveau}
-- Propose des questions variées et progressives
-- Inclus des situations concrètes quand pertinent
-- Structure tes réponses en étapes claires
-- Respecte les attentes pédagogiques françaises
-
-FORMAT JSON REQUIS:
-{{
-    "exercises": [
-        {{
-            "type": "general",
-            "enonce": "Énoncé de l'exercice adapté au niveau",
-            "icone": "book-open",
-            "solution": {{
-                "etapes": ["Étape 1: Méthode", "Étape 2: Application"],
-                "resultat": "Réponse finale expliquée"
-            }},
-            "difficulte": "{difficulte}",
-            "bareme": [
-                {{"etape": "Méthode", "points": 2.0}},
-                {{"etape": "Application", "points": 2.0}}
-            ]
-        }}
-    ]
-}}
-"""
-
-    # Chapter-specific examples by subject
+    # PROMPTS IA SPÉCIALISÉS PAR MATIÈRE by subject
     chapter_examples = {
         # Mathématiques
         "Volumes": {
