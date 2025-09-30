@@ -102,7 +102,7 @@
 # Testing Data - Main Agent and testing sub agent both should log testing data below this section
 #====================================================================================================
 
-user_problem_statement: "Intégrer deux nouvelles matières (Physique-Chimie et SVT) avec curriculum officiel français, prompts IA spécialisés, système d'icônes étendu et types d'exercices adaptés. Tests requis sur génération d'exercices pour au moins 2 chapitres par matière."
+user_problem_statement: "Transformer 'Le Maître Mot' en plateforme éducative complète avec système de feature flags pour 23 matières du système français (681 chapitres). Stratégie : 'Tout afficher, griser ce qui n'est pas prêt'. Implémentation feature flags (active/coming_soon/planned/beta/future), API catalog étendue, interface montrant toutes matières avec statuts, page roadmap publique."
 
 backend:
   - task: "Intégration Physique-Chimie - Curriculum et prompts spécialisés"
