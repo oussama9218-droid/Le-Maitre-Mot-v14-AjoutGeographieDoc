@@ -653,7 +653,7 @@ CURRICULUM_DATA_COMPLETE = {
     },
 
     "Géographie": {
-        "status": "planned",
+        "status": "active",
         "expected": "Décembre 2025",
         "description": "Cartes interactives, données statistiques, études de cas",
         "features": ["interactive_maps", "statistical_data", "case_studies"],
