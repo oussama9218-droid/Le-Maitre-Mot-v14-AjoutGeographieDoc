@@ -1704,7 +1704,14 @@ FORMAT JSON REQUIS:
     
     if instruction:
         # Use specialized prompt
-        logger.info(f"🤖 Using specialized prompt for {matiere}")
+        logger.info(
+            "🗺️ Geography subject activated with advanced document integration",
+            module_name="generation",
+            func_name="geography_activation",
+            features_enabled=["specialized_prompts", "document_search", "cartographic_exercises"],
+            document_sources=["wikimedia_commons", "validated_cache", "fallback_system"],
+            supported_document_types=["carte_france", "carte_monde", "carte_europe", "planisphere", "carte_thematique"]
+        )
         system_msg = instruction
     else:
         # Fallback: Create a generic prompt for subjects without specialized prompts
