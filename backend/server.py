@@ -75,7 +75,11 @@ EXERCISE_ICON_MAPPING = {
     "energy": "battery",
     "waves": "radio",
     
-    # NOUVEAU - SVT  
+    # NOUVEAU - Géographie
+    "cartographic": "map",
+    "geographic": "compass",
+    "demographic": "users",
+    "urban": "building-2",
     "analysis": "leaf",
     "biology": "dna",
     "geology": "mountain",
