@@ -1914,7 +1914,7 @@ JSON OBLIGATOIRE:
             
             # CRITICAL FIX: Clean the enonce by removing any residual JSON schema blocks
             enonce_clean = re.sub(r'\{\s*"sch[ée]ma".*?\}', "", enonce, flags=re.DOTALL)
-            enonce_clean = re.sub(r'\{\s*"schema".*?\}', "", enonce_clean, flags=re.DOTALL)
+            enonce_clean = re.sub(r'\{\s*"geometric_schema".*?\}', "", enonce_clean, flags=re.DOTALL)
             enonce_clean = enonce_clean.strip()
             
             # Remove any trailing newlines or multiple spaces caused by JSON removal
