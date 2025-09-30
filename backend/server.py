@@ -1802,7 +1802,19 @@ JSON OBLIGATOIRE:
         "Le corps humain et la santé": "Expliquer le mécanisme de la digestion",
         "La Terre, la vie et l'organisation du vivant": "Observer des cellules au microscope",
         "Les enjeux contemporains de la planète": "Étudier les changements climatiques",
-        "Corps humain et santé": "Analyser le système immunitaire"
+        "Corps humain et santé": "Analyser le système immunitaire",
+        
+        # Géographie
+        "Découvrir le(s) lieu(x) où j'habite": "Localiser sa commune sur une carte de France",
+        "Se loger, travailler, se cultiver, avoir des loisirs": "Analyser l'organisation d'une ville française",
+        "Satisfaire les besoins en énergie, en eau": "Étudier la répartition des ressources en eau en France",
+        "Se déplacer - Moyens de transport": "Analyser les réseaux de transport français",
+        "Communiquer d'un bout à l'autre du monde": "Localiser les grandes métropoles mondiales",
+        "Mieux habiter - La ville de demain": "Comparer l'urbanisation en France et dans le monde",
+        "Mieux habiter - Les espaces ruraux": "Analyser les mutations des espaces ruraux français",
+        "L'urbanisation du monde": "Identifier les mégalopoles sur un planisphère",
+        "Les mobilités humaines transnationales": "Analyser les flux migratoires sur une carte",
+        "Des espaces transformés par la mondialisation": "Étudier les échanges commerciaux mondiaux"
     }
     
     example = examples.get(chapitre, f"Exercice {chapitre}")
