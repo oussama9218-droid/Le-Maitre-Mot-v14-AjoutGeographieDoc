@@ -2741,7 +2741,12 @@ async def generate_document(request: GenerateRequest):
         for theme, chapters in level_data.items():
             all_chapters.extend(chapters)
         available_chapters = all_chapters
+        available_chapters = all_chapters
         if request.chapitre not in available_chapters:
+            logger.error(
+                f"❌ Chapter not found: {request.chapitre}",
+                available_chapters=available_chapters[:5]  # Show first 5 for debugging
+            )
             raise HTTPException(status_code=400, detail="Chapitre non trouvé pour ce niveau")
         
         logger.info(f"🚀 Document generation started - {request.matiere} {request.niveau} {request.chapitre} - {request.type_doc} - {request.difficulte} - {request.nb_exercices} exercises - guest_id: {request.guest_id}")
