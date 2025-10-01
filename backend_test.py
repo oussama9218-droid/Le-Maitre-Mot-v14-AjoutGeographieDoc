@@ -12366,12 +12366,17 @@ if __name__ == "__main__":
             # Run feature flag system tests
             passed, total = tester.run_feature_flag_tests()
             print(f"\n🎯 Feature Flag Tests: {passed}/{total} passed")
+        elif test_mode == "urgent":
+            # Run urgent validation tests for 400 Bad Request fix
+            print("🚨 RUNNING URGENT VALIDATION MODE")
+            success = tester.run_urgent_validation_tests()
+            sys.exit(0 if success else 1)
         elif test_mode == "race-condition":
             # Legacy support for race condition tests
             run_magic_link_race_condition_tests()
         else:
             print(f"Unknown test mode: {test_mode}")
-            print("Available modes: math, curriculum, newsubjects, auth, logo, magic, security, template, subscription, feature_flags")
+            print("Available modes: math, curriculum, newsubjects, auth, logo, magic, security, template, subscription, feature_flags, urgent")
         sys.exit(0)
     
     # Run all tests if no specific mode specified
