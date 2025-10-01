@@ -162,6 +162,37 @@
             max-width: 100%;
             height: auto;
         }
+        
+        /* NOUVEAU: Styles pour documents géographiques */
+        .geographic-document {
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            page-break-inside: avoid;
+        }
+        
+        .document-title {
+            font-weight: bold;
+            font-size: 14px;
+            color: #2c5aa0;
+            margin-bottom: 8px;
+            text-align: center;
+        }
+        
+        .document-image {
+            text-align: center;
+            margin: 10px 0;
+        }
+        
+        .document-attribution {
+            font-size: 10px;
+            color: #666;
+            text-align: center;
+            margin-top: 8px;
+            font-style: italic;
+        }
 
         @media print {
             body { padding: 20px; }
