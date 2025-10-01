@@ -1643,43 +1643,83 @@ FORMAT JSON REQUIS:
         "Géographie": f"""
 {prompt_context['prompt_intro']}.
 
-🗺️ SPÉCIALISTE GÉOGRAPHIE AVEC DOCUMENTS PÉDAGOGIQUES
+🗺️ SPÉCIALISTE GÉOGRAPHIE AVEC DOCUMENTS PÉDAGOGIQUES DIVERSIFIÉS
 
 Crée {nb_exercices} exercices de Géographie pour un élève de {niveau} sur le chapitre: "{chapitre}".
 Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français.
 
-RÈGLES GÉOGRAPHIE OBLIGATOIRES:
+🎯 RÈGLES GÉOGRAPHIE OBLIGATOIRES - DIVERSIFICATION DES DOCUMENTS :
 - Utilise des SITUATIONS GÉOGRAPHIQUES CONCRÈTES et RÉELLES
 - Privilégie la LECTURE DE CARTES et l'ANALYSE SPATIALE
-- Propose des exercices nécessitant un DOCUMENT CARTOGRAPHIQUE spécifique
+- CHAQUE EXERCICE DOIT DEMANDER UN TYPE DE DOCUMENT DIFFÉRENT
+- OBLIGATOIRE: VARIER les types de cartes selon le contenu de l'exercice
 - Utilise le VOCABULAIRE GÉOGRAPHIQUE adapté au niveau {niveau}
 - Développe les compétences de LOCALISATION et ORIENTATION
-- Respecte les attendus du programme français pour "{chapitre}"
 
-WORKFLOW DEUX ÉTAPES AUTOMATIQUE:
-1. Génération de l'exercice avec spécification du document attendu
-2. Le système recherchera automatiquement le document pédagogique correspondant
+🗺️ TYPES DE DOCUMENTS À UTILISER (OBLIGATOIRE - VARIER SELON L'EXERCICE) :
 
-EXEMPLES par niveau:
-- 6e: "Se loger, travailler, se cultiver" → carte démographique France, planisphère continents/océans
-- 5e: "L'urbanisation du monde" → carte grandes métropoles mondiales
-- 4e: "Des espaces transformés par la mondialisation" → carte flux commerciaux
-- Lycée: cartes spécialisées IGN, INSEE, géopolitiques
+POUR LES EXERCICES SUR LA FRANCE :
+- "carte_france" : questions sur régions, départements, villes françaises
+- Exemple : "Localise Paris, Lyon, Marseille sur une carte de France"
 
-FORMAT JSON REQUIS:
+POUR LES EXERCICES SUR L'EUROPE :
+- "carte_europe" : questions sur pays européens, capitales, frontières européennes
+- Exemple : "Identifie l'Allemagne, l'Italie, l'Espagne sur une carte d'Europe"
+
+POUR LES EXERCICES SUR L'ASIE :
+- "carte_asie" : questions sur Chine, Japon, Inde, villes asiatiques
+- Exemple : "Localise Tokyo, Beijing, Delhi sur une carte d'Asie"
+
+POUR LES EXERCICES SUR L'AMÉRIQUE :
+- "carte_amerique_nord" : États-Unis, Canada, Mexique
+- Exemple : "Identifie New York, Toronto, Mexico sur une carte d'Amérique du Nord"
+
+POUR LES EXERCICES SUR L'AFRIQUE :
+- "carte_afrique" : pays africains, déserts, fleuves africains
+- Exemple : "Localise le Sahara, le Nil, le Kenya sur une carte d'Afrique"
+
+POUR LES EXERCICES MONDIAUX/GLOBAUX :
+- "carte_monde" : continents, océans, grandes zones climatiques
+- Exemple : "Identifie les 5 océans sur un planisphère"
+
+🎯 INSTRUCTIONS DE GÉNÉRATION CRITIQUE :
+
+1. **ANALYSER LE CHAPITRE "{chapitre}"** : 
+   - Si contient "France" → privilégier "carte_france"
+   - Si contient "Europe" → privilégier "carte_europe" 
+   - Si contient "monde", "mondial" → privilégier "carte_monde"
+   - Si contient un continent → utiliser la carte correspondante
+
+2. **VARIER OBLIGATOIREMENT LES EXERCICES** :
+   - Si 2+ exercices : JAMAIS le même type de document 2 fois !
+   - Si 3+ exercices : utiliser 3 types différents minimum
+   - Si 4+ exercices : utiliser 4 types différents minimum
+   - Priorité : carte appropriée au contenu > diversification
+
+3. **EXEMPLES CONCRETS PAR NIVEAU** :
+
+NIVEAU 6e - Chapitre "Découvrir le(s) lieu(x) où j'habite" :
+- Exercice 1 : carte_france + "Localise ta région sur la carte de France"
+- Exercice 2 : carte_monde + "Situe la France par rapport aux autres continents"
+
+NIVEAU 5e - Chapitre "L'urbanisation du monde" :
+- Exercice 1 : carte_monde + "Identifie les mégalopoles mondiales"
+- Exercice 2 : carte_asie + "Analyse l'urbanisation au Japon"
+- Exercice 3 : carte_amerique_nord + "Étudie les villes américaines"
+
+FORMAT JSON REQUIS AVEC DOCUMENTS VARIÉS :
 {{
     "exercises": [
         {{
             "type": "cartographic",
-            "enonce": "Énoncé nécessitant l'analyse d'une carte ou document géographique",
+            "enonce": "Énoncé adapté au type de carte demandée",
             "icone": "map",
             "document_attendu": {{
-                "type": "carte_france | carte_monde | carte_europe | planisphere | carte_thematique",
-                "doit_afficher": ["éléments requis sur la carte"],
+                "type": "carte_france",
+                "doit_afficher": ["éléments spécifiques à la carte"],
                 "langue": "français",
-                "echelle_preferee": "nationale | continentale | mondiale | locale",
-                "projection": "préférence si applicable",
-                "description": "Description précise du document nécessaire"
+                "echelle_preferee": "nationale",
+                "description": "Description précise du document France"
             }},
             "competences": ["Lire une carte", "Se repérer dans l'espace", "Analyser un document"],
             "solution": {{
@@ -1695,6 +1735,19 @@ FORMAT JSON REQUIS:
         }}
     ]
 }}
+
+⚠️ CONTRAINTE ABSOLUE :
+- CHAQUE exercice DOIT avoir un "type" différent dans "document_attendu"
+- INTERDICTION d'utiliser "carte_monde" pour tous les exercices
+- ANALYSER le contenu pour choisir la carte la PLUS APPROPRIÉE
+- VARIER absolument entre : carte_france, carte_europe, carte_asie, carte_amerique_nord, carte_afrique, carte_monde
+
+🎯 RÉSULTAT ATTENDU :
+✅ Exercice 1 : Carte spécifique → exercice correspondant au contenu
+✅ Exercice 2 : Carte différente → exercice correspondant 
+✅ Exercice 3 : Carte différente → exercice correspondant
+✅ Exercice 4 : Carte différente → exercice correspondant
+✅ Export PDF avec des cartes différentes et pertinentes
 """
     }
     
