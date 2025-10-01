@@ -75,6 +75,47 @@ class LeMaitreMotAPITester:
         """Test the root API endpoint"""
         return self.run_test("Root API", "GET", "", 200)
 
+    def test_roadmap_endpoint(self):
+        """Test the public roadmap endpoint for transparency"""
+        print("\n🗺️ TESTING PUBLIC ROADMAP ENDPOINT")
+        print("="*50)
+        print("CONTEXT: Testing endpoint roadmap public pour transparence utilisateur")
+        
+        success, response = self.run_test("Public Roadmap", "GET", "roadmap", 200)
+        
+        if success and isinstance(response, dict):
+            print(f"   ✅ Roadmap endpoint accessible")
+            
+            # Check for expected roadmap structure
+            expected_statuses = ['active', 'coming_soon', 'planned', 'beta', 'future']
+            found_statuses = []
+            
+            for status in expected_statuses:
+                if status in response:
+                    found_statuses.append(status)
+                    status_data = response[status]
+                    if isinstance(status_data, dict):
+                        subject_count = status_data.get('subject_count', 0)
+                        print(f"   📊 {status}: {subject_count} subjects")
+                    elif isinstance(status_data, list):
+                        print(f"   📊 {status}: {len(status_data)} subjects")
+            
+            # Check for timeline/phases information
+            if 'timeline' in response or 'phases' in response:
+                print(f"   ✅ Timeline/phases information present")
+            
+            # Verify transparency features
+            transparency_score = len(found_statuses) / len(expected_statuses)
+            if transparency_score >= 0.8:
+                print(f"   ✅ Good transparency: {len(found_statuses)}/{len(expected_statuses)} statuses present")
+                return True, response
+            else:
+                print(f"   ⚠️  Limited transparency: {len(found_statuses)}/{len(expected_statuses)} statuses present")
+                return False, response
+        else:
+            print(f"   ❌ Roadmap endpoint failed")
+            return False, {}
+
     def test_feature_flags_system(self):
         """Test the feature flags system and curriculum validation"""
         print("\n🏁 TESTING FEATURE FLAGS SYSTEM")
