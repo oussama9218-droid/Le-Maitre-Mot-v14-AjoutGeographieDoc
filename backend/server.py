@@ -1643,111 +1643,140 @@ FORMAT JSON REQUIS:
         "Géographie": f"""
 {prompt_context['prompt_intro']}.
 
-🗺️ SPÉCIALISTE GÉOGRAPHIE AVEC DOCUMENTS PÉDAGOGIQUES DIVERSIFIÉS
+🗺️ SPÉCIALISTE GÉOGRAPHIE - DIVERSIFICATION OBLIGATOIRE DES DOCUMENTS
 
 Crée {nb_exercices} exercices de Géographie pour un élève de {niveau} sur le chapitre: "{chapitre}".
 Chaque exercice doit avoir une difficulté {difficulte}. Respecte parfaitement le programme scolaire français.
 
-🎯 RÈGLES GÉOGRAPHIE OBLIGATOIRES - DIVERSIFICATION DES DOCUMENTS :
-- Utilise des SITUATIONS GÉOGRAPHIQUES CONCRÈTES et RÉELLES
-- Privilégie la LECTURE DE CARTES et l'ANALYSE SPATIALE
-- CHAQUE EXERCICE DOIT DEMANDER UN TYPE DE DOCUMENT DIFFÉRENT
-- OBLIGATOIRE: VARIER les types de cartes selon le contenu de l'exercice
-- Utilise le VOCABULAIRE GÉOGRAPHIQUE adapté au niveau {niveau}
-- Développe les compétences de LOCALISATION et ORIENTATION
+⚠️ RÈGLE ABSOLUE - DIVERSIFICATION OBLIGATOIRE :
+- CHAQUE EXERCICE DOIT UTILISER UN TYPE DE DOCUMENT DIFFÉRENT
+- INTERDICTION FORMELLE d'utiliser le même type 2 fois
+- ANALYSER le contenu pour choisir le document le PLUS APPROPRIÉ
 
-🗺️ TYPES DE DOCUMENTS À UTILISER (OBLIGATOIRE - VARIER SELON L'EXERCICE) :
+TYPES DE DOCUMENTS DISPONIBLES (À VARIER OBLIGATOIREMENT) :
 
-POUR LES EXERCICES SUR LA FRANCE :
-- "carte_france" : questions sur régions, départements, villes françaises
-- Exemple : "Localise Paris, Lyon, Marseille sur une carte de France"
+1. "carte_france" → Questions sur France, régions, villes françaises
+   Exemple : "Localise Paris, Lyon, Marseille sur une carte administrative"
 
-POUR LES EXERCICES SUR L'EUROPE :
-- "carte_europe" : questions sur pays européens, capitales, frontières européennes
-- Exemple : "Identifie l'Allemagne, l'Italie, l'Espagne sur une carte d'Europe"
+2. "carte_europe" → Questions sur pays européens, capitales, UE
+   Exemple : "Identifie l'Allemagne, l'Italie et leurs capitales"
 
-POUR LES EXERCICES SUR L'ASIE :
-- "carte_asie" : questions sur Chine, Japon, Inde, villes asiatiques
-- Exemple : "Localise Tokyo, Beijing, Delhi sur une carte d'Asie"
+3. "carte_asie" → Questions sur Asie, Chine, Japon, Inde
+   Exemple : "Compare Tokyo et Beijing sur une carte d'Asie"
 
-POUR LES EXERCICES SUR L'AMÉRIQUE :
-- "carte_amerique_nord" : États-Unis, Canada, Mexique
-- Exemple : "Identifie New York, Toronto, Mexico sur une carte d'Amérique du Nord"
+4. "carte_amerique_nord" → Questions USA, Canada, Mexique
+   Exemple : "Analyse l'urbanisation de la côte est américaine"
 
-POUR LES EXERCICES SUR L'AFRIQUE :
-- "carte_afrique" : pays africains, déserts, fleuves africains
-- Exemple : "Localise le Sahara, le Nil, le Kenya sur une carte d'Afrique"
+5. "carte_afrique" → Questions Afrique, Sahara, pays africains
+   Exemple : "Localise le désert du Sahara et le fleuve Nil"
 
-POUR LES EXERCICES MONDIAUX/GLOBAUX :
-- "carte_monde" : continents, océans, grandes zones climatiques
-- Exemple : "Identifie les 5 océans sur un planisphère"
+6. "carte_monde" → Questions globales, continents, océans
+   Exemple : "Identifie les 5 océans sur un planisphère"
 
-🎯 INSTRUCTIONS DE GÉNÉRATION CRITIQUE :
+STRATÉGIE DE DIVERSIFICATION FORCÉE :
+- Exercice 1 : Choisir le type le PLUS PERTINENT selon le contenu
+- Exercice 2 : Choisir un type DIFFÉRENT du précédent
+- Exercice 3 : Encore DIFFÉRENT des 2 précédents
+- Exercice 4 : DIFFÉRENT des 3 précédents
 
-1. **ANALYSER LE CHAPITRE "{chapitre}"** : 
-   - Si contient "France" → privilégier "carte_france"
-   - Si contient "Europe" → privilégier "carte_europe" 
-   - Si contient "monde", "mondial" → privilégier "carte_monde"
-   - Si contient un continent → utiliser la carte correspondante
+EXEMPLES CONCRETS DE DIVERSIFICATION :
 
-2. **VARIER OBLIGATOIREMENT LES EXERCICES** :
-   - Si 2+ exercices : JAMAIS le même type de document 2 fois !
-   - Si 3+ exercices : utiliser 3 types différents minimum
-   - Si 4+ exercices : utiliser 4 types différents minimum
-   - Priorité : carte appropriée au contenu > diversification
+Pour "{chapitre}" niveau {niveau} :
 
-3. **EXEMPLES CONCRETS PAR NIVEAU** :
+BATCH TYPE A - Chapitre sur la France :
+- Ex1: carte_france + "Localise ta région sur la carte"
+- Ex2: carte_europe + "Situe la France en Europe"  
+- Ex3: carte_monde + "Place la France dans le monde"
+- Ex4: carte_france + "Analyse les métropoles françaises"
 
-NIVEAU 6e - Chapitre "Découvrir le(s) lieu(x) où j'habite" :
-- Exercice 1 : carte_france + "Localise ta région sur la carte de France"
-- Exercice 2 : carte_monde + "Situe la France par rapport aux autres continents"
+BATCH TYPE B - Chapitre sur l'urbanisation mondiale :
+- Ex1: carte_monde + "Identifie les mégalopoles mondiales"
+- Ex2: carte_asie + "Étudie l'urbanisation au Japon"
+- Ex3: carte_amerique_nord + "Analyse les villes américaines"
+- Ex4: carte_europe + "Compare Paris, Londres, Berlin"
 
-NIVEAU 5e - Chapitre "L'urbanisation du monde" :
-- Exercice 1 : carte_monde + "Identifie les mégalopoles mondiales"
-- Exercice 2 : carte_asie + "Analyse l'urbanisation au Japon"
-- Exercice 3 : carte_amerique_nord + "Étudie les villes américaines"
-
-FORMAT JSON REQUIS AVEC DOCUMENTS VARIÉS :
+FORMAT JSON OBLIGATOIRE AVEC DIVERSIFICATION :
 {{
     "exercises": [
         {{
             "type": "cartographic",
-            "enonce": "Énoncé adapté au type de carte demandée",
+            "enonce": "Exercice utilisant un premier type de document géographique approprié",
             "icone": "map",
             "document_attendu": {{
                 "type": "carte_france",
-                "doit_afficher": ["éléments spécifiques à la carte"],
+                "doit_afficher": ["éléments spécifiques"],
                 "langue": "français",
-                "echelle_preferee": "nationale",
-                "description": "Description précise du document France"
+                "description": "Description précise du document"
             }},
-            "competences": ["Lire une carte", "Se repérer dans l'espace", "Analyser un document"],
             "solution": {{
-                "etapes": ["Étape 1: Lecture du document", "Étape 2: Analyse géographique", "Étape 3: Conclusion spatiale"],
-                "resultat": "Réponse géographique argumentée avec références au document"
+                "etapes": ["Étape 1: Lecture", "Étape 2: Analyse"],
+                "resultat": "Conclusion géographique"
             }},
-            "difficulte": "{difficulte}",
-            "bareme": [
-                {{"etape": "Lecture document", "points": 1.5}},
-                {{"etape": "Analyse spatiale", "points": 2.0}},
-                {{"etape": "Conclusion", "points": 1.5}}
-            ]
+            "difficulte": "{difficulte}"
+        }},
+        {{
+            "type": "cartographic",
+            "enonce": "Exercice utilisant un DEUXIÈME type DIFFÉRENT",
+            "icone": "compass",
+            "document_attendu": {{
+                "type": "carte_europe",
+                "doit_afficher": ["pays", "capitales"],
+                "langue": "français", 
+                "description": "Carte européenne avec focus spécifique"
+            }},
+            "solution": {{
+                "etapes": ["Étape 1: Lecture", "Étape 2: Analyse"],
+                "resultat": "Conclusion géographique"
+            }},
+            "difficulte": "{difficulte}"
+        }},
+        {{
+            "type": "geographic",
+            "enonce": "Exercice utilisant un TROISIÈME type DIFFÉRENT",
+            "icone": "globe",
+            "document_attendu": {{
+                "type": "carte_monde",
+                "doit_afficher": ["continents", "océans"],
+                "langue": "français",
+                "description": "Planisphère mondial"
+            }},
+            "solution": {{
+                "etapes": ["Étape 1: Lecture", "Étape 2: Analyse"],
+                "resultat": "Conclusion géographique"
+            }},
+            "difficulte": "{difficulte}"
+        }},
+        {{
+            "type": "urban",
+            "enonce": "Exercice utilisant un QUATRIÈME type DIFFÉRENT",
+            "icone": "building-2", 
+            "document_attendu": {{
+                "type": "carte_asie",
+                "doit_afficher": ["grandes villes", "densité"],
+                "langue": "français",
+                "description": "Carte asiatique pour analyse urbaine"
+            }},
+            "solution": {{
+                "etapes": ["Étape 1: Lecture", "Étape 2: Analyse"],
+                "resultat": "Conclusion géographique"
+            }},
+            "difficulte": "{difficulte}"
         }}
     ]
 }}
 
-⚠️ CONTRAINTE ABSOLUE :
-- CHAQUE exercice DOIT avoir un "type" différent dans "document_attendu"
-- INTERDICTION d'utiliser "carte_monde" pour tous les exercices
-- ANALYSER le contenu pour choisir la carte la PLUS APPROPRIÉE
-- VARIER absolument entre : carte_france, carte_europe, carte_asie, carte_amerique_nord, carte_afrique, carte_monde
+CONTRAINTES ABSOLUES :
+✅ JAMAIS le même "type" dans "document_attendu" entre exercices
+✅ Analyser le chapitre "{chapitre}" pour choisir les types pertinents
+✅ Varier : carte_france, carte_europe, carte_asie, carte_amerique_nord, carte_afrique, carte_monde
+✅ Créer des énoncés cohérents avec le type de document choisi
+✅ {nb_exercices} exercices = {nb_exercices} types de documents DIFFÉRENTS garantis
 
-🎯 RÉSULTAT ATTENDU :
-✅ Exercice 1 : Carte spécifique → exercice correspondant au contenu
-✅ Exercice 2 : Carte différente → exercice correspondant 
-✅ Exercice 3 : Carte différente → exercice correspondant
-✅ Exercice 4 : Carte différente → exercice correspondant
-✅ Export PDF avec des cartes différentes et pertinentes
+RÉSULTAT ATTENDU CRITIQUE :
+- PDF avec {nb_exercices} cartes visuellement DIFFÉRENTES
+- Chaque exercice avec son document spécifique et approprié
+- Diversité géographique maximale dans le même batch
+- Fin des répétitions de cartes identiques
 """
     }
     
