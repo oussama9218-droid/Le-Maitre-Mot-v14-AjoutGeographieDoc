@@ -2973,6 +2973,166 @@ class LeMaitreMotAPITester:
         
         return len(issues_found) == 0, investigation_results
 
+    def test_geography_document_fix(self):
+        """Test the geography document fix - URLs should return HTTP 200 instead of 404"""
+        print("\n🗺️ TESTING GEOGRAPHY DOCUMENT FIX")
+        print("="*60)
+        print("CONTEXT: Testing fix for 404 URLs in VALIDATED_DOCUMENTS_CACHE")
+        print("ISSUE: Geography documents showing broken images due to 404 URLs")
+        print("FIX: Updated URLs to working TUBS France map and reliable world map")
+        
+        # Test 1: Generate geography exercise as specified in review request
+        test_data = {
+            "matiere": "Géographie",
+            "niveau": "6e",
+            "chapitre": "Découvrir le(s) lieu(x) où j'habite",
+            "type_doc": "exercices",
+            "difficulte": "moyen",
+            "nb_exercices": 2,
+            "versions": ["A"],
+            "guest_id": self.guest_id
+        }
+        
+        print(f"\n🔍 TEST 1: Generate Geography Exercise")
+        print(f"   Subject: {test_data['matiere']}")
+        print(f"   Level: {test_data['niveau']}")
+        print(f"   Chapter: {test_data['chapitre']}")
+        
+        start_time = time.time()
+        success, response = self.run_test(
+            "Geography Document Fix - Generate Exercise",
+            "POST",
+            "generate",
+            200,
+            data=test_data,
+            timeout=60
+        )
+        generation_time = time.time() - start_time
+        
+        document_with_working_url = False
+        document_metadata_complete = False
+        intelligent_selection_working = False
+        
+        if success and isinstance(response, dict):
+            document = response.get('document')
+            if document:
+                exercises = document.get('exercises', [])
+                print(f"   ✅ Generated {len(exercises)} geography exercises in {generation_time:.2f}s")
+                
+                # Test 2: Verify exercises include documents with working URLs
+                for i, exercise in enumerate(exercises):
+                    document_data = exercise.get('document')
+                    if document_data:
+                        print(f"\n   📄 Exercise {i+1} has educational document:")
+                        
+                        # Check document metadata
+                        title = document_data.get('titre', 'No title')
+                        url = document_data.get('url_fichier_direct', '')
+                        licence = document_data.get('licence', {})
+                        
+                        print(f"     Title: {title}")
+                        print(f"     URL: {url}")
+                        print(f"     License: {licence.get('type', 'Unknown')} - {licence.get('notice_attribution', 'No attribution')}")
+                        
+                        # Test 3: Verify document metadata includes proper title and licensing
+                        if title and title != 'No title':
+                            if licence.get('type') and licence.get('notice_attribution'):
+                                document_metadata_complete = True
+                                print(f"     ✅ Document metadata complete")
+                            else:
+                                print(f"     ⚠️  Document metadata incomplete")
+                        
+                        # Test 4: Test that URL returns HTTP 200 (not 404)
+                        if url:
+                            print(f"     🔍 Testing URL accessibility...")
+                            try:
+                                import requests
+                                url_response = requests.head(url, timeout=10, allow_redirects=True)
+                                if url_response.status_code == 200:
+                                    document_with_working_url = True
+                                    print(f"     ✅ URL returns HTTP 200 - WORKING")
+                                else:
+                                    print(f"     ❌ URL returns HTTP {url_response.status_code} - BROKEN")
+                            except Exception as e:
+                                print(f"     ❌ URL test failed: {str(e)}")
+                        
+                        # Test 5: Verify intelligent document selection (France exercises get France map)
+                        if 'france' in title.lower() or 'français' in title.lower():
+                            intelligent_selection_working = True
+                            print(f"     ✅ Intelligent selection: France exercise got France map")
+                        elif 'monde' in title.lower() or 'world' in title.lower():
+                            print(f"     ✅ Got world map (acceptable for geography)")
+                        else:
+                            print(f"     ⚠️  Document type may not match exercise content")
+                    else:
+                        print(f"   ℹ️  Exercise {i+1} has no document (may be normal)")
+            else:
+                print(f"   ❌ No document in response")
+        else:
+            print(f"   ❌ Geography exercise generation FAILED")
+            if isinstance(response, dict):
+                error_detail = response.get('detail', 'Unknown error')
+                print(f"   Error: {error_detail}")
+        
+        # Test 6: Direct URL validation of fixed URLs from document_search.py
+        print(f"\n🔍 TEST 6: Direct URL Validation of Fixed URLs")
+        fixed_urls = {
+            "carte_france": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/France%2C_administrative_divisions_-_Nmbrs_%28departments%2Boverseas%29.svg/1200px-France%2C_administrative_divisions_-_Nmbrs_%28departments%2Boverseas%29.svg.png",
+            "carte_monde": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1200px-Equirectangular_projection_SW.jpg"
+        }
+        
+        all_urls_working = True
+        for url_name, url in fixed_urls.items():
+            print(f"   Testing {url_name}: {url}")
+            try:
+                import requests
+                url_response = requests.head(url, timeout=10, allow_redirects=True)
+                if url_response.status_code == 200:
+                    print(f"     ✅ {url_name} returns HTTP 200 - FIXED")
+                else:
+                    print(f"     ❌ {url_name} returns HTTP {url_response.status_code} - STILL BROKEN")
+                    all_urls_working = False
+            except Exception as e:
+                print(f"     ❌ {url_name} test failed: {str(e)}")
+                all_urls_working = False
+        
+        # Summary of geography document fix testing
+        print(f"\n📊 GEOGRAPHY DOCUMENT FIX TEST RESULTS:")
+        print(f"   Exercise Generation: {'✅ PASS' if success else '❌ FAIL'}")
+        print(f"   Document with Working URL: {'✅ PASS' if document_with_working_url else '❌ FAIL'}")
+        print(f"   Complete Metadata: {'✅ PASS' if document_metadata_complete else '❌ FAIL'}")
+        print(f"   Intelligent Selection: {'✅ PASS' if intelligent_selection_working else '⚠️  PARTIAL'}")
+        print(f"   Direct URL Validation: {'✅ PASS' if all_urls_working else '❌ FAIL'}")
+        
+        # Overall assessment
+        all_tests_passed = (success and document_with_working_url and document_metadata_complete and all_urls_working)
+        
+        if all_tests_passed:
+            print(f"\n   🎉 GEOGRAPHY DOCUMENT FIX COMPLETELY SUCCESSFUL")
+            print(f"   ✅ URLs no longer return 404 errors")
+            print(f"   ✅ Document metadata includes proper title and licensing")
+            print(f"   ✅ Intelligent document selection working")
+            print(f"   ✅ Geography exercises display working images")
+        else:
+            print(f"\n   ⚠️  Geography document fix has issues:")
+            if not success:
+                print(f"   - Exercise generation failed")
+            if not document_with_working_url:
+                print(f"   - URLs still returning non-200 status codes")
+            if not document_metadata_complete:
+                print(f"   - Document metadata incomplete")
+            if not all_urls_working:
+                print(f"   - Some fixed URLs still not working")
+        
+        return all_tests_passed, {
+            "exercise_generation": success,
+            "working_url": document_with_working_url,
+            "complete_metadata": document_metadata_complete,
+            "intelligent_selection": intelligent_selection_working,
+            "direct_url_validation": all_urls_working,
+            "generation_time": generation_time
+        }
+
     def run_logo_investigation_only(self):
         """Run only the logo investigation tests"""
         print("🔍 Starting Logo Display Investigation...")
