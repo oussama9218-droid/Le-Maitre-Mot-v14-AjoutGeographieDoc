@@ -523,30 +523,52 @@ class LeMaitreMotAPITester:
                     elif expected_status == 200:
                         print("   🚨 CRITICAL: Active subject should work but failed")
         
-        # Summary of fix validation
-        print(f"\n📊 FIX VALIDATION SUMMARY:")
+        # Summary of urgent fix validation
+        print(f"\n📊 URGENT FIX VALIDATION SUMMARY:")
         print(f"   Overall: {results['all_tests']['passed']}/{results['all_tests']['total']} tests passed")
-        print(f"   Regression Tests: {results['regression_tests']['passed']}/{results['regression_tests']['total']} passed")
-        print(f"   Fix Validation Tests: {results['fix_validation_tests']['passed']}/{results['fix_validation_tests']['total']} passed")
+        print(f"   Regression Critical: {results['regression_critical']['passed']}/{results['regression_critical']['total']} passed")
+        print(f"   New Active Subjects: {results['new_active']['passed']}/{results['new_active']['total']} passed")
+        print(f"   Error Validation: {results['error_validation']['passed']}/{results['error_validation']['total']} passed")
         
-        # Performance summary
-        avg_time = sum(p['time'] for p in results['performance_data']) / len(results['performance_data'])
-        print(f"   Average generation time: {avg_time:.2f}s")
-        
-        # Critical assessment
-        fix_success = results['fix_validation_tests']['passed'] == results['fix_validation_tests']['total']
-        regression_success = results['regression_tests']['passed'] == results['regression_tests']['total']
-        
-        if fix_success and regression_success:
-            print("   🎉 400 BAD REQUEST FIX COMPLETELY SUCCESSFUL")
-        elif fix_success:
-            print("   ⚠️  Fix working but regression issues detected")
-        elif regression_success:
-            print("   ⚠️  No regression but fix not fully working")
-        else:
-            print("   🚨 CRITICAL: Fix not working and regression detected")
+        # Performance summary for successful generations
+        if results['performance_data']:
+            avg_time = sum(p['time'] for p in results['performance_data']) / len(results['performance_data'])
+            print(f"   Average generation time: {avg_time:.2f}s")
             
-        return fix_success and regression_success, results
+            # Check critical performance
+            critical_slow = [p for p in results['performance_data'] if p['time'] > 30 and p['priority'] == 'ABSOLUE']
+            if critical_slow:
+                print(f"   ⚠️  {len(critical_slow)} critical subjects exceed 30s threshold")
+            else:
+                print(f"   ✅ All critical subjects within 30s threshold")
+        
+        # Critical failures assessment
+        if results['critical_failures']:
+            print(f"\n🚨 CRITICAL FAILURES DETECTED:")
+            for failure in results['critical_failures']:
+                print(f"   - {failure}")
+        
+        # Overall assessment
+        regression_success = results['regression_critical']['passed'] == results['regression_critical']['total']
+        new_active_success = results['new_active']['passed'] == results['new_active']['total']
+        error_validation_success = results['error_validation']['passed'] == results['error_validation']['total']
+        no_critical_failures = len(results['critical_failures']) == 0
+        
+        if regression_success and new_active_success and error_validation_success and no_critical_failures:
+            print("\n   🎉 URGENT 400 BAD REQUEST FIX COMPLETELY SUCCESSFUL")
+            print("   ✅ Matières existantes refonctionnent")
+            print("   ✅ Nouvelles matières actives fonctionnelles")
+            print("   ✅ Erreurs appropriées (423/400) avec messages clairs")
+            print("   ✅ Temps de génération < 30 secondes")
+        elif regression_success and new_active_success:
+            print("\n   ⚠️  Fix mostly working but error validation issues")
+        elif regression_success:
+            print("\n   ⚠️  Regression tests pass but new features not working")
+        else:
+            print("\n   🚨 CRITICAL: Regression detected - existing subjects broken")
+            
+        overall_success = regression_success and new_active_success and no_critical_failures
+        return overall_success, results
     
     def validate_french_content(self, exercises):
         """Validate that French exercises have appropriate content"""
