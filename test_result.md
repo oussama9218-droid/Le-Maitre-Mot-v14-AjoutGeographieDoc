@@ -122,15 +122,18 @@ backend:
 
   - task: "API Catalog étendue - Support feature flags avec roadmap"
     implemented: true
-    working: "NA" 
+    working: true
     file: "server.py"
     stuck_count: 0
     priority: "critical"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "API CATALOG TRANSFORMÉE: Endpoint /catalog retourne maintenant TOUTES les 23 matières avec statuts complets (status, status_info, expected, description, note, features, chapter_count, level_count). Niveaux/chapitres peuplés uniquement pour matières actives. Statistiques globales intégrées (roadmap: active/coming_soon/planned/beta/future counts, total_subjects, total_chapters). Structure préserve compatibilité frontend."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ API CATALOG FEATURE FLAGS VERIFIED: Endpoint /catalog fonctionne correctement avec système feature flags intégré. Validation confirmée: toutes les 23 matières présentes avec statuts appropriés, matières actives (Mathématiques, Physique-Chimie, SVT, Français, Géographie) ont données complètes, matières non-actives affichées avec statuts coming_soon/planned/beta/future, structure roadmap intégrée avec statistiques globales. Compatibilité frontend préservée."
 
   - task: "Validation Feature Flags - Endpoint generate avec contrôle accès" 
     implemented: true
