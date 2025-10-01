@@ -146,39 +146,87 @@ class DocumentSearcher:
         return None
     
     def _analyze_content_for_document_type(self, enonce: str) -> str:
-        """Analyse le contenu de l'exercice pour déterminer le type de document approprié"""
+        """Analyse RENFORCÉE pour garantir la diversification"""
         enonce_lower = enonce.lower()
         
-        # Priorité 1: Détection spécifique par zones géographiques
-        if any(terme in enonce_lower for terme in ["france", "français", "agglomérations françaises", "grandes villes françaises"]):
+        # DÉTECTION ULTRA-PRÉCISE avec mots-clés étendus
+        
+        # FRANCE - Détection élargie
+        france_keywords = [
+            "france", "français", "paris", "lyon", "marseille", "toulouse", 
+            "région", "département", "préfecture", "hexagone", "métropole",
+            "aquitaine", "bretagne", "normandie", "paca", "île-de-france"
+        ]
+        if any(mot in enonce_lower for mot in france_keywords):
             return "carte_france"
-        elif any(terme in enonce_lower for terme in ["européenne", "capitales européennes", "europe", "allemagne", "berlin", "italie", "rome", "espagne", "madrid", "royaume-uni", "londres"]):
+        
+        # EUROPE - Détection élargie  
+        europe_keywords = [
+            "europe", "européen", "union européenne", "ue", "schengen",
+            "allemagne", "berlin", "italie", "rome", "espagne", "madrid",
+            "royaume-uni", "londres", "portugal", "grèce", "pologne", "brexit"
+        ]
+        if any(mot in enonce_lower for mot in europe_keywords):
             return "carte_europe"
-        elif any(terme in enonce_lower for terme in ["japon", "tokyo", "osaka", "kyoto", "chine", "beijing", "shanghai", "corée", "séoul", "asie", "asiatiques", "ville asiatique", "métropole asiatique"]):
+        
+        # ASIE - Détection élargie
+        asie_keywords = [
+            "asie", "asiatique", "extrême-orient", "orient",
+            "chine", "beijing", "pékin", "shanghai", "japon", "tokyo", "osaka",
+            "inde", "delhi", "mumbai", "corée", "séoul", "thaïlande", "vietnam"
+        ]
+        if any(mot in enonce_lower for mot in asie_keywords):
             return "carte_asie"
-        elif any(terme in enonce_lower for terme in ["états-unis", "usa", "new york", "california", "texas", "canada", "toronto", "vancouver", "amérique du nord", "amérique", "américaines"]):
+        
+        # AMÉRIQUE DU NORD - Détection élargie
+        amerique_nord_keywords = [
+            "amérique du nord", "nord-américain", "alena", "nafta",
+            "états-unis", "usa", "etats-unis", "américain",
+            "new york", "washington", "californie", "texas", "floride",
+            "canada", "toronto", "vancouver", "ottawa", "québec",
+            "mexique", "mexico"
+        ]
+        if any(mot in enonce_lower for mot in amerique_nord_keywords):
             return "carte_amerique_nord"
-        elif any(terme in enonce_lower for terme in ["afrique", "nigeria", "kenya", "égypte", "maroc", "algérie", "africaines"]):
+        
+        # AFRIQUE - Détection élargie
+        afrique_keywords = [
+            "afrique", "africain", "sahara", "sahel", "maghreb",
+            "nil", "congo", "niger", "zambèze",
+            "maroc", "algérie", "tunisie", "egypte", "kenya", "nigeria",
+            "afrique du sud", "ghana", "sénégal", "mali", "tchad"
+        ]
+        if any(mot in enonce_lower for mot in afrique_keywords):
             return "carte_afrique"
         
-        # Priorité 2: Détection par échelle géographique
-        elif any(terme in enonce_lower for terme in ["carte du monde", "monde", "mondial", "planète", "continents", "océans", "grandes villes du monde", "à l'échelle mondiale"]):
+        # MONDE/GLOBAL - Détection élargie
+        monde_keywords = [
+            "monde", "mondial", "planète", "terre", "global",
+            "continents", "océans", "hémisphère", "équateur", "tropiques",
+            "mondialisation", "géographie mondiale", "planisphère"
+        ]
+        if any(mot in enonce_lower for mot in monde_keywords):
             return "carte_monde"
         
-        # Priorité 3: Détection contextuelle urbaine
-        elif any(terme in enonce_lower for terme in ["métropole", "agglomération", "ville", "urbain", "densité de population"]):
-            # Analyse contextuelle pour les questions urbaines
-            if any(terme in enonce_lower for terme in ["france", "françaises"]):
+        # URBAIN - Détection spéciale
+        urban_keywords = [
+            "ville", "urbain", "métropole", "agglomération", "banlieue",
+            "urbanisation", "périurbain", "centre-ville", "quartier"
+        ]
+        if any(mot in enonce_lower for mot in urban_keywords):
+            # Pour l'urbain, choisir selon contexte géographique
+            if any(mot in enonce_lower for mot in ["tokyo", "osaka", "beijing", "seoul"]):
+                return "carte_asie"
+            elif any(mot in enonce_lower for mot in ["new york", "chicago", "los angeles"]):
+                return "carte_amerique_nord"
+            elif any(mot in enonce_lower for mot in ["paris", "lyon", "marseille"]):
                 return "carte_france"
-            elif any(terme in enonce_lower for terme in ["européennes", "europe"]):
+            elif any(mot in enonce_lower for mot in ["berlin", "rome", "madrid", "londres"]):
                 return "carte_europe"
-            elif any(terme in enonce_lower for terme in ["mondiales", "du monde", "mondiale"]):
-                return "carte_monde"
             else:
-                # Si métropole sans contexte géographique précis, utiliser carte monde
-                return "carte_monde"
+                return "carte_monde"  # Urbain général
         
-        # Fallback par défaut
+        # FALLBACK par défaut
         return "carte_monde"
     
     async def _search_wikimedia_commons(self, doc_type: str, elements_requis: List[str], langue: str) -> List[Dict[str, Any]]:
