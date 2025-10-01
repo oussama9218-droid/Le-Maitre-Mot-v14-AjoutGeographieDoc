@@ -188,6 +188,115 @@ class LeMaitreMotAPITester:
                             
         return success, response
 
+    def test_400_bad_request_diagnosis(self):
+        """PRIORITY 1: Diagnose the 400 Bad Request issue with exercise generation"""
+        print("\n🚨 DIAGNOSING 400 BAD REQUEST ISSUE")
+        print("="*60)
+        print("CONTEXT: Exercise generation returning 400 Bad Request for all subjects")
+        print("PRIORITY: Identify exact error and root cause")
+        
+        # Test different subjects and scenarios to identify the pattern
+        test_scenarios = [
+            {
+                "name": "Mathematics 6e (Basic)",
+                "data": {
+                    "matiere": "Mathématiques",
+                    "niveau": "6e", 
+                    "chapitre": "Nombres entiers et décimaux",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                }
+            },
+            {
+                "name": "French 5e (Generic)",
+                "data": {
+                    "matiere": "Français",
+                    "niveau": "5e",
+                    "chapitre": "Le voyage et l'aventure : pourquoi aller vers l'inconnu ?",
+                    "type_doc": "exercices", 
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                }
+            },
+            {
+                "name": "Geography 6e (New)",
+                "data": {
+                    "matiere": "Géographie",
+                    "niveau": "6e",
+                    "chapitre": "Découvrir le(s) lieu(x) où j'habite",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen", 
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                }
+            }
+        ]
+        
+        all_failed = True
+        error_patterns = []
+        
+        for scenario in test_scenarios:
+            print(f"\n   Testing: {scenario['name']}")
+            print(f"   Data: {scenario['data']}")
+            
+            success, response = self.run_test(
+                f"400 DIAGNOSIS: {scenario['name']}",
+                "POST",
+                "generate", 
+                200,  # We expect 200 but will analyze 400s
+                data=scenario['data'],
+                timeout=60
+            )
+            
+            if success:
+                all_failed = False
+                print(f"   ✅ {scenario['name']} WORKS - 400 issue not universal")
+                document = response.get('document') if isinstance(response, dict) else None
+                if document:
+                    exercises = document.get('exercises', [])
+                    print(f"   ✅ Generated {len(exercises)} exercises successfully")
+            else:
+                print(f"   ❌ {scenario['name']} FAILED with 400")
+                if isinstance(response, dict):
+                    error_detail = response.get('detail', 'Unknown error')
+                    error_patterns.append(error_detail)
+                    print(f"   ERROR: {error_detail}")
+                    
+                    # Analyze specific error patterns
+                    if 'validation' in error_detail.lower():
+                        print("   🔍 VALIDATION ERROR detected")
+                    elif 'chapitre' in error_detail.lower():
+                        print("   🔍 CHAPTER VALIDATION ERROR detected")
+                    elif 'matiere' in error_detail.lower():
+                        print("   🔍 SUBJECT VALIDATION ERROR detected")
+                    elif 'pydantic' in error_detail.lower():
+                        print("   🔍 PYDANTIC MODEL ERROR detected")
+                    else:
+                        print("   🔍 UNKNOWN ERROR PATTERN")
+        
+        # Summary of findings
+        print(f"\n   DIAGNOSIS SUMMARY:")
+        print(f"   All scenarios failed: {all_failed}")
+        print(f"   Error patterns found: {len(set(error_patterns))}")
+        
+        if error_patterns:
+            unique_errors = list(set(error_patterns))
+            for i, error in enumerate(unique_errors, 1):
+                print(f"   Error {i}: {error}")
+        
+        if all_failed:
+            print("   🚨 CRITICAL: ALL subjects failing - systemic issue")
+        else:
+            print("   ℹ️  PARTIAL: Some subjects working - specific issue")
+            
+        return not all_failed, {"all_failed": all_failed, "error_patterns": error_patterns}
+
     def test_generate_document(self):
         """Test document generation with French mathematics curriculum - REGRESSION TEST"""
         test_data = {
