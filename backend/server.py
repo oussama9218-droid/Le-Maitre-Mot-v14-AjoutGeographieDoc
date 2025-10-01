@@ -2013,20 +2013,26 @@ JSON OBLIGATOIRE:
                     exercise_id=i+1
                 )
             
-            # THIRD PASS: Geographic document search for Geography exercises
+            # THIRD PASS: Geographic document search for Geography exercises with DIVERSITY TRACKING
             if matiere.lower() == "géographie" and "document_attendu" in ex_data:
+                # Initialize document tracking if not exists
+                if not hasattr(generate_exercises_with_ai, 'used_document_types'):
+                    generate_exercises_with_ai.used_document_types = []
+                
                 logger.info(
                     "🗺️ Geographic document required, starting document search",
                     module_name="generation",
                     func_name="document_search",
                     enonce_preview=enonce_clean[:100],
-                    document_type=ex_data["document_attendu"].get("type", "unknown")
+                    document_type=ex_data["document_attendu"].get("type", "unknown"),
+                    already_used=generate_exercises_with_ai.used_document_types
                 )
                 
                 try:
                     # Passer l'énoncé à la recherche pour analyse intelligente
                     document_request = ex_data["document_attendu"].copy()
                     document_request["enonce"] = enonce_clean  # Ajouter l'énoncé pour analyse
+                    document_request["avoid_types"] = generate_exercises_with_ai.used_document_types.copy()  # Force diversification
                     
                     document_metadata = await search_educational_document(document_request)
                     if document_metadata:
