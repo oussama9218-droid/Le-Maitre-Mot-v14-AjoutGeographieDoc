@@ -180,15 +180,107 @@ const Step3GenerationApercu = ({
                       <div className="text-gray-900 whitespace-pre-wrap">
                         <MathRenderer content={exercise.enonce} />
                       </div>
+                      
                       {/* Display geometric schema if present */}
                       {exercise.schema_img && (
                         <div className="mt-4 text-center">
+                          <h6 className="text-sm font-medium text-gray-700 mb-2">📐 Schéma géométrique</h6>
                           <img 
                             src={exercise.schema_img} 
                             alt="Schéma géométrique" 
                             className="max-w-full h-auto mx-auto border border-gray-300 rounded-lg shadow-sm"
                             style={{ maxHeight: '400px' }}
                           />
+                        </div>
+                      )}
+                      
+                      {/* NOUVEAU: Display geographic document if present */}
+                      {exercise.document && (
+                        <div className="mt-4 bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="flex items-center mb-3">
+                            <span className="text-xl mr-2">🗺️</span>
+                            <h6 className="text-sm font-medium text-blue-800">Document pédagogique</h6>
+                          </div>
+                          
+                          {/* Document title and description */}
+                          <div className="mb-3">
+                            <p className="text-sm font-medium text-blue-900">{exercise.document.titre}</p>
+                            {exercise.document.description && (
+                              <p className="text-xs text-blue-600 mt-1">{exercise.document.description}</p>
+                            )}
+                          </div>
+                          
+                          {/* Document image */}
+                          {exercise.document.url_fichier_direct && (
+                            <div className="text-center mb-3">
+                              <img 
+                                src={exercise.document.url_fichier_direct} 
+                                alt={exercise.document.titre || "Document pédagogique"}
+                                className="max-w-full h-auto mx-auto border border-gray-300 rounded-lg shadow-sm"
+                                style={{ maxHeight: '350px' }}
+                                onLoad={() => console.log('🗺️ Geographic document loaded:', exercise.document.titre)}
+                                onError={(e) => {
+                                  console.error('❌ Failed to load geographic document:', exercise.document.titre);
+                                  e.target.style.display = 'none';
+                                }}
+                              />
+                            </div>
+                          )}
+                          
+                          {/* Document metadata */}
+                          <div className="grid grid-cols-2 gap-2 text-xs text-blue-700">
+                            {exercise.document.largeur_px && (
+                              <div>
+                                <span className="font-medium">Dimensions :</span> 
+                                {exercise.document.largeur_px} × {exercise.document.hauteur_px} px
+                              </div>
+                            )}
+                            {exercise.document.langue_labels && (
+                              <div>
+                                <span className="font-medium">Langue :</span> {exercise.document.langue_labels}
+                              </div>
+                            )}
+                          </div>
+                          
+                          {/* License and attribution */}
+                          {exercise.document.licence && (
+                            <div className="mt-3 pt-3 border-t border-blue-200">
+                              <div className="flex items-center justify-between text-xs">
+                                <div>
+                                  <span className="font-medium text-blue-800">Licence :</span>
+                                  <span className="ml-1 px-2 py-1 bg-blue-100 rounded text-blue-800">
+                                    {exercise.document.licence.type}
+                                  </span>
+                                </div>
+                                {exercise.document.url_page_commons && (
+                                  <a 
+                                    href={exercise.document.url_page_commons}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 hover:text-blue-800 underline"
+                                    onClick={() => console.log('🔗 Opening document source:', exercise.document.url_page_commons)}
+                                  >
+                                    Source
+                                  </a>
+                                )}
+                              </div>
+                              {exercise.document.licence.notice_attribution && (
+                                <p className="text-xs text-blue-600 mt-1">
+                                  {exercise.document.licence.notice_attribution}
+                                </p>
+                              )}
+                            </div>
+                          )}
+                          
+                          {/* Debug info in development */}
+                          {process.env.NODE_ENV === 'development' && exercise.document && (
+                            <details className="mt-2">
+                              <summary className="text-xs text-gray-500 cursor-pointer">Debug Document Data</summary>
+                              <pre className="text-xs text-gray-600 mt-1 bg-gray-100 p-2 rounded overflow-auto">
+                                {JSON.stringify(exercise.document, null, 2)}
+                              </pre>
+                            </details>
+                          )}
                         </div>
                       )}
                     </CardContent>
