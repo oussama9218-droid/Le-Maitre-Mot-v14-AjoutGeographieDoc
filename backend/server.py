@@ -2040,14 +2040,19 @@ JSON OBLIGATOIRE:
                         ex_data["document"] = document_metadata
                         ex_data["type"] = "cartographic"  # Ensure type is set for Geography
                         
+                        # Track the document type used to avoid repetition
+                        doc_title = document_metadata.get("titre", "Unknown")
+                        generate_exercises_with_ai.used_document_types.append(doc_title)
+                        
                         logger.info(
                             "✅ Educational document found and attached",
                             module_name="generation", 
                             func_name="document_attachment",
-                            document_title=document_metadata.get("titre", "Unknown"),
+                            document_title=doc_title,
                             document_type=document_metadata.get("type", "Unknown"),
                             licence=document_metadata.get("licence", {}).get("type", "Unknown"),
                             exercise_id=i+1,
+                            diversity_tracking=len(generate_exercises_with_ai.used_document_types),
                             content_based_selection=bool(document_request.get("enonce"))
                         )
                     else:
