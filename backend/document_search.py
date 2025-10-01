@@ -154,7 +154,7 @@ class DocumentSearcher:
             return "carte_france"
         elif any(terme in enonce_lower for terme in ["européenne", "capitales européennes", "europe", "allemagne", "berlin", "italie", "rome", "espagne", "madrid", "royaume-uni", "londres"]):
             return "carte_europe"
-        elif any(terme in enonce_lower for terme in ["japon", "tokyo", "osaka", "kyoto", "chine", "beijing", "shanghai", "corée", "séoul", "asie", "asiatiques"]):
+        elif any(terme in enonce_lower for terme in ["japon", "tokyo", "osaka", "kyoto", "chine", "beijing", "shanghai", "corée", "séoul", "asie", "asiatiques", "ville asiatique", "métropole asiatique"]):
             return "carte_asie"
         elif any(terme in enonce_lower for terme in ["états-unis", "usa", "new york", "california", "texas", "canada", "toronto", "vancouver", "amérique du nord", "amérique", "américaines"]):
             return "carte_amerique_nord"
