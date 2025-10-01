@@ -401,80 +401,80 @@ class DocumentSearcher:
                 "conseils_impression": "Format A3 paysage, marges 10mm"
             },
             "carte_asie": {
-                "titre": "Carte physique de l'Asie (fallback)",
+                "titre": "Carte du monde pour l'Asie (fallback)",
                 "langue_labels": "multilingue",
-                "projection": "Lambert azimuthal equal-area",
-                "inclut_continents": False,
+                "projection": "Equirectangular",
+                "inclut_continents": True,
                 "inclut_asie": True,
                 "licence": {
-                    "type": "CC BY-SA",
-                    "notice_attribution": "Wikimedia Commons",
-                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                    "type": "PD",
+                    "notice_attribution": "Domaine public",
+                    "lien_licence": ""
                 },
-                "auteur_source": "Wikimedia Commons",
-                "url_page_commons": "https://commons.wikimedia.org",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/80/Asia_laea_location_map.svg",
+                "auteur_source": "NASA/Wikimedia",
+                "url_page_commons": "https://commons.wikimedia.org/wiki/File:Equirectangular_projection_SW.jpg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1200px-Equirectangular_projection_SW.jpg",
                 "largeur_px": 1200,
-                "hauteur_px": 1000,
-                "pourquoi_choisie": "Document spécialisé pour l'Asie",
+                "hauteur_px": 600,
+                "pourquoi_choisie": "Carte monde fiable pour exercices sur l'Asie",
                 "conseils_impression": "Format A4 paysage, marges 12mm"
             },
             "carte_amerique_nord": {
-                "titre": "Carte de l'Amérique du Nord (fallback)",
+                "titre": "Carte du monde pour l'Amérique du Nord (fallback)",
                 "langue_labels": "multilingue",
-                "projection": "Lambert azimuthal equal-area",
-                "inclut_continents": False,
+                "projection": "Equirectangular",
+                "inclut_continents": True,
                 "inclut_amerique_nord": True,
                 "licence": {
-                    "type": "CC BY-SA",
-                    "notice_attribution": "Wikimedia Commons",
-                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                    "type": "PD",
+                    "notice_attribution": "Domaine public",
+                    "lien_licence": ""
                 },
-                "auteur_source": "Wikimedia Commons",
-                "url_page_commons": "https://commons.wikimedia.org",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/3/3e/North_America_laea_location_map.svg",
+                "auteur_source": "NASA/Wikimedia",
+                "url_page_commons": "https://commons.wikimedia.org/wiki/File:Equirectangular_projection_SW.jpg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1200px-Equirectangular_projection_SW.jpg",
                 "largeur_px": 1200,
-                "hauteur_px": 1030,
-                "pourquoi_choisie": "Document spécialisé pour l'Amérique du Nord",
+                "hauteur_px": 600,
+                "pourquoi_choisie": "Carte monde fiable pour exercices sur l'Amérique du Nord",
                 "conseils_impression": "Format A4 paysage, marges 12mm"
             },
             "carte_europe": {
-                "titre": "Carte politique de l'Europe (fallback)",
+                "titre": "Carte du monde pour l'Europe (fallback)",
                 "langue_labels": "multilingue",
-                "projection": "Lambert azimuthal equal-area",
-                "inclut_continents": False,
+                "projection": "Equirectangular",
+                "inclut_continents": True,
                 "inclut_europe": True,
                 "licence": {
-                    "type": "CC BY-SA",
-                    "notice_attribution": "Wikimedia Commons",
-                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                    "type": "PD",
+                    "notice_attribution": "Domaine public",
+                    "lien_licence": ""
                 },
-                "auteur_source": "Wikimedia Commons",
-                "url_page_commons": "https://commons.wikimedia.org",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/4/44/Europe_blank_laea_location_map.svg",
-                "largeur_px": 1080,
-                "hauteur_px": 1080,
-                "pourquoi_choisie": "Document spécialisé pour l'Europe",
+                "auteur_source": "NASA/Wikimedia",
+                "url_page_commons": "https://commons.wikimedia.org/wiki/File:Equirectangular_projection_SW.jpg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1200px-Equirectangular_projection_SW.jpg",
+                "largeur_px": 1200,
+                "hauteur_px": 600,
+                "pourquoi_choisie": "Carte monde fiable pour exercices sur l'Europe",
                 "conseils_impression": "Format A4 paysage, marges 12mm"
             },
             "carte_afrique": {
-                "titre": "Carte politique de l'Afrique (fallback)",
+                "titre": "Carte du monde pour l'Afrique (fallback)",
                 "langue_labels": "multilingue",
-                "projection": "Équirectangulaire",
-                "inclut_continents": False,
+                "projection": "Equirectangular",
+                "inclut_continents": True,
                 "inclut_afrique": True,
                 "licence": {
-                    "type": "CC BY-SA",
-                    "notice_attribution": "Wikimedia Commons",
-                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                    "type": "PD",
+                    "notice_attribution": "Domaine public",
+                    "lien_licence": ""
                 },
-                "auteur_source": "Wikimedia Commons",
-                "url_page_commons": "https://commons.wikimedia.org",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/86/Africa_blank_location_map.svg",
-                "largeur_px": 863,
-                "hauteur_px": 1000,
-                "pourquoi_choisie": "Document spécialisé pour l'Afrique",
-                "conseils_impression": "Format A4 portrait, marges 15mm"
+                "auteur_source": "NASA/Wikimedia",
+                "url_page_commons": "https://commons.wikimedia.org/wiki/File:Equirectangular_projection_SW.jpg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1200px-Equirectangular_projection_SW.jpg",
+                "largeur_px": 1200,
+                "hauteur_px": 600,
+                "pourquoi_choisie": "Carte monde fiable pour exercices sur l'Afrique",
+                "conseils_impression": "Format A4 paysage, marges 12mm"
             }
         }
         
