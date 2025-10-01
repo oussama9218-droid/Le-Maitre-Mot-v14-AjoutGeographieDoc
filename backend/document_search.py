@@ -67,10 +67,10 @@ class DocumentSearcher:
     
     async def search_geographic_document(self, document_request: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """
-        Recherche un document géographique selon les critères spécifiés
+        Recherche un document géographique selon les critères spécifiés avec DIVERSIFICATION FORCÉE
         
         Args:
-            document_request: Dictionnaire avec type, doit_afficher, langue, etc.
+            document_request: Dictionnaire avec type, doit_afficher, langue, avoid_types, etc.
         
         Returns:
             Dictionnaire avec métadonnées complètes du document trouvé
@@ -78,6 +78,7 @@ class DocumentSearcher:
         doc_type = document_request.get("type", "carte_monde")
         langue = document_request.get("langue", "français")
         elements_requis = document_request.get("doit_afficher", [])
+        avoid_types = document_request.get("avoid_types", [])  # NOUVEAU : types à éviter
         
         # NOUVEAU : Analyse intelligente du contenu pour choisir le bon document
         enonce = document_request.get("enonce", "")
@@ -89,7 +90,8 @@ class DocumentSearcher:
                 func_name="intelligent_analysis",
                 original_type=doc_type,
                 analyzed_type=intelligent_doc_type,
-                content_preview=enonce[:100]
+                content_preview=enonce[:100],
+                avoid_types=avoid_types
             )
             # Utiliser le type intelligent si différent
             if intelligent_doc_type != "carte_monde" or doc_type == "cartographic":
