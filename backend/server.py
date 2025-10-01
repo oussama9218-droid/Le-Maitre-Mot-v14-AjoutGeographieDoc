@@ -2708,16 +2708,39 @@ async def generate_document(request: GenerateRequest):
         # Log active subject access
         log_feature_flag_access(request.matiere, "active", "guest")
         
-        # Validate the curriculum selection using new structure
-        available_subjects = get_available_subjects()
-        if request.matiere not in available_subjects:
-            raise HTTPException(status_code=400, detail="Matière non supportée")
+        logger.info(
+            "🚀 Document generation started - feature flags validation passed",
+            module_name="generation",
+            func_name="generate_document",
+            matiere=request.matiere,
+            niveau=request.niveau, 
+            chapitre=request.chapitre,
+            type_doc=request.type_doc,
+            difficulte=request.difficulte,
+            nb_exercices=request.nb_exercices,
+            guest_id=request.guest_id,
+            feature_flag_status="active"
+        )
         
-        available_levels = get_levels_for_subject(request.matiere)
+        # UPDATED: Use NEW curriculum system for validation
+        active_subjects = get_active_subjects()  # Use new system instead of legacy
+        if request.matiere not in active_subjects:
+            logger.error(f"❌ Subject not found in active subjects: {request.matiere}")
+            raise HTTPException(status_code=400, detail="Matière non supportée par le nouveau système")
+        
+        # Get levels from the new system
+        active_subject_data = active_subjects[request.matiere]
+        available_levels = list(active_subject_data.keys())
         if request.niveau not in available_levels:
+            logger.error(f"❌ Level not found: {request.niveau} for {request.matiere}")
             raise HTTPException(status_code=400, detail="Niveau non supporté pour cette matière")
         
-        available_chapters = get_all_chapters_for_level(request.matiere, request.niveau)
+        # Get chapters from the new system
+        level_data = active_subject_data[request.niveau]
+        all_chapters = []
+        for theme, chapters in level_data.items():
+            all_chapters.extend(chapters)
+        available_chapters = all_chapters
         if request.chapitre not in available_chapters:
             raise HTTPException(status_code=400, detail="Chapitre non trouvé pour ce niveau")
         
