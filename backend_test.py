@@ -12328,6 +12328,71 @@ Résultat final.''',
         
         return feature_flag_passed, feature_flag_total
 
+    def run_urgent_validation_tests(self):
+        """Run urgent validation tests for 400 Bad Request fix"""
+        print("🚨 URGENT: Starting Feature Flags Fix Validation...")
+        print(f"   Base URL: {self.base_url}")
+        print(f"   Guest ID: {self.guest_id}")
+        print("   FOCUS: Validation du fix des erreurs 400 Bad Request")
+        
+        # Critical test sequence for urgent validation
+        urgent_tests = [
+            ("Root API", self.test_root_endpoint),
+            ("Feature Flags System", self.test_feature_flags_system),
+            ("Public Roadmap", self.test_roadmap_endpoint),
+            ("400 Bad Request Fix", self.test_400_bad_request_fix_validation),
+        ]
+        
+        critical_failures = []
+        
+        for test_name, test_func in urgent_tests:
+            try:
+                print(f"\n{'='*70}")
+                print(f"🧪 Running {test_name} Test")
+                print(f"{'='*70}")
+                success, result = test_func()
+                
+                if not success:
+                    critical_failures.append(f"{test_name}: Failed")
+                    if test_name == "400 Bad Request Fix":
+                        # This is the most critical test
+                        print(f"🚨 CRITICAL FAILURE: {test_name}")
+                        
+            except Exception as e:
+                print(f"❌ {test_name} test failed with exception: {e}")
+                critical_failures.append(f"{test_name}: Exception - {str(e)}")
+                self.tests_run += 1
+        
+        # Urgent summary
+        self.print_urgent_summary(critical_failures)
+        
+        return len(critical_failures) == 0
+
+    def print_urgent_summary(self, critical_failures):
+        """Print urgent validation summary"""
+        print(f"\n{'='*70}")
+        print("🚨 URGENT VALIDATION SUMMARY")
+        print(f"{'='*70}")
+        print(f"Tests Run: {self.tests_run}")
+        print(f"Tests Passed: {self.tests_passed}")
+        print(f"Success Rate: {(self.tests_passed/self.tests_run*100):.1f}%" if self.tests_run > 0 else "No tests run")
+        
+        if len(critical_failures) == 0:
+            print("🎉 URGENT FIX VALIDATION SUCCESSFUL!")
+            print("✅ Matières existantes (Math/PC/SVT) refonctionnent")
+            print("✅ Nouvelles matières (Français/Géographie) fonctionnelles")
+            print("✅ Erreurs appropriées (423/400) avec messages clairs")
+            print("✅ Temps de génération < 30 secondes")
+        else:
+            print(f"🚨 CRITICAL FAILURES DETECTED ({len(critical_failures)}):")
+            for failure in critical_failures:
+                print(f"   - {failure}")
+            print("\n⚠️  URGENT ACTION REQUIRED")
+        
+        print(f"\nBase URL: {self.base_url}")
+        print(f"Guest ID: {self.guest_id}")
+        print(f"{'='*70}")
+
 if __name__ == "__main__":
     tester = LeMaitreMotAPITester()
     
