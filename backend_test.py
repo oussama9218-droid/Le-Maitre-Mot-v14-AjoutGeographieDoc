@@ -12741,7 +12741,8 @@ Résultat final.''',
             ("Geography Generation with Documents", self.test_geography_generation_6e_with_documents),
             ("Frontend Document Display", self.test_geography_document_frontend_display),
             ("PDF Export with Documents", self.test_geography_pdf_export_with_documents),
-            ("Debug Logging", self.test_geography_debug_logging)
+            ("Debug Logging", self.test_geography_debug_logging),
+            ("Intelligent Document System", self.test_intelligent_geography_document_system)
         ]
         
         geography_passed = 0
