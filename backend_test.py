@@ -357,12 +357,68 @@ class LeMaitreMotAPITester:
             }
         ]
         
+        # Add error validation tests
+        error_validation_scenarios = [
+            {
+                "name": "EMC (coming_soon) - Should return 423 Locked",
+                "data": {
+                    "matiere": "EMC",
+                    "niveau": "6e",
+                    "chapitre": "Test Chapter",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_status": 423,
+                "category": "error_validation",
+                "priority": "HAUTE"
+            },
+            {
+                "name": "Invalid niveau - Should return 400",
+                "data": {
+                    "matiere": "Mathématiques",
+                    "niveau": "INVALID_LEVEL",
+                    "chapitre": "Nombres entiers et décimaux",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_status": 400,
+                "category": "error_validation",
+                "priority": "MOYENNE"
+            },
+            {
+                "name": "Invalid chapitre - Should return 400",
+                "data": {
+                    "matiere": "Mathématiques",
+                    "niveau": "6e",
+                    "chapitre": "INVALID_CHAPTER_NAME",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_status": 400,
+                "category": "error_validation",
+                "priority": "MOYENNE"
+            }
+        ]
+        
+        all_scenarios = test_scenarios + error_validation_scenarios
+        
         results = {
-            "regression_tests": {"passed": 0, "total": 0},
-            "fix_validation_tests": {"passed": 0, "total": 0},
-            "all_tests": {"passed": 0, "total": len(test_scenarios)},
+            "regression_critical": {"passed": 0, "total": 0},
+            "new_active": {"passed": 0, "total": 0},
+            "error_validation": {"passed": 0, "total": 0},
+            "all_tests": {"passed": 0, "total": len(all_scenarios)},
             "error_patterns": [],
-            "performance_data": []
+            "performance_data": [],
+            "critical_failures": []
         }
         
         for scenario in test_scenarios:
