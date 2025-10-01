@@ -188,17 +188,18 @@ class LeMaitreMotAPITester:
                             
         return success, response
 
-    def test_400_bad_request_diagnosis(self):
-        """PRIORITY 1: Diagnose the 400 Bad Request issue with exercise generation"""
-        print("\n🚨 DIAGNOSING 400 BAD REQUEST ISSUE")
+    def test_400_bad_request_fix_validation(self):
+        """PRIORITY 1: Test the 400 Bad Request fix for exercise generation"""
+        print("\n🔧 TESTING 400 BAD REQUEST FIX")
         print("="*60)
-        print("CONTEXT: Exercise generation returning 400 Bad Request for all subjects")
-        print("PRIORITY: Identify exact error and root cause")
+        print("CONTEXT: Testing fix for curriculum validation conflict")
+        print("FIX APPLIED: Replaced get_available_subjects() with get_active_subjects()")
+        print("EXPECTED: All active subjects (Math, PC, SVT, Français, Géographie) should work")
         
-        # Test different subjects and scenarios to identify the pattern
+        # Test all active subjects according to curriculum_complete.py
         test_scenarios = [
             {
-                "name": "Mathematics 6e (Basic)",
+                "name": "Mathématiques (Old System - Should Still Work)",
                 "data": {
                     "matiere": "Mathématiques",
                     "niveau": "6e", 
@@ -208,10 +209,42 @@ class LeMaitreMotAPITester:
                     "nb_exercices": 2,
                     "versions": ["A"],
                     "guest_id": self.guest_id
-                }
+                },
+                "expected_working": True,
+                "category": "regression"
             },
             {
-                "name": "French 5e (Generic)",
+                "name": "Physique-Chimie (Old System - Should Still Work)",
+                "data": {
+                    "matiere": "Physique-Chimie",
+                    "niveau": "5e",
+                    "chapitre": "Organisation et transformations de la matière",
+                    "type_doc": "exercices", 
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_working": True,
+                "category": "regression"
+            },
+            {
+                "name": "SVT (Old System - Should Still Work)",
+                "data": {
+                    "matiere": "SVT",
+                    "niveau": "5e",
+                    "chapitre": "Le vivant et son évolution",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen", 
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_working": True,
+                "category": "regression"
+            },
+            {
+                "name": "Français (New System - Was Blocked, Should Now Work)",
                 "data": {
                     "matiere": "Français",
                     "niveau": "5e",
@@ -221,81 +254,159 @@ class LeMaitreMotAPITester:
                     "nb_exercices": 2,
                     "versions": ["A"],
                     "guest_id": self.guest_id
-                }
+                },
+                "expected_working": True,
+                "category": "fix_validation"
             },
             {
-                "name": "Geography 6e (New)",
+                "name": "Géographie (New System + Documents - Was Blocked, Should Now Work)",
                 "data": {
                     "matiere": "Géographie",
-                    "niveau": "6e",
+                    "niveau": "CM1",
                     "chapitre": "Découvrir le(s) lieu(x) où j'habite",
                     "type_doc": "exercices",
                     "difficulte": "moyen", 
                     "nb_exercices": 2,
                     "versions": ["A"],
                     "guest_id": self.guest_id
-                }
+                },
+                "expected_working": True,
+                "category": "fix_validation"
             }
         ]
         
-        all_failed = True
-        error_patterns = []
+        results = {
+            "regression_tests": {"passed": 0, "total": 0},
+            "fix_validation_tests": {"passed": 0, "total": 0},
+            "all_tests": {"passed": 0, "total": len(test_scenarios)},
+            "error_patterns": [],
+            "performance_data": []
+        }
         
         for scenario in test_scenarios:
-            print(f"\n   Testing: {scenario['name']}")
-            print(f"   Data: {scenario['data']}")
+            print(f"\n🔍 Testing: {scenario['name']}")
+            print(f"   Category: {scenario['category']}")
+            print(f"   Expected: {'✅ Should work' if scenario['expected_working'] else '❌ Should fail'}")
             
+            start_time = time.time()
             success, response = self.run_test(
-                f"400 DIAGNOSIS: {scenario['name']}",
+                f"400 FIX: {scenario['name']}",
                 "POST",
                 "generate", 
-                200,  # We expect 200 but will analyze 400s
+                200 if scenario['expected_working'] else 400,
                 data=scenario['data'],
                 timeout=60
             )
+            generation_time = time.time() - start_time
             
-            if success:
-                all_failed = False
-                print(f"   ✅ {scenario['name']} WORKS - 400 issue not universal")
-                document = response.get('document') if isinstance(response, dict) else None
-                if document:
-                    exercises = document.get('exercises', [])
-                    print(f"   ✅ Generated {len(exercises)} exercises successfully")
+            # Track performance
+            results["performance_data"].append({
+                "subject": scenario['data']['matiere'],
+                "time": generation_time,
+                "success": success
+            })
+            
+            # Update category counters
+            if scenario['category'] == 'regression':
+                results["regression_tests"]["total"] += 1
+            elif scenario['category'] == 'fix_validation':
+                results["fix_validation_tests"]["total"] += 1
+            
+            if success == scenario['expected_working']:
+                results["all_tests"]["passed"] += 1
+                if scenario['category'] == 'regression':
+                    results["regression_tests"]["passed"] += 1
+                elif scenario['category'] == 'fix_validation':
+                    results["fix_validation_tests"]["passed"] += 1
+                
+                print(f"   ✅ {scenario['name']} - EXPECTED RESULT")
+                if success and isinstance(response, dict):
+                    document = response.get('document')
+                    if document:
+                        exercises = document.get('exercises', [])
+                        print(f"   ✅ Generated {len(exercises)} exercises in {generation_time:.2f}s")
+                        
+                        # Performance check
+                        if generation_time > 30:
+                            print(f"   ⚠️  Generation time exceeds 30s threshold")
+                        else:
+                            print(f"   ✅ Generation time within 30s threshold")
+                        
+                        # Check for subject-specific content
+                        if scenario['data']['matiere'] == 'Français':
+                            self.validate_french_content(exercises)
+                        elif scenario['data']['matiere'] == 'Géographie':
+                            self.validate_geography_content(exercises)
             else:
-                print(f"   ❌ {scenario['name']} FAILED with 400")
+                print(f"   ❌ {scenario['name']} - UNEXPECTED RESULT")
                 if isinstance(response, dict):
                     error_detail = response.get('detail', 'Unknown error')
-                    error_patterns.append(error_detail)
+                    results["error_patterns"].append(error_detail)
                     print(f"   ERROR: {error_detail}")
                     
-                    # Analyze specific error patterns
-                    if 'validation' in error_detail.lower():
-                        print("   🔍 VALIDATION ERROR detected")
-                    elif 'chapitre' in error_detail.lower():
-                        print("   🔍 CHAPTER VALIDATION ERROR detected")
-                    elif 'matiere' in error_detail.lower():
-                        print("   🔍 SUBJECT VALIDATION ERROR detected")
-                    elif 'pydantic' in error_detail.lower():
-                        print("   🔍 PYDANTIC MODEL ERROR detected")
-                    else:
-                        print("   🔍 UNKNOWN ERROR PATTERN")
+                    # Analyze error patterns
+                    if 'chapitre non trouvé' in error_detail.lower():
+                        print("   🔍 CHAPTER VALIDATION ERROR - Fix may not be applied")
+                    elif 'matière non trouvée' in error_detail.lower():
+                        print("   🔍 SUBJECT VALIDATION ERROR - Feature flags issue")
+                    elif 'validation' in error_detail.lower():
+                        print("   🔍 GENERAL VALIDATION ERROR")
         
-        # Summary of findings
-        print(f"\n   DIAGNOSIS SUMMARY:")
-        print(f"   All scenarios failed: {all_failed}")
-        print(f"   Error patterns found: {len(set(error_patterns))}")
+        # Summary of fix validation
+        print(f"\n📊 FIX VALIDATION SUMMARY:")
+        print(f"   Overall: {results['all_tests']['passed']}/{results['all_tests']['total']} tests passed")
+        print(f"   Regression Tests: {results['regression_tests']['passed']}/{results['regression_tests']['total']} passed")
+        print(f"   Fix Validation Tests: {results['fix_validation_tests']['passed']}/{results['fix_validation_tests']['total']} passed")
         
-        if error_patterns:
-            unique_errors = list(set(error_patterns))
-            for i, error in enumerate(unique_errors, 1):
-                print(f"   Error {i}: {error}")
+        # Performance summary
+        avg_time = sum(p['time'] for p in results['performance_data']) / len(results['performance_data'])
+        print(f"   Average generation time: {avg_time:.2f}s")
         
-        if all_failed:
-            print("   🚨 CRITICAL: ALL subjects failing - systemic issue")
+        # Critical assessment
+        fix_success = results['fix_validation_tests']['passed'] == results['fix_validation_tests']['total']
+        regression_success = results['regression_tests']['passed'] == results['regression_tests']['total']
+        
+        if fix_success and regression_success:
+            print("   🎉 400 BAD REQUEST FIX COMPLETELY SUCCESSFUL")
+        elif fix_success:
+            print("   ⚠️  Fix working but regression issues detected")
+        elif regression_success:
+            print("   ⚠️  No regression but fix not fully working")
         else:
-            print("   ℹ️  PARTIAL: Some subjects working - specific issue")
+            print("   🚨 CRITICAL: Fix not working and regression detected")
             
-        return not all_failed, {"all_failed": all_failed, "error_patterns": error_patterns}
+        return fix_success and regression_success, results
+    
+    def validate_french_content(self, exercises):
+        """Validate that French exercises have appropriate content"""
+        for i, exercise in enumerate(exercises):
+            enonce = exercise.get('enonce', '').lower()
+            french_indicators = ['texte', 'lecture', 'grammaire', 'vocabulaire', 'expression', 'phrase', 'mot']
+            has_french_content = any(indicator in enonce for indicator in french_indicators)
+            if has_french_content:
+                print(f"   ✅ French exercise {i+1} has appropriate content")
+            else:
+                print(f"   ⚠️  French exercise {i+1} may lack specific French content")
+    
+    def validate_geography_content(self, exercises):
+        """Validate that Geography exercises have appropriate content and documents"""
+        for i, exercise in enumerate(exercises):
+            enonce = exercise.get('enonce', '').lower()
+            document = exercise.get('document')
+            
+            # Check for geography content
+            geo_indicators = ['lieu', 'territoire', 'espace', 'carte', 'région', 'ville', 'habitat']
+            has_geo_content = any(indicator in enonce for indicator in geo_indicators)
+            if has_geo_content:
+                print(f"   ✅ Geography exercise {i+1} has appropriate content")
+            else:
+                print(f"   ⚠️  Geography exercise {i+1} may lack specific geography content")
+            
+            # Check for educational documents (special feature for Geography)
+            if document:
+                print(f"   ✅ Geography exercise {i+1} has educational document attached")
+            else:
+                print(f"   ℹ️  Geography exercise {i+1} has no document (may be normal)")
 
     def test_generate_document(self):
         """Test document generation with French mathematics curriculum - REGRESSION TEST"""
