@@ -1942,7 +1942,11 @@ JSON OBLIGATOIRE:
                 )
                 
                 try:
-                    document_metadata = await search_educational_document(ex_data["document_attendu"])
+                    # Passer l'énoncé à la recherche pour analyse intelligente
+                    document_request = ex_data["document_attendu"].copy()
+                    document_request["enonce"] = enonce_clean  # Ajouter l'énoncé pour analyse
+                    
+                    document_metadata = await search_educational_document(document_request)
                     if document_metadata:
                         # Add document to exercise data
                         ex_data["document"] = document_metadata
@@ -1955,7 +1959,8 @@ JSON OBLIGATOIRE:
                             document_title=document_metadata.get("titre", "Unknown"),
                             document_type=document_metadata.get("type", "Unknown"),
                             licence=document_metadata.get("licence", {}).get("type", "Unknown"),
-                            exercise_id=i+1
+                            exercise_id=i+1,
+                            content_based_selection=bool(document_request.get("enonce"))
                         )
                     else:
                         logger.warning(
