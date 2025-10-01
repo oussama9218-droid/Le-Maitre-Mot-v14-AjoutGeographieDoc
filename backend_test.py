@@ -263,17 +263,19 @@ class LeMaitreMotAPITester:
         return success, response
 
     def test_400_bad_request_fix_validation(self):
-        """PRIORITY 1: Test the 400 Bad Request fix for exercise generation"""
-        print("\n🔧 TESTING 400 BAD REQUEST FIX")
-        print("="*60)
-        print("CONTEXT: Testing fix for curriculum validation conflict")
-        print("FIX APPLIED: Replaced get_available_subjects() with get_active_subjects()")
-        print("EXPECTED: All active subjects (Math, PC, SVT, Français, Géographie) should work")
+        """URGENT: Test the 400 Bad Request fix for feature flags system"""
+        print("\n🚨 URGENT TESTING: 400 BAD REQUEST FIX VALIDATION")
+        print("="*70)
+        print("CONTEXT: Correction urgente appliquée au système de feature flags")
+        print("PROBLÈME: Toutes les générations bloquées par erreurs 400 Bad Request")
+        print("FIX APPLIQUÉ: Validation directe contre CURRICULUM_DATA_COMPLETE")
+        print("CRITÈRES DE SUCCÈS: Aucune erreur 400 pour matières actives, temps < 30s")
         
-        # Test all active subjects according to curriculum_complete.py
+        # Test scenarios based on review request
         test_scenarios = [
+            # Test Matières de Base (should work again)
             {
-                "name": "Mathématiques (Old System - Should Still Work)",
+                "name": "Mathématiques 6e - Nombres entiers et décimaux (REGRESSION)",
                 "data": {
                     "matiere": "Mathématiques",
                     "niveau": "6e", 
@@ -285,10 +287,11 @@ class LeMaitreMotAPITester:
                     "guest_id": self.guest_id
                 },
                 "expected_working": True,
-                "category": "regression"
+                "category": "regression_critical",
+                "priority": "ABSOLUE"
             },
             {
-                "name": "Physique-Chimie (Old System - Should Still Work)",
+                "name": "Physique-Chimie 5e - Organisation et transformations de la matière (REGRESSION)",
                 "data": {
                     "matiere": "Physique-Chimie",
                     "niveau": "5e",
@@ -300,10 +303,11 @@ class LeMaitreMotAPITester:
                     "guest_id": self.guest_id
                 },
                 "expected_working": True,
-                "category": "regression"
+                "category": "regression_critical",
+                "priority": "ABSOLUE"
             },
             {
-                "name": "SVT (Old System - Should Still Work)",
+                "name": "SVT 5e - Le vivant et son évolution (REGRESSION)",
                 "data": {
                     "matiere": "SVT",
                     "niveau": "5e",
@@ -315,14 +319,16 @@ class LeMaitreMotAPITester:
                     "guest_id": self.guest_id
                 },
                 "expected_working": True,
-                "category": "regression"
+                "category": "regression_critical",
+                "priority": "ABSOLUE"
             },
+            # Test Nouvelles Matières Actives
             {
-                "name": "Français (New System - Was Blocked, Should Now Work)",
+                "name": "Français 6e - Grammaire et orthographe - Classes de mots (NOUVEAU ACTIF)",
                 "data": {
                     "matiere": "Français",
-                    "niveau": "5e",
-                    "chapitre": "Le voyage et l'aventure : pourquoi aller vers l'inconnu ?",
+                    "niveau": "6e",
+                    "chapitre": "Grammaire et orthographe - Classes de mots",
                     "type_doc": "exercices", 
                     "difficulte": "moyen",
                     "nb_exercices": 2,
@@ -330,13 +336,14 @@ class LeMaitreMotAPITester:
                     "guest_id": self.guest_id
                 },
                 "expected_working": True,
-                "category": "fix_validation"
+                "category": "new_active",
+                "priority": "HAUTE"
             },
             {
-                "name": "Géographie (New System + Documents - Was Blocked, Should Now Work)",
+                "name": "Géographie 6e - Découvrir le(s) lieu(x) où j'habite (NOUVEAU ACTIF)",
                 "data": {
                     "matiere": "Géographie",
-                    "niveau": "CM1",
+                    "niveau": "6e",
                     "chapitre": "Découvrir le(s) lieu(x) où j'habite",
                     "type_doc": "exercices",
                     "difficulte": "moyen", 
@@ -345,7 +352,8 @@ class LeMaitreMotAPITester:
                     "guest_id": self.guest_id
                 },
                 "expected_working": True,
-                "category": "fix_validation"
+                "category": "new_active",
+                "priority": "HAUTE"
             }
         ]
         
