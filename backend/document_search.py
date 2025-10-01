@@ -106,9 +106,23 @@ class DocumentSearcher:
             elements_requis=elements_requis
         )
         
-        # Vérifier d'abord le cache des documents validés
+        # Vérifier d'abord le cache des documents validés avec DIVERSIFICATION
         cached_doc = self._check_cache(doc_type, elements_requis)
         if cached_doc:
+            # 🎯 FORCER LA DIVERSIFICATION : Éviter les titres déjà utilisés
+            doc_title = cached_doc.get('titre', '')
+            if doc_title in avoid_types:
+                logger.info(f"🔄 Document '{doc_title}' déjà utilisé, cherchons une alternative...")
+                # Essayer d'autres types disponibles
+                alternative_types = ["carte_france", "carte_europe", "carte_asie", "carte_amerique_nord", "carte_afrique", "carte_monde"]
+                for alt_type in alternative_types:
+                    if alt_type != doc_type:
+                        alt_doc = self._check_cache(alt_type, elements_requis)
+                        if alt_doc and alt_doc.get('titre', '') not in avoid_types:
+                            logger.info(f"✅ Alternative document found: {alt_doc['titre']} (type: {alt_type})")
+                            return self._enrich_document_metadata(alt_doc, document_request)
+                logger.warning(f"⚠️ No alternative found, using original despite duplication")
+            
             logger.info(f"✅ Document found in validated cache: {cached_doc['titre']}")
             return self._enrich_document_metadata(cached_doc, document_request)
         
