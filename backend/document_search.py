@@ -399,6 +399,82 @@ class DocumentSearcher:
                 "hauteur_px": 1746,
                 "pourquoi_choisie": "Document de fallback - planisphère standard",
                 "conseils_impression": "Format A3 paysage, marges 10mm"
+            },
+            "carte_asie": {
+                "titre": "Carte physique de l'Asie (fallback)",
+                "langue_labels": "multilingue",
+                "projection": "Lambert azimuthal equal-area",
+                "inclut_continents": False,
+                "inclut_asie": True,
+                "licence": {
+                    "type": "CC BY-SA",
+                    "notice_attribution": "Wikimedia Commons",
+                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                },
+                "auteur_source": "Wikimedia Commons",
+                "url_page_commons": "https://commons.wikimedia.org",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/80/Asia_laea_location_map.svg",
+                "largeur_px": 1200,
+                "hauteur_px": 1000,
+                "pourquoi_choisie": "Document spécialisé pour l'Asie",
+                "conseils_impression": "Format A4 paysage, marges 12mm"
+            },
+            "carte_amerique_nord": {
+                "titre": "Carte de l'Amérique du Nord (fallback)",
+                "langue_labels": "multilingue",
+                "projection": "Lambert azimuthal equal-area",
+                "inclut_continents": False,
+                "inclut_amerique_nord": True,
+                "licence": {
+                    "type": "CC BY-SA",
+                    "notice_attribution": "Wikimedia Commons",
+                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                },
+                "auteur_source": "Wikimedia Commons",
+                "url_page_commons": "https://commons.wikimedia.org",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/3/3e/North_America_laea_location_map.svg",
+                "largeur_px": 1200,
+                "hauteur_px": 1030,
+                "pourquoi_choisie": "Document spécialisé pour l'Amérique du Nord",
+                "conseils_impression": "Format A4 paysage, marges 12mm"
+            },
+            "carte_europe": {
+                "titre": "Carte politique de l'Europe (fallback)",
+                "langue_labels": "multilingue",
+                "projection": "Lambert azimuthal equal-area",
+                "inclut_continents": False,
+                "inclut_europe": True,
+                "licence": {
+                    "type": "CC BY-SA",
+                    "notice_attribution": "Wikimedia Commons",
+                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                },
+                "auteur_source": "Wikimedia Commons",
+                "url_page_commons": "https://commons.wikimedia.org",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/4/44/Europe_blank_laea_location_map.svg",
+                "largeur_px": 1080,
+                "hauteur_px": 1080,
+                "pourquoi_choisie": "Document spécialisé pour l'Europe",
+                "conseils_impression": "Format A4 paysage, marges 12mm"
+            },
+            "carte_afrique": {
+                "titre": "Carte politique de l'Afrique (fallback)",
+                "langue_labels": "multilingue",
+                "projection": "Équirectangulaire",
+                "inclut_continents": False,
+                "inclut_afrique": True,
+                "licence": {
+                    "type": "CC BY-SA",
+                    "notice_attribution": "Wikimedia Commons",
+                    "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
+                },
+                "auteur_source": "Wikimedia Commons",
+                "url_page_commons": "https://commons.wikimedia.org",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/86/Africa_blank_location_map.svg",
+                "largeur_px": 863,
+                "hauteur_px": 1000,
+                "pourquoi_choisie": "Document spécialisé pour l'Afrique",
+                "conseils_impression": "Format A4 portrait, marges 15mm"
             }
         }
         
