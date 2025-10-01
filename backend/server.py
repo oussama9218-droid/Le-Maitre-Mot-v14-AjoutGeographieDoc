@@ -2687,7 +2687,7 @@ async def generate_document(request: GenerateRequest):
     try:
         logger = get_logger()
         logger.info(
-            f"🔥 URGENT GENERATE REQUEST RECEIVED",
+            "🔥 URGENT GENERATE REQUEST RECEIVED",
             module_name="generation",
             func_name="generate_document_corrected", 
             matiere=request.matiere,
