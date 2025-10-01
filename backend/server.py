@@ -2685,6 +2685,7 @@ async def get_usage_analytics(request: Request, days: int = 30):
 async def generate_document(request: GenerateRequest):
     """Generate a document with exercises - CORRECTED feature flag validation"""
     try:
+        logger = get_logger()
         logger.info(
             f"🔥 URGENT GENERATE REQUEST RECEIVED",
             module_name="generation",
