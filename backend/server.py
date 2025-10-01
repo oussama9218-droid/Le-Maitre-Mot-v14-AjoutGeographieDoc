@@ -2129,6 +2129,30 @@ JSON OBLIGATOIRE:
             geometry_exercises=sum(1 for ex in exercises if hasattr(ex, 'exercise_type') and ex.exercise_type == 'geometry'),
             approach="two_pass"
         )
+        
+        # 🗺️ LOGS DE DÉBOGAGE DIVERSITÉ GÉOGRAPHIE
+        if matiere == "Géographie":
+            logger.info("🗺️ DOCUMENT DIVERSITY CHECK:")
+            document_types_used = []
+            for i, exercise in enumerate(exercises, 1):
+                if hasattr(exercise, 'document') and exercise.document:
+                    doc_type = getattr(exercise.document, 'type', 'unknown')
+                    doc_title = getattr(exercise.document, 'titre', 'No title')
+                    document_types_used.append(doc_type)
+                    logger.info(f"  Exercice {i}: {doc_type} - {doc_title}")
+                else:
+                    logger.info(f"  Exercice {i}: NO DOCUMENT")
+            
+            # Vérifier la diversité
+            unique_types = len(set(document_types_used))
+            total_types = len(document_types_used)
+            logger.info(f"🎯 DIVERSITY RESULT: {unique_types}/{total_types} types uniques")
+            
+            if unique_types < total_types:
+                logger.warning("⚠️ DIVERSITY ISSUE: Documents répétés détectés!")
+            else:
+                logger.info("✅ DIVERSITY SUCCESS: Tous les documents sont différents")
+        
         return exercises
         
     except asyncio.TimeoutError:
