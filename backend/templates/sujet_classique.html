@@ -208,6 +208,29 @@
                 </div>
             {% endif %}
             
+            <!-- NOUVEAU: Render geographic document if present -->
+            {% if exercice.document %}
+                <div class="geographic-document">
+                    <div class="document-title">📍 {{ exercice.document.titre }}</div>
+                    
+                    {% if exercice.document.url_fichier_direct %}
+                        <div class="document-image">
+                            <img src="{{ exercice.document.url_fichier_direct }}" 
+                                 alt="{{ exercice.document.titre }}" 
+                                 style="max-width: 100%; max-height: 300px; margin: 10px auto; display: block; border: 1px solid #ccc;"/>
+                        </div>
+                    {% endif %}
+                    
+                    {% if exercice.document.licence and exercice.document.licence.notice_attribution %}
+                        <div class="document-attribution">
+                            <small>Source : {{ exercice.document.licence.notice_attribution }}
+                            {% if exercice.document.licence.type %} ({{ exercice.document.licence.type }}){% endif %}
+                            </small>
+                        </div>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
             {% if exercice.type == "qcm" and exercice.donnees and exercice.donnees.options %}
             <div class="qcm-options">
                 {% for option in exercice.donnees.options %}
