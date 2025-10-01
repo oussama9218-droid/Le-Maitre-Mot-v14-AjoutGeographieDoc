@@ -2683,24 +2683,49 @@ async def get_usage_analytics(request: Request, days: int = 30):
 
 @api_router.post("/generate")
 async def generate_document(request: GenerateRequest):
-    """Generate a document with exercises - with feature flag validation"""
+    """Generate a document with exercises - CORRECTED feature flag validation"""
     try:
-        # FEATURE FLAG VALIDATION - Check if subject is active
-        if not is_subject_active(request.matiere):
-            subject_config = get_subject_by_name(request.matiere)
-            status = subject_config.get("status", "unknown") if subject_config else "unknown"
-            expected = subject_config.get("expected", "TBD") if subject_config else "TBD"
+        logger.info(
+            f"🔥 URGENT GENERATE REQUEST RECEIVED",
+            module_name="generation",
+            func_name="generate_document_corrected", 
+            matiere=request.matiere,
+            niveau=request.niveau,
+            chapitre=request.chapitre,
+            guest_id=request.guest_id
+        )
+        
+        # CORRECTION 1: Vérifier que la matière existe dans le nouveau système
+        if request.matiere not in CURRICULUM_DATA_COMPLETE:
+            logger.error(f"❌ Unknown subject in CURRICULUM_DATA_COMPLETE: {request.matiere}")
+            raise HTTPException(
+                status_code=400,
+                detail=f"Matière '{request.matiere}' non reconnue dans le système"
+            )
+        
+        # CORRECTION 2: Vérifier le statut avec logs détaillés
+        matiere_config = CURRICULUM_DATA_COMPLETE[request.matiere]
+        matiere_status = matiere_config.get("status", "inactive")
+        
+        logger.info(
+            f"🔍 Feature flag check for {request.matiere}",
+            status=matiere_status,
+            expected=matiere_config.get("expected", "N/A"),
+            has_data="data" in matiere_config
+        )
+        
+        if matiere_status != "active":
+            logger.warning(f"⚠️ Subject {request.matiere} is not active (status: {matiere_status})")
             
-            log_feature_flag_access(request.matiere, status, "guest")
+            log_feature_flag_access(request.matiere, matiere_status, "guest")
             
             raise HTTPException(
-                status_code=423,  # Locked
+                status_code=423,  # Locked (not 400 Bad Request)
                 detail={
-                    "error": "subject_not_available",
+                    "error": "subject_not_available", 
                     "message": f"La matière {request.matiere} n'est pas encore disponible",
-                    "status": status,
-                    "expected": expected,
-                    "emoji": CURRICULUM_STATUS.get(status, {}).get("emoji", "⏸️"),
+                    "status": matiere_status,
+                    "expected": matiere_config.get("expected", "TBD"),
                     "available_subjects": list(get_active_subjects().keys())
                 }
             )
@@ -2708,46 +2733,48 @@ async def generate_document(request: GenerateRequest):
         # Log active subject access
         log_feature_flag_access(request.matiere, "active", "guest")
         
-        logger.info(
-            "🚀 Document generation started - feature flags validation passed",
-            module_name="generation",
-            func_name="generate_document",
-            matiere=request.matiere,
-            niveau=request.niveau, 
-            chapitre=request.chapitre,
-            type_doc=request.type_doc,
-            difficulte=request.difficulte,
-            nb_exercices=request.nb_exercices,
-            guest_id=request.guest_id,
-            feature_flag_status="active"
-        )
+        # CORRECTION 3: Utiliser les données du nouveau système directement
+        subject_data = matiere_config.get("data", {})
+        if not subject_data:
+            logger.error(f"❌ No curriculum data for active subject: {request.matiere}")
+            raise HTTPException(
+                status_code=500,
+                detail=f"Données de curriculum manquantes pour {request.matiere}"
+            )
         
-        # UPDATED: Use NEW curriculum system for validation
-        active_subjects = get_active_subjects()  # Use new system instead of legacy
-        if request.matiere not in active_subjects:
-            logger.error(f"❌ Subject not found in active subjects: {request.matiere}")
-            raise HTTPException(status_code=400, detail="Matière non supportée par le nouveau système")
-        
-        # Get levels from the new system
-        active_subject_data = active_subjects[request.matiere]
-        available_levels = list(active_subject_data.keys())
+        # CORRECTION 4: Validation niveau avec le nouveau système
+        available_levels = list(subject_data.keys())
         if request.niveau not in available_levels:
-            logger.error(f"❌ Level not found: {request.niveau} for {request.matiere}")
-            raise HTTPException(status_code=400, detail="Niveau non supporté pour cette matière")
+            logger.error(
+                f"❌ Level not available: {request.niveau} for {request.matiere}",
+                available_levels=available_levels
+            )
+            raise HTTPException(
+                status_code=400,
+                detail=f"Niveau '{request.niveau}' non disponible pour {request.matiere}. Disponibles: {', '.join(available_levels)}"
+            )
         
-        # Get chapters from the new system
-        level_data = active_subject_data[request.niveau]
+        # CORRECTION 5: Validation chapitre avec le nouveau système 
+        level_data = subject_data[request.niveau]
         all_chapters = []
         for theme, chapters in level_data.items():
             all_chapters.extend(chapters)
-        available_chapters = all_chapters
-        available_chapters = all_chapters
-        if request.chapitre not in available_chapters:
+        
+        if request.chapitre not in all_chapters:
             logger.error(
-                f"❌ Chapter not found: {request.chapitre}",
-                available_chapters=available_chapters[:5]  # Show first 5 for debugging
+                f"❌ Chapter not available: {request.chapitre} for {request.matiere} {request.niveau}",
+                available_chapters=all_chapters[:3]  # Show first 3 for logs
             )
-            raise HTTPException(status_code=400, detail="Chapitre non trouvé pour ce niveau")
+            raise HTTPException(
+                status_code=400, 
+                detail=f"Chapitre '{request.chapitre}' non disponible pour {request.matiere} {request.niveau}"
+            )
+        
+        logger.info(
+            "✅ All validations passed, starting exercise generation",
+            module_name="generation",
+            func_name="validation_success"
+        )
         
         logger.info(f"🚀 Document generation started - {request.matiere} {request.niveau} {request.chapitre} - {request.type_doc} - {request.difficulte} - {request.nb_exercices} exercises - guest_id: {request.guest_id}")
         
