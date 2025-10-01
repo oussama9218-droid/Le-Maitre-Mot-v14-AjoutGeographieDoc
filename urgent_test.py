@@ -223,7 +223,7 @@ class UrgentValidator:
                     # Check for proper 423 Locked response
                     if isinstance(response, dict):
                         error_msg = response.get('detail', '')
-                        if 'coming_soon' in error_msg.lower() or 'locked' in error_msg.lower():
+                        if isinstance(error_msg, str) and ('coming_soon' in error_msg.lower() or 'locked' in error_msg.lower()):
                             print(f"   ✅ Proper 423 Locked response for inactive subject")
                         else:
                             print(f"   ⚠️  423 response but unclear message: {error_msg}")
