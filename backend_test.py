@@ -12392,6 +12392,8 @@ Résultat final.''',
         print(f"\nBase URL: {self.base_url}")
         print(f"Guest ID: {self.guest_id}")
         print(f"{'='*70}")
+        
+        return len(critical_failures) == 0
 
     def test_geography_generation_6e_with_documents(self):
         """Test Geography exercise generation for 6e level with educational documents - CRITICAL TEST"""
