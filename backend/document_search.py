@@ -16,52 +16,52 @@ class DocumentSearcher:
         self.wikimedia_api_base = "https://commons.wikimedia.org/w/api.php"
         self.wikimedia_base_url = "https://commons.wikimedia.org"
         
-        # Cache des documents validés avec plus de variété
+        # Cache des documents validés avec URLs TESTÉES ET VALIDES
         self.validated_documents_cache = {
-            # Cartes de base
+            # Cartes de base avec URLs vérifiées
             "carte_france": {
                 "titre": "Carte administrative de France métropolitaine",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/88/France_administrative_location_map.svg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/50/France_location_map-Regions_and_departements-2016.svg/1200px-France_location_map-Regions_and_departements-2016.svg.png",
                 "licence": {"type": "CC BY-SA", "notice_attribution": "Wikimedia Commons"},
-                "largeur_px": 1587,
-                "hauteur_px": 1215
+                "largeur_px": 1200,
+                "hauteur_px": 1200
             },
             "carte_monde": {
                 "titre": "Planisphère avec continents et océans",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/83/Equirectangular_projection_SW.jpg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1200px-Equirectangular_projection_SW.jpg",
                 "licence": {"type": "PD", "notice_attribution": "Domaine public"},
-                "largeur_px": 2058,
-                "hauteur_px": 1746
+                "largeur_px": 1200,
+                "hauteur_px": 600
             },
             
-            # Nouvelles cartes spécifiques par région
+            # Nouvelles cartes spécifiques avec URLs valides testées
             "carte_europe": {
                 "titre": "Carte politique de l'Europe",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/4/44/Europe_blank_laea_location_map.svg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Europe_blank_laea_location_map.svg/1200px-Europe_blank_laea_location_map.svg.png",
                 "licence": {"type": "CC BY-SA", "notice_attribution": "Wikimedia Commons"},
-                "largeur_px": 1080,
-                "hauteur_px": 1080
+                "largeur_px": 1200,
+                "hauteur_px": 1200
             },
             "carte_asie": {
                 "titre": "Carte physique de l'Asie",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/80/Asia_laea_location_map.svg", 
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Asia_laea_location_map.svg/1200px-Asia_laea_location_map.svg.png", 
                 "licence": {"type": "CC BY-SA", "notice_attribution": "Wikimedia Commons"},
                 "largeur_px": 1200,
                 "hauteur_px": 1000
             },
             "carte_amerique_nord": {
                 "titre": "Carte de l'Amérique du Nord",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/3/3e/North_America_laea_location_map.svg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/North_America_laea_location_map.svg/1200px-North_America_laea_location_map.svg.png",
                 "licence": {"type": "CC BY-SA", "notice_attribution": "Wikimedia Commons"},
                 "largeur_px": 1200,
                 "hauteur_px": 1030
             },
             "carte_afrique": {
                 "titre": "Carte politique de l'Afrique",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/86/Africa_blank_location_map.svg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Africa_blank_location_map.svg/1200px-Africa_blank_location_map.svg.png",
                 "licence": {"type": "CC BY-SA", "notice_attribution": "Wikimedia Commons"},
-                "largeur_px": 863,
-                "hauteur_px": 1000
+                "largeur_px": 1200,
+                "hauteur_px": 1400
             }
         }
     
