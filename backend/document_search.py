@@ -79,6 +79,22 @@ class DocumentSearcher:
         langue = document_request.get("langue", "français")
         elements_requis = document_request.get("doit_afficher", [])
         
+        # NOUVEAU : Analyse intelligente du contenu pour choisir le bon document
+        enonce = document_request.get("enonce", "")
+        if enonce:
+            intelligent_doc_type = self._analyze_content_for_document_type(enonce)
+            logger.info(
+                f"🧠 Intelligent document type analysis",
+                module_name="document_search",
+                func_name="intelligent_analysis",
+                original_type=doc_type,
+                analyzed_type=intelligent_doc_type,
+                content_preview=enonce[:100]
+            )
+            # Utiliser le type intelligent si différent
+            if intelligent_doc_type != "carte_monde" or doc_type == "cartographic":
+                doc_type = intelligent_doc_type
+        
         logger.info(
             f"🔍 Starting geographic document search",
             module_name="document_search",
@@ -105,8 +121,8 @@ class DocumentSearcher:
         except Exception as e:
             logger.error(f"❌ Error searching Wikimedia Commons: {e}")
         
-        # Fallback: retourner un document par défaut
-        logger.warning(f"⚠️ No document found, using fallback for {doc_type}")
+        # Fallback: retourner un document par défaut approprié
+        logger.warning(f"⚠️ No specific document found, using fallback for {doc_type}")
         return self._get_fallback_document(doc_type, document_request)
     
     def _check_cache(self, doc_type: str, elements_requis: List[str]) -> Optional[Dict[str, Any]]:
