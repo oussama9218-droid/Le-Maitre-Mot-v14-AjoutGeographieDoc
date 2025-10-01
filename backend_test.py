@@ -12788,6 +12788,265 @@ Résultat final.''',
                 
         return geography_passed, geography_total
 
+    def test_intelligent_geography_document_system(self):
+        """Test the new intelligent document system for Geography that selects specific maps based on exercise content"""
+        print("\n🧠 TESTING INTELLIGENT GEOGRAPHY DOCUMENT SYSTEM")
+        print("="*70)
+        print("CONTEXT: Testing new système de documents intelligents pour la Géographie")
+        print("OBJECTIF: Sélectionner des cartes spécifiques selon le contenu des exercices")
+        print("AMÉLIORATIONS: Cache étendu, analyse intelligente, sélection contextuelle, logs détaillés")
+        
+        # Test scenarios based on the review request
+        intelligent_test_scenarios = [
+            {
+                "name": "Tokyo/Japan Exercise → Should use carte_asie",
+                "data": {
+                    "matiere": "Géographie",
+                    "niveau": "6e",
+                    "chapitre": "Découvrir le(s) lieu(x) où j'habite",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_document_type": "carte_asie",
+                "content_keywords": ["tokyo", "japon", "asie"],
+                "priority": "CRITICAL"
+            },
+            {
+                "name": "New York/USA Exercise → Should use carte_amerique_nord",
+                "data": {
+                    "matiere": "Géographie",
+                    "niveau": "6e", 
+                    "chapitre": "Se loger, travailler, se cultiver, avoir des loisirs",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_document_type": "carte_amerique_nord",
+                "content_keywords": ["new york", "états-unis", "amérique du nord"],
+                "priority": "CRITICAL"
+            },
+            {
+                "name": "Europe/European Countries → Should use carte_europe",
+                "data": {
+                    "matiere": "Géographie",
+                    "niveau": "5e",
+                    "chapitre": "L'urbanisation du monde",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_document_type": "carte_europe",
+                "content_keywords": ["europe", "allemagne", "france", "italie"],
+                "priority": "HIGH"
+            },
+            {
+                "name": "General Geography → Should use carte_monde",
+                "data": {
+                    "matiere": "Géographie",
+                    "niveau": "5e",
+                    "chapitre": "Des espaces transformés par la mondialisation",
+                    "type_doc": "exercices",
+                    "difficulte": "moyen",
+                    "nb_exercices": 2,
+                    "versions": ["A"],
+                    "guest_id": self.guest_id
+                },
+                "expected_document_type": "carte_monde",
+                "content_keywords": ["monde", "mondial", "continents"],
+                "priority": "MEDIUM"
+            }
+        ]
+        
+        results = {
+            "total_tests": len(intelligent_test_scenarios),
+            "passed_tests": 0,
+            "intelligent_selection_working": 0,
+            "different_documents_confirmed": 0,
+            "logs_verified": 0,
+            "document_types_found": set(),
+            "critical_failures": []
+        }
+        
+        generated_documents = []
+        
+        for scenario in intelligent_test_scenarios:
+            print(f"\n🔍 Testing: {scenario['name']}")
+            print(f"   Priority: {scenario['priority']}")
+            print(f"   Expected document type: {scenario['expected_document_type']}")
+            print(f"   Looking for content: {scenario['content_keywords']}")
+            
+            start_time = time.time()
+            success, response = self.run_test(
+                f"INTELLIGENT DOC: {scenario['name']}",
+                "POST",
+                "generate",
+                200,
+                data=scenario['data'],
+                timeout=60
+            )
+            generation_time = time.time() - start_time
+            
+            if success and isinstance(response, dict):
+                document = response.get('document')
+                if document:
+                    exercises = document.get('exercises', [])
+                    print(f"   ✅ Generated {len(exercises)} exercises in {generation_time:.2f}s")
+                    
+                    # Store document for comparison
+                    generated_documents.append({
+                        "scenario": scenario['name'],
+                        "document_id": document.get('id'),
+                        "exercises": exercises,
+                        "expected_type": scenario['expected_document_type']
+                    })
+                    
+                    # Check exercise content for geographic keywords
+                    content_match_found = False
+                    document_attached = False
+                    
+                    for i, exercise in enumerate(exercises):
+                        enonce = exercise.get('enonce', '').lower()
+                        document_data = exercise.get('document')
+                        
+                        # Check for expected geographic content
+                        for keyword in scenario['content_keywords']:
+                            if keyword.lower() in enonce:
+                                print(f"   ✅ Exercise {i+1} contains expected keyword: '{keyword}'")
+                                content_match_found = True
+                                break
+                        
+                        # Check for document attachment
+                        if document_data:
+                            document_attached = True
+                            doc_title = document_data.get('titre', '')
+                            doc_type = self._analyze_document_type_from_title(doc_title)
+                            results["document_types_found"].add(doc_type)
+                            
+                            print(f"   ✅ Exercise {i+1} has document: {doc_title}")
+                            print(f"   📍 Detected document type: {doc_type}")
+                            
+                            # Check if document type matches expectation
+                            if doc_type == scenario['expected_document_type']:
+                                print(f"   🎯 PERFECT MATCH: Document type matches expectation!")
+                                results["intelligent_selection_working"] += 1
+                            else:
+                                print(f"   ⚠️  Document type mismatch: expected {scenario['expected_document_type']}, got {doc_type}")
+                    
+                    if content_match_found:
+                        print(f"   ✅ Content analysis successful - geographic keywords found")
+                    else:
+                        print(f"   ⚠️  Content may not contain expected geographic keywords")
+                    
+                    if document_attached:
+                        print(f"   ✅ Educational documents attached to exercises")
+                        results["passed_tests"] += 1
+                    else:
+                        print(f"   ❌ No educational documents attached")
+                        if scenario['priority'] == 'CRITICAL':
+                            results["critical_failures"].append(f"No documents attached for {scenario['name']}")
+                else:
+                    print(f"   ❌ No document generated")
+                    if scenario['priority'] == 'CRITICAL':
+                        results["critical_failures"].append(f"Document generation failed for {scenario['name']}")
+            else:
+                print(f"   ❌ Generation failed")
+                if scenario['priority'] == 'CRITICAL':
+                    results["critical_failures"].append(f"API call failed for {scenario['name']}")
+        
+        # Verify different documents are being used (not same planisphere)
+        unique_document_types = len(results["document_types_found"])
+        if unique_document_types >= 3:
+            print(f"\n   ✅ DIFFERENT DOCUMENTS CONFIRMED: Found {unique_document_types} different document types")
+            print(f"   Document types detected: {list(results['document_types_found'])}")
+            results["different_documents_confirmed"] = 1
+        else:
+            print(f"\n   ⚠️  Limited document variety: Only {unique_document_types} different types found")
+            print(f"   Document types detected: {list(results['document_types_found'])}")
+        
+        # Check backend logs for intelligent analysis
+        print(f"\n🔍 CHECKING BACKEND LOGS FOR INTELLIGENT ANALYSIS...")
+        try:
+            import subprocess
+            log_check_result = subprocess.run(
+                "tail -n 100 /var/log/supervisor/backend.*.log | grep -i 'intelligent\\|document.*type\\|analyze.*content' | tail -10",
+                shell=True, capture_output=True, text=True, timeout=10
+            )
+            log_check = log_check_result.stdout
+            
+            if log_check and "intelligent" in log_check.lower():
+                print(f"   ✅ INTELLIGENT ANALYSIS LOGS FOUND:")
+                for line in log_check.split('\n')[:5]:  # Show first 5 relevant lines
+                    if line.strip():
+                        print(f"   📝 {line.strip()}")
+                results["logs_verified"] = 1
+            else:
+                print(f"   ⚠️  No recent intelligent analysis logs found")
+        except:
+            print(f"   ⚠️  Could not check backend logs")
+        
+        # Summary of intelligent document system test
+        print(f"\n📊 INTELLIGENT DOCUMENT SYSTEM TEST SUMMARY:")
+        print(f"   Overall tests: {results['passed_tests']}/{results['total_tests']} passed")
+        print(f"   Intelligent selection working: {results['intelligent_selection_working']}/{results['total_tests']} scenarios")
+        print(f"   Different documents confirmed: {'✅ YES' if results['different_documents_confirmed'] else '❌ NO'}")
+        print(f"   Intelligent analysis logs: {'✅ FOUND' if results['logs_verified'] else '❌ NOT FOUND'}")
+        print(f"   Document types variety: {unique_document_types} different types")
+        
+        # Critical failures assessment
+        if results['critical_failures']:
+            print(f"\n🚨 CRITICAL FAILURES DETECTED:")
+            for failure in results['critical_failures']:
+                print(f"   - {failure}")
+        
+        # Success criteria evaluation
+        success_criteria = {
+            "documents_different": results["different_documents_confirmed"] == 1,
+            "intelligent_selection": results["intelligent_selection_working"] >= 2,  # At least 2/4 working
+            "logs_present": results["logs_verified"] == 1,
+            "no_critical_failures": len(results["critical_failures"]) == 0
+        }
+        
+        overall_success = all(success_criteria.values())
+        
+        if overall_success:
+            print(f"\n   🎉 INTELLIGENT DOCUMENT SYSTEM COMPLETELY SUCCESSFUL")
+            print(f"   ✅ Documents différents pour exercices avec contenu géographique varié")
+            print(f"   ✅ Sélection intelligente basée sur analyse du contenu")
+            print(f"   ✅ Logs montrant l'analyse contextuelle")
+            print(f"   ✅ Cartes appropriées (Asie pour Tokyo, Amérique du Nord pour New York)")
+        elif success_criteria["documents_different"] and success_criteria["intelligent_selection"]:
+            print(f"\n   ⚠️  Intelligent document system mostly working but some issues")
+        else:
+            print(f"\n   🚨 CRITICAL: Intelligent document system not working as expected")
+        
+        return overall_success, results
+    
+    def _analyze_document_type_from_title(self, title: str) -> str:
+        """Analyze document type from title for testing purposes"""
+        title_lower = title.lower()
+        
+        if any(term in title_lower for term in ["asie", "asia"]):
+            return "carte_asie"
+        elif any(term in title_lower for term in ["amérique du nord", "north america"]):
+            return "carte_amerique_nord"
+        elif any(term in title_lower for term in ["europe"]):
+            return "carte_europe"
+        elif any(term in title_lower for term in ["afrique", "africa"]):
+            return "carte_afrique"
+        elif any(term in title_lower for term in ["france"]):
+            return "carte_france"
+        elif any(term in title_lower for term in ["monde", "world", "planisphère"]):
+            return "carte_monde"
+        else:
+            return "unknown"
+
 if __name__ == "__main__":
     tester = LeMaitreMotAPITester()
     
