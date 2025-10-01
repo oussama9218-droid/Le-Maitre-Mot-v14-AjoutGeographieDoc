@@ -152,15 +152,18 @@ backend:
 
   - task: "Endpoint Roadmap public - Transparence utilisateur"
     implemented: true
-    working: "NA"
+    working: true
     file: "server.py"
     stuck_count: 0 
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "ROADMAP PUBLIQUE CRÉÉE: Nouvel endpoint /roadmap exposant toutes matières organisées par statut avec métadonnées (subjects_for_status avec description, expected, note, features, chapter_count). Phases timeline structurées (Phase 1: Oct 2025 Français/EMC, Phase 2: Nov-Dec 2025 Histoire/Géo/SES, Phase 3: Jan-Mar 2026 EPS/Arts/Techno Beta, Phase 4: 2026+ Spécialités). Stats globales incluses."
+        - working: true
+        - agent: "testing"
+        - comment: "✅ ENDPOINT ROADMAP PUBLIC VERIFIED: Endpoint /roadmap accessible et fonctionnel pour transparence utilisateur. Structure roadmap complète avec toutes matières organisées par statut (active/coming_soon/planned/beta/future), métadonnées détaillées (description, expected, note, features, chapter_count), phases timeline structurées avec dates prévues. Transparence utilisateur assurée avec visibilité complète sur développement plateforme."
 
   - task: "Mathematical expressions rendering system with LaTeX formatting and MathML conversion"
     implemented: true
