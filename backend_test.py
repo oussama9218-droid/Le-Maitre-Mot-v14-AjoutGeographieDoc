@@ -421,52 +421,64 @@ class LeMaitreMotAPITester:
             "critical_failures": []
         }
         
-        for scenario in test_scenarios:
+        for scenario in all_scenarios:
             print(f"\n🔍 Testing: {scenario['name']}")
             print(f"   Category: {scenario['category']}")
-            print(f"   Expected: {'✅ Should work' if scenario['expected_working'] else '❌ Should fail'}")
+            print(f"   Priority: {scenario['priority']}")
+            
+            # Determine expected status and behavior
+            if 'expected_working' in scenario:
+                expected_status = 200 if scenario['expected_working'] else 400
+                expected_behavior = "✅ Should work" if scenario['expected_working'] else "❌ Should fail"
+            else:
+                expected_status = scenario['expected_status']
+                expected_behavior = f"Should return {expected_status}"
+            
+            print(f"   Expected: {expected_behavior}")
             
             start_time = time.time()
             success, response = self.run_test(
-                f"400 FIX: {scenario['name']}",
+                f"URGENT FIX: {scenario['name']}",
                 "POST",
                 "generate", 
-                200 if scenario['expected_working'] else 400,
+                expected_status,
                 data=scenario['data'],
                 timeout=60
             )
             generation_time = time.time() - start_time
             
-            # Track performance
-            results["performance_data"].append({
-                "subject": scenario['data']['matiere'],
-                "time": generation_time,
-                "success": success
-            })
+            # Track performance for successful generations
+            if expected_status == 200:
+                results["performance_data"].append({
+                    "subject": scenario['data']['matiere'],
+                    "time": generation_time,
+                    "success": success,
+                    "priority": scenario['priority']
+                })
             
             # Update category counters
-            if scenario['category'] == 'regression':
-                results["regression_tests"]["total"] += 1
-            elif scenario['category'] == 'fix_validation':
-                results["fix_validation_tests"]["total"] += 1
+            category = scenario['category']
+            if category in results:
+                results[category]["total"] += 1
             
-            if success == scenario['expected_working']:
+            if success:
                 results["all_tests"]["passed"] += 1
-                if scenario['category'] == 'regression':
-                    results["regression_tests"]["passed"] += 1
-                elif scenario['category'] == 'fix_validation':
-                    results["fix_validation_tests"]["passed"] += 1
+                if category in results:
+                    results[category]["passed"] += 1
                 
                 print(f"   ✅ {scenario['name']} - EXPECTED RESULT")
-                if success and isinstance(response, dict):
+                
+                if expected_status == 200 and isinstance(response, dict):
                     document = response.get('document')
                     if document:
                         exercises = document.get('exercises', [])
                         print(f"   ✅ Generated {len(exercises)} exercises in {generation_time:.2f}s")
                         
-                        # Performance check
+                        # Critical performance check
                         if generation_time > 30:
                             print(f"   ⚠️  Generation time exceeds 30s threshold")
+                            if scenario['priority'] == 'ABSOLUE':
+                                results["critical_failures"].append(f"Performance issue: {scenario['name']} took {generation_time:.2f}s")
                         else:
                             print(f"   ✅ Generation time within 30s threshold")
                         
@@ -475,12 +487,31 @@ class LeMaitreMotAPITester:
                             self.validate_french_content(exercises)
                         elif scenario['data']['matiere'] == 'Géographie':
                             self.validate_geography_content(exercises)
+                            
+                elif expected_status == 423:
+                    # Check for proper 423 Locked response
+                    if isinstance(response, dict):
+                        error_msg = response.get('detail', '')
+                        if 'coming_soon' in error_msg.lower() or 'locked' in error_msg.lower():
+                            print(f"   ✅ Proper 423 Locked response for inactive subject")
+                        else:
+                            print(f"   ⚠️  423 response but unclear message: {error_msg}")
+                            
+                elif expected_status == 400:
+                    # Check for proper 400 validation error
+                    if isinstance(response, dict):
+                        error_msg = response.get('detail', '')
+                        print(f"   ✅ Proper 400 validation error: {error_msg}")
             else:
                 print(f"   ❌ {scenario['name']} - UNEXPECTED RESULT")
                 if isinstance(response, dict):
                     error_detail = response.get('detail', 'Unknown error')
                     results["error_patterns"].append(error_detail)
                     print(f"   ERROR: {error_detail}")
+                    
+                    # Critical failure tracking
+                    if scenario['priority'] == 'ABSOLUE':
+                        results["critical_failures"].append(f"CRITICAL: {scenario['name']} failed - {error_detail}")
                     
                     # Analyze error patterns
                     if 'chapitre non trouvé' in error_detail.lower():
@@ -489,6 +520,8 @@ class LeMaitreMotAPITester:
                         print("   🔍 SUBJECT VALIDATION ERROR - Feature flags issue")
                     elif 'validation' in error_detail.lower():
                         print("   🔍 GENERAL VALIDATION ERROR")
+                    elif expected_status == 200:
+                        print("   🚨 CRITICAL: Active subject should work but failed")
         
         # Summary of fix validation
         print(f"\n📊 FIX VALIDATION SUMMARY:")
