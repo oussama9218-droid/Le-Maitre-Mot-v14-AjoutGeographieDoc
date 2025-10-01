@@ -12829,6 +12829,12 @@ if __name__ == "__main__":
             print("🚨 RUNNING URGENT VALIDATION MODE")
             success = tester.run_urgent_validation_tests()
             sys.exit(0 if success else 1)
+        elif test_mode == "geography":
+            # Run Geography document tests
+            print("🗺️ RUNNING GEOGRAPHY DOCUMENT TESTS")
+            passed, total = tester.run_geography_document_tests()
+            print(f"\n🗺️ Geography Document Tests: {passed}/{total} passed")
+            sys.exit(0 if passed == total else 1)
         elif test_mode == "race-condition":
             # Legacy support for race condition tests
             run_magic_link_race_condition_tests()
