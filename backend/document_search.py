@@ -149,29 +149,34 @@ class DocumentSearcher:
         """Analyse le contenu de l'exercice pour déterminer le type de document approprié"""
         enonce_lower = enonce.lower()
         
-        # Détection par zones géographiques spécifiques
-        if any(pays in enonce_lower for pays in ["france", "français", "paris", "lyon", "marseille"]):
+        # Priorité 1: Détection spécifique par zones géographiques
+        if any(terme in enonce_lower for terme in ["france", "français", "agglomérations françaises", "grandes villes françaises"]):
             return "carte_france"
-        elif any(pays in enonce_lower for pays in ["japon", "tokyo", "osaka", "kyoto", "chine", "beijing", "shanghai", "corée", "séoul", "asie"]):
-            return "carte_asie"
-        elif any(pays in enonce_lower for pays in ["états-unis", "usa", "new york", "california", "texas", "canada", "toronto", "vancouver", "amérique du nord"]):
-            return "carte_amerique_nord"
-        elif any(pays in enonce_lower for pays in ["allemagne", "berlin", "italie", "rome", "espagne", "madrid", "royaume-uni", "londres", "europe"]):
+        elif any(terme in enonce_lower for terme in ["européenne", "capitales européennes", "europe", "allemagne", "berlin", "italie", "rome", "espagne", "madrid", "royaume-uni", "londres"]):
             return "carte_europe"
-        elif any(pays in enonce_lower for pays in ["afrique", "nigeria", "kenya", "égypte", "maroc", "algérie"]):
+        elif any(terme in enonce_lower for terme in ["japon", "tokyo", "osaka", "kyoto", "chine", "beijing", "shanghai", "corée", "séoul", "asie", "asiatiques"]):
+            return "carte_asie"
+        elif any(terme in enonce_lower for terme in ["états-unis", "usa", "new york", "california", "texas", "canada", "toronto", "vancouver", "amérique du nord", "amérique", "américaines"]):
+            return "carte_amerique_nord"
+        elif any(terme in enonce_lower for terme in ["afrique", "nigeria", "kenya", "égypte", "maroc", "algérie", "africaines"]):
             return "carte_afrique"
-        elif any(terme in enonce_lower for terme in ["monde", "mondial", "planète", "continents", "océans"]):
+        
+        # Priorité 2: Détection par échelle géographique
+        elif any(terme in enonce_lower for terme in ["carte du monde", "monde", "mondial", "planète", "continents", "océans", "grandes villes du monde", "à l'échelle mondiale"]):
             return "carte_monde"
         
-        # Détection par type de contenu géographique
-        if any(terme in enonce_lower for terme in ["urbain", "ville", "métropole", "agglomération"]):
-            # Pour les questions urbaines, prioriser les cartes régionales
-            if any(terme in enonce_lower for terme in ["tokyo", "japon", "asie"]):
-                return "carte_asie"
-            elif any(terme in enonce_lower for terme in ["new york", "états-unis", "amérique"]):
-                return "carte_amerique_nord"
+        # Priorité 3: Détection contextuelle urbaine
+        elif any(terme in enonce_lower for terme in ["métropole", "agglomération", "ville", "urbain", "densité de population"]):
+            # Analyse contextuelle pour les questions urbaines
+            if any(terme in enonce_lower for terme in ["france", "françaises"]):
+                return "carte_france"
+            elif any(terme in enonce_lower for terme in ["européennes", "europe"]):
+                return "carte_europe"
+            elif any(terme in enonce_lower for terme in ["mondiales", "du monde", "mondiale"]):
+                return "carte_monde"
             else:
-                return "carte_monde"  # Fallback pour urbain général
+                # Si métropole sans contexte géographique précis, utiliser carte monde
+                return "carte_monde"
         
         # Fallback par défaut
         return "carte_monde"
