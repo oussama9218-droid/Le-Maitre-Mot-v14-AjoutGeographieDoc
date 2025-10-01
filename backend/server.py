@@ -1402,6 +1402,10 @@ async def generate_exercises_with_ai(matiere: str, niveau: str, chapitre: str, t
     """Generate exercises using AI"""
     logger = get_logger()
     
+    # 🎯 RESET DIVERSITY TRACKING for new document generation
+    if hasattr(generate_exercises_with_ai, 'used_document_types'):
+        generate_exercises_with_ai.used_document_types = []
+    
     # Log input parameters
     logger.info(
         "Starting AI exercise generation",
