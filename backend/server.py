@@ -3577,6 +3577,49 @@ async def export_pdf(request: ExportRequest, http_request: Request):
                 else:
                     exercise['schema_svg'] = ""
                 
+                # NOUVEAU: Process geographic document if present
+                if exercise.get('document'):
+                    doc_data = exercise['document']
+                    logger.info(
+                        "🗺️ Processing geographic document for PDF export",
+                        module_name="export",
+                        func_name="process_geographic_document",
+                        doc_id=request.document_id,
+                        exercise_id=exercise.get('id', 'unknown'),
+                        document_title=doc_data.get('titre', 'Unknown'),
+                        document_type=doc_data.get('type', 'Unknown'),
+                        has_image=bool(doc_data.get('url_fichier_direct')),
+                        image_url=doc_data.get('url_fichier_direct', 'No URL')[:100] if doc_data.get('url_fichier_direct') else None,
+                        licence_type=doc_data.get('licence', {}).get('type', 'Unknown'),
+                        licence_attribution=doc_data.get('licence', {}).get('notice_attribution', 'No attribution')[:50] if doc_data.get('licence', {}).get('notice_attribution') else None
+                    )
+                    
+                    # Validate document data for PDF rendering
+                    if not doc_data.get('url_fichier_direct'):
+                        logger.warning(
+                            "⚠️ Geographic document missing image URL",
+                            module_name="export",
+                            func_name="document_validation",
+                            doc_id=request.document_id,
+                            document_title=doc_data.get('titre', 'Unknown')
+                        )
+                    
+                    if not doc_data.get('licence', {}).get('notice_attribution'):
+                        logger.warning(
+                            "⚠️ Geographic document missing attribution",
+                            module_name="export",
+                            func_name="document_validation",
+                            doc_id=request.document_id,
+                            document_title=doc_data.get('titre', 'Unknown')
+                        )
+                else:
+                    logger.debug(
+                        "No geographic document for exercise",
+                        module_name="export",
+                        func_name="process_geographic_document",
+                        exercise_id=exercise.get('id', 'unknown')
+                    )
+                
                 # Process solution if it exists
                 if exercise.get('solution'):
                     if exercise['solution'].get('resultat'):
