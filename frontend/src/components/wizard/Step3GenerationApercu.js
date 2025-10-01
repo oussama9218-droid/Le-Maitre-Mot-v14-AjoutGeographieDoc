@@ -23,6 +23,30 @@ const Step3GenerationApercu = ({
 }) => {
   const canGenerate = selectedMatiere && selectedNiveau && selectedChapitre && typeDoc && difficulte && nbExercices;
 
+  // 🔍 Debug logging for geographic documents
+  React.useEffect(() => {
+    if (currentDocument && currentDocument.exercises) {
+      const exercisesWithDocuments = currentDocument.exercises.filter(ex => ex.document);
+      if (exercisesWithDocuments.length > 0) {
+        console.log('🗺️ [Step3] Geographic documents detected:', {
+          totalExercises: currentDocument.exercises.length,
+          exercisesWithDocuments: exercisesWithDocuments.length,
+          matiere: selectedMatiere,
+          documents: exercisesWithDocuments.map(ex => ({
+            title: ex.document?.titre,
+            type: ex.document?.type,
+            hasImage: !!ex.document?.url_fichier_direct
+          }))
+        });
+      } else {
+        console.log('🗺️ [Step3] No geographic documents in current document', {
+          matiere: selectedMatiere,
+          totalExercises: currentDocument.exercises.length
+        });
+      }
+    }
+  }, [currentDocument, selectedMatiere]);
+
   return (
     <div className="space-y-6">
       {/* Section Génération */}
