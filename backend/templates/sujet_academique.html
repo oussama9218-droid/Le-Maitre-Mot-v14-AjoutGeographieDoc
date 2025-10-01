@@ -128,6 +128,29 @@
     <div class="geometric-schema">
         {{ exercise.schema_svg|safe }}
     </div>
+    {% endif %}
+    
+    <!-- NOUVEAU: Geographic document -->
+    {% if exercise.document %}
+      <div class="geographic-document">
+        <div class="document-title">🗺️ {{ exercise.document.titre }}</div>
+        
+        {% if exercise.document.url_fichier_direct %}
+          <div class="document-image">
+            <img src="{{ exercise.document.url_fichier_direct }}" 
+                 alt="{{ exercise.document.titre }}" 
+                 style="max-width: 100%; max-height: 300px; margin: 10px auto; display: block; border: 1px solid #ccc;"/>
+          </div>
+        {% endif %}
+        
+        {% if exercise.document.licence and exercise.document.licence.notice_attribution %}
+          <div class="document-attribution">
+            <small>{{ exercise.document.licence.notice_attribution }}
+            {% if exercise.document.licence.type %} ({{ exercise.document.licence.type }}){% endif %}
+            </small>
+          </div>
+        {% endif %}
+      </div>
     {% endif %}</div>
     
     {% if exercise.type == 'qcm' and exercise.donnees and exercise.donnees.options %}
