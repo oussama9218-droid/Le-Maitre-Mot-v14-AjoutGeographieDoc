@@ -20,7 +20,7 @@ class DocumentSearcher:
         self.validated_documents_cache = {
             # Cartes de base avec URLs vérifiées fonctionnelles
             "carte_france": {
-                "titre": "Carte administrative de France avec départements",
+                "titre": "Carte administrative de France métropolitaine",
                 "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/France%2C_administrative_divisions_-_Nmbrs_%28departments%2Boverseas%29.svg/1200px-France%2C_administrative_divisions_-_Nmbrs_%28departments%2Boverseas%29.svg.png",
                 "licence": {"type": "CC BY-SA 3.0", "notice_attribution": "TUBS, CC BY-SA 3.0, via Wikimedia Commons"},
                 "largeur_px": 1200,
