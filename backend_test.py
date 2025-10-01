@@ -75,6 +75,80 @@ class LeMaitreMotAPITester:
         """Test the root API endpoint"""
         return self.run_test("Root API", "GET", "", 200)
 
+    def test_feature_flags_system(self):
+        """Test the feature flags system and curriculum validation"""
+        print("\n🏁 TESTING FEATURE FLAGS SYSTEM")
+        print("="*50)
+        print("CONTEXT: Testing new curriculum_complete.py feature flags system")
+        
+        # Test catalog endpoint to verify feature flags integration
+        success, response = self.run_test("Feature Flags Catalog", "GET", "catalog", 200)
+        
+        if success and isinstance(response, dict):
+            catalog = response.get('catalog', [])
+            roadmap = response.get('roadmap', {})
+            
+            print(f"   📚 Found {len(catalog)} subjects in catalog")
+            
+            # Expected active subjects according to curriculum_complete.py
+            expected_active = ['Mathématiques', 'Physique-Chimie', 'SVT', 'Français', 'Géographie']
+            found_active = []
+            
+            for subject in catalog:
+                subject_name = subject.get('name')
+                status = subject.get('status')
+                status_info = subject.get('status_info', {})
+                
+                print(f"   {status_info.get('emoji', '❓')} {subject_name}: {status}")
+                
+                if status == 'active':
+                    found_active.append(subject_name)
+                    
+                    # Verify active subjects have data
+                    levels = subject.get('levels', [])
+                    if levels:
+                        print(f"     ✅ Has {len(levels)} levels with data")
+                    else:
+                        print(f"     ❌ No levels data for active subject")
+            
+            # Verify all expected active subjects are present
+            missing_active = [s for s in expected_active if s not in found_active]
+            extra_active = [s for s in found_active if s not in expected_active]
+            
+            print(f"\n   📊 FEATURE FLAGS VALIDATION:")
+            print(f"   Expected active: {expected_active}")
+            print(f"   Found active: {found_active}")
+            
+            if not missing_active and not extra_active:
+                print(f"   ✅ All expected active subjects found, no extras")
+                feature_flags_valid = True
+            else:
+                feature_flags_valid = False
+                if missing_active:
+                    print(f"   ❌ Missing active subjects: {missing_active}")
+                if extra_active:
+                    print(f"   ⚠️  Extra active subjects: {extra_active}")
+            
+            # Test roadmap data
+            if roadmap:
+                print(f"\n   🗺️  ROADMAP DATA:")
+                for status, subjects in roadmap.items():
+                    if isinstance(subjects, list):
+                        print(f"   {status}: {len(subjects)} subjects")
+                    elif isinstance(subjects, dict):
+                        subject_count = subjects.get('subject_count', 0)
+                        print(f"   {status}: {subject_count} subjects")
+            
+            return feature_flags_valid, {
+                "active_subjects": found_active,
+                "missing_active": missing_active,
+                "extra_active": extra_active,
+                "total_subjects": len(catalog)
+            }
+        else:
+            print("   ❌ Failed to get catalog data")
+            return False, {}
+
     def test_catalog_endpoint(self):
         """Test the catalog endpoint with new curriculum structure including Physique-Chimie and SVT"""
         success, response = self.run_test("Catalog", "GET", "catalog", 200)
