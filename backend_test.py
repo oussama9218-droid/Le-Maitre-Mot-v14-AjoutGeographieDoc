@@ -3047,10 +3047,29 @@ class LeMaitreMotAPITester:
                             print(f"     🔍 Testing URL accessibility...")
                             try:
                                 import requests
-                                url_response = requests.head(url, timeout=10, allow_redirects=True)
+                                # Try HEAD request first
+                                headers = {
+                                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+                                }
+                                url_response = requests.head(url, timeout=10, allow_redirects=True, headers=headers)
+                                
+                                # If HEAD fails with 403, try GET request
+                                if url_response.status_code == 403:
+                                    print(f"     ℹ️  HEAD request returned 403, trying GET request...")
+                                    url_response = requests.get(url, timeout=10, allow_redirects=True, headers=headers, stream=True)
+                                    # Only read first few bytes to avoid downloading entire image
+                                    content_peek = next(url_response.iter_content(chunk_size=1024), b'')
+                                    url_response.close()
+                                
                                 if url_response.status_code == 200:
                                     document_with_working_url = True
                                     print(f"     ✅ URL returns HTTP 200 - WORKING")
+                                    # Check if it's actually an image
+                                    content_type = url_response.headers.get('content-type', '')
+                                    if 'image' in content_type:
+                                        print(f"     ✅ Content-Type confirms image: {content_type}")
+                                    else:
+                                        print(f"     ⚠️  Unexpected content-type: {content_type}")
                                 else:
                                     print(f"     ❌ URL returns HTTP {url_response.status_code} - BROKEN")
                             except Exception as e:
