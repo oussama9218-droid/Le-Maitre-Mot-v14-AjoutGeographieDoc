@@ -8,7 +8,7 @@ import tempfile
 import os
 
 class PDFExportDebugTester:
-    def __init__(self, base_url="https://mathwizard-15.preview.emergentagent.com"):
+    def __init__(self, base_url="https://lemaitremot-1.preview.emergentagent.com"):
         self.base_url = base_url
         self.api_url = f"{base_url}/api"
         self.tests_run = 0

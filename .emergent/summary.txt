@@ -1,88 +1,76 @@
 <analysis>
-The AI engineer's work on Le Maître Mot V1 commenced with an MVP, providing AI-powered exercise generation, PDF export, freemium access, and magic link authentication. The trajectory highlights two phases: stability verification and functionality expansion. Initial bugs included logo rendering in PDFs and Pro status synchronization, which were addressed by refining session management and WeasyPrint path handling.
+The trajectory outlines an intensive development and debugging cycle for the Le Maître Mot application. The initial task was to provide a comprehensive summary of the existing project, which features a FastAPI backend and a React frontend for AI-powered educational content generation.
 
-Subsequent development focused on adding multiple PDF export styles (Classique, Moderne, Élève, Minimal, Corrigé détaillé, Académique) with dynamic access control. A significant effort was dedicated to LaTeX formula rendering, evolving from a problematic client-side MathJax approach to a robust server-side SVG conversion using  and . Most recently, the engineer integrated geometric schema generation (triangles, squares, circles) into the AI generation and backend rendering, converting JSON schema definitions into SVG images. The immediate challenge is ensuring these geometric schemas are correctly parsed and rendered as Base64 for web display and integrated into the PDF export pipeline to prevent raw JSON from appearing in the final document. The engineer is currently debugging the  function to properly integrate this schema rendering logic.
+The core of the work involved three major, sequential feature implementations requested by the user:
+1.  **Subject Expansion**: Integrating Physique-Chimie and SVT by updating  and adding subject-specific AI prompts in .
+2.  **Architectural Overhaul**: Implementing a feature flag system to support the entire French curriculum (23 subjects). This introduced a new  file, refactored  and  endpoints, and updated the React frontend to display subject statuses (e.g., active, coming_soon). This phase was followed by significant debugging to resolve  issues caused by incorrect prompt logic flow.
+3.  **Advanced Geography Module**: Creating a sophisticated system to automatically find and attach rights-free educational documents (maps) to Geography exercises. This required a new  module and further integration into .
+
+The final phase has been a series of rapid bug-fix cycles for the Geography feature. Issues addressed include a  caused by a validation conflict between the new and old curriculum systems, implementing the missing frontend/PDF display logic for documents, refining document selection to be context-aware, and finally, diagnosing that the documents fail to display because their cached URLs are invalid and return 404 errors.
 </analysis>
 
 <product_requirements>
-Le Maître Mot aims to be a comprehensive application for French teachers, enabling efficient creation of high-quality educational content. It should generate diverse exercise sheets by subject (Maths, French, Physics-Chemistry), level (6e-3e), and chapter, and provide customizable templates. Key features include AI-powered generation of exercises and solutions, differentiated versions (A/B, difficulty), and export to PDF/DOCX. The UI must be user-friendly.
+Le Maître Mot is an AI-driven web application for French educators to generate custom exercises. Initially focused on Mathematics, the platform has undergone significant expansion.
 
-Currently, the application supports AI-powered content generation using GPT-4o, solution generation, and PDF export for both exercise and solution sheets. A freemium model allows 3 free exports, with unlimited access via a paid Pro subscription managed by Stripe. Magic link authentication via Brevo ensures secure login, multi-device sessions, and Pro status persistence. Recent enhancements include single-session enforcement, subscription duplicate checks, and personalized Pro PDF templates (with logo, school, professor details, year, footer, and style selection). The application provides distinct PDF designs: a student-friendly version for non-Pro users and an ultra-professional, customizable version for Pro users. Latest updates include multiple export styles (Classique, Moderne, Élève, Corrigé détaillé, Minimal, Académique), high-quality server-side LaTeX rendering to SVG, and AI-generated geometric schemas (triangles, squares, circles) rendered as SVGs within documents for both web display and PDF export.
+**Core Functionality:**
+*   **AI Content Generation (GPT-4o):** Creates exercises and solutions based on the French national curriculum.
+*   **Freemium Model:** A free tier with limits and a Pro subscription (Stripe) unlocking advanced features.
+*   **PDF/DOCX Export:** Pro users can export content using customizable templates with school logos.
+
+**Recent Implementations & Vision:**
+The product vision has expanded to become a comprehensive platform for the entire French curriculum.
+1.  **Multi-Subject Support:** The application now actively supports **Mathématiques, Physique-Chimie, and SVT**, with specialized AI prompts for each.
+2.  **Feature Flag System:** A robust backend system has been implemented to manage the rollout of all 23 official subjects. The frontend displays the full catalog, visually indicating which subjects are active, coming soon, or in development, creating a clear product roadmap for users.
+3.  **Advanced Document Integration (Géographie):** For the Geography subject, a new system automatically searches for and embeds relevant, rights-free educational documents (e.g., maps from Wikimedia Commons) directly into the generated exercises, complete with licensing information.
 </product_requirements>
 
 <key_technical_concepts>
-- **FastAPI:** Python web framework for backend APIs.
-- **React:** JavaScript library for frontend UI.
-- **MongoDB:** NoSQL database for data storage.
-- **LLM Integration:** GPT-4o for AI content generation.
-- **WeasyPrint:** Python library for HTML to PDF conversion.
-- **Jinja2:** Templating engine for dynamic HTML rendering.
-- **Brevo:** Email service for magic link authentication.
-- **Stripe:** Payment gateway for managing subscriptions.
-- **Pydantic:** Data validation and settings management.
-- **JWT:** JSON Web Tokens for secure session management.
-- **Tailwind CSS & Shadcn UI:** Frontend styling and components.
-- **pylatexenc & Matplotlib:** LaTeX to SVG conversion and geometric schema rendering.
-- **svgwrite:** Python library for generating SVG.
+- **Backend:** FastAPI (Python), MongoDB, Pydantic, WeasyPrint (PDFs).
+- **Frontend:** React, shadcn/ui components.
+- **AI & Integrations:** GPT-4o via .
+- **Architecture:**
+    - **Feature Flags:** A dictionary-based system in  controls subject availability (, , etc.) without requiring redeployment.
+    - **Dynamic AI Prompts:**  uses a dictionary () to select specialized prompts based on the chosen subject, with a generic fallback for newly activated subjects.
+    - **Automated Document Search:** A two-pass system for Geography first generates the exercise text, then uses keywords to search and attach a relevant map from a cached/validated list or via the Wikimedia Commons API.
 </key_technical_concepts>
 
 <code_architecture>
-The application uses a standard full-stack architecture with a React frontend, FastAPI backend, and MongoDB database.
+The application uses a standard monolith architecture with a separate frontend and backend.
 
 
 
--   **/app/backend/server.py**:
-    -   **Importance**: Core FastAPI backend. Handles API logic, MongoDB interactions, LLM calls, PDF generation, authentication, and Stripe payments.
-    -   **Changes Made**:
-        -   Refactored PDF generation to use WeasyPrint with Jinja2.
-        -   Expanded  for subjects and updated AI prompts.
-        -   Added Pydantic models (, , ,  with ).
-        -   Modified  for  and  (logo).
-        -   Implemented logo upload, storage in , and static file serving.
-        -   Fixed logo URL conversion to absolute  paths for WeasyPrint in .
-        -   Integrated dynamic template selection based on user's  status and  choice.
-        -   Added  dictionary to define available templates and their properties.
-        -   Implemented server-side LaTeX to SVG conversion () into the PDF rendering pipeline.
-        -   Integrated geometric schema detection and SVG/Base64 rendering () for both web display (in  endpoint) and PDF export (in  endpoint).
-        -   Updated  prompts for AI to generate geometric schema JSON.
-        -   Fixed Pydantic object  error to .
-        -   Fixed template truncation caused by MathJax removal by restoring full HTML.
--   **/app/backend/templates/**:
-    -   **Importance**: Stores all HTML templates for PDF generation, separating design from backend logic.
-    -   **Changes Made**: Extensively modified. Includes , , , , , , , , , , , , , , . Standard templates were restored to a student-friendly design, while Pro templates offer an ultra-professional customizable look. All templates were initially modified to include MathJax, then MathJax was removed and replaced with server-side SVG rendering of LaTeX. Several templates (, , , , , , , , ) required extensive repair due to truncation issues from a previous MathJax removal script.
--   **/app/backend/latex_to_svg.py**:
-    -   **Importance**: New module for converting LaTeX mathematical expressions into SVG images. This enables high-quality, printable math rendering without relying on client-side JavaScript.
-    -   **Changes Made**: Implemented  method using  and  to render LaTeX to SVG. Includes regex patterns to detect various LaTeX constructs (fractions, exponents, roots, parentheses) and replaces them with inline SVG.
--   **/app/backend/geometry_renderer.py**:
-    -   **Importance**: New module for generating geometric figures (triangles, squares, circles, etc.) from structured JSON data into SVG images.
-    -   **Changes Made**: Implemented functions to draw different geometric figures using  and . Includes  for web display and  for direct SVG embedding in PDF, detecting JSON schema data within text and replacing it with the corresponding SVG.
--   **/app/frontend/src/App.js**:
-    -   **Importance**: Main React component, manages UI, state, and API calls.
-    -   **Changes Made**: Integrated authentication states (, , ). Contains  to handle session tokens and . Added states (, ) for template selection. Added logic to fetch available export styles () and display a dropdown menu for Pro users. Modified  to send the selected  to the backend.
--   **/app/frontend/src/components/TemplateSettings.js**:
-    -   **Importance**: Frontend component for Pro user template customization.
-    -   **Changes Made**: Handles inputs for professor, school, year, footer, logo upload, and style selection. Sends data as  to the backend.
+- ****: The core FastAPI application. It was heavily modified to:
+    - Integrate the feature flag system, refactoring the  and  endpoints to check subject status from .
+    - Implement dynamic AI prompt selection logic for different subjects.
+    - Integrate the  module to attach documents to Geography exercises.
+    - Add logging for the document attachment process in the PDF export logic.
+    - Fix a Pydantic model name conflict by renaming the  field to .
+
+- ****: Originally stored the curriculum for Mathematics. It was updated to include data for Physique-Chimie and SVT. It now represents the data source for subjects that were active before the feature flag system.
+
+- ****: A new file that is central to the platform's multi-subject strategy. It contains the  dictionary, which defines the status (, , etc.), description, and curriculum data for all 23 subjects of the French educational system.
+
+- ****: A new module created to implement the advanced Geography feature. It handles the logic for searching educational documents, primarily from a pre-validated cache of maps with keywords, and includes a (currently unused) framework for querying the Wikimedia Commons API as a fallback. It was updated to include more specific maps and a content analysis function to select the most relevant one.
+
+- ****: The React component for previewing generated exercises. It was modified to display the educational document attached to Geography exercises, including its title, image, and attribution notice. This was a critical addition to complete the feature on the user-facing side.
+
+- ****: The Jinja2 templates for PDF exports. All relevant templates (, , etc.) were updated with a new section and CSS to conditionally render the attached educational document and its attribution information if present in the exercise data.
 </code_architecture>
 
 <pending_tasks>
-- Investigate and repair the remaining problematic templates (,  (mapping issue),  (mapping issue), , , , ).
-- Implement automated tests for new features as requested by the user.
-- Implement advanced PDF layout options (beyond basic settings now added).
-- Integrate comprehensive analytics (beyond the basic tracking endpoint implemented).
-- Thoroughly test the integration of geometric schema rendering for all content types and ensure consistency between web display and PDF export.
+- **Original Deferred Tasks:** The two-pass AI generation for geometric schemas and the implementation of general analytics/testing remain unaddressed as development focus shifted to major feature expansions.
 </pending_tasks>
 
 <current_work>
-Immediately prior to this summary, the AI engineer was addressing a critical issue where geometric schemas generated by the AI were not appearing correctly on the web interface *before* PDF export, but were working for PDF export. The user clarified that the logic for detecting and replacing the JSON schema with its rendered SVG/Base64 representation was missing or incorrect within the  (or  in the AI's current context) function.
+The most recent work focuses on debugging the Advanced Geography Module. After successfully implementing the backend logic for document search and the frontend/PDF logic for display, two user-reported issues arose:
 
-The engineer had previously implemented:
-1.  A  module to convert geometric JSON schemas into SVG.
-2.  An update to the  endpoint in  to convert these schemas into Base64 encoded PNGs for web display.
-3.  An update to the AI prompt to generate geometric schemas as JSON within exercise text.
+1.  **Repetitive Documents:** The system always attached the same generic world map regardless of the exercise content. This was addressed by implementing an intelligent document system in . This system analyzes keywords in the exercise text (e.g., Tokyo, New York) to select a more contextually appropriate map from an expanded cache.
 
-The current work focuses on integrating the detection and replacement of geometric schema JSON within the  function in . The AI has confirmed that its  function correctly generates SVG for PDF. The immediate task is to ensure this function is properly invoked to parse the document's content (énoncé, solution, étapes) for geometric schema JSON, convert it, and embed the resulting SVG or Base64 image into the HTML template *before* WeasyPrint generates the PDF, thus ensuring consistency across web and PDF rendering.
+2.  **Documents Not Displaying:** Following the previous fix, the user reported that no documents were being displayed at all (pas de document affiché). The metadata (title, license) was visible, but the image itself was broken.
+
+Investigation revealed the root cause: the URLs for the maps stored in the  within  are invalid and return **404 Not Found** errors. The immediate task is to fix these broken image URLs.
 </current_work>
 
 <optional_next_step>
-Integrate the geometric schema detection and SVG/Base64 replacement logic into the  function's processing loop for all document content (énoncé, solution, étapes).
+Correct the invalid image URLs in the  within  to resolve the 404 errors and ensure geography documents are displayed correctly.
 </optional_next_step>
