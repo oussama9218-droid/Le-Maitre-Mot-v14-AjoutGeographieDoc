@@ -110,13 +110,17 @@ class DocumentSearcher:
         return self._get_fallback_document(doc_type, document_request)
     
     def _check_cache(self, doc_type: str, elements_requis: List[str]) -> Optional[Dict[str, Any]]:
-        """Vérifie le cache des documents validés"""
+        """Vérifie le cache des documents validés avec sélection intelligente"""
         
-        # Mapping des types vers les clés de cache
+        # Mapping des types vers les clés de cache avec logique intelligente
         cache_mapping = {
             "carte_france": "carte_france",
             "carte_monde": "carte_monde", 
-            "planisphere": "carte_monde"
+            "planisphere": "carte_monde",
+            "carte_europe": "carte_europe",
+            "carte_asie": "carte_asie", 
+            "carte_amerique_nord": "carte_amerique_nord",
+            "carte_afrique": "carte_afrique"
         }
         
         cache_key = cache_mapping.get(doc_type)
@@ -124,6 +128,37 @@ class DocumentSearcher:
             return self.validated_documents_cache[cache_key]
         
         return None
+    
+    def _analyze_content_for_document_type(self, enonce: str) -> str:
+        """Analyse le contenu de l'exercice pour déterminer le type de document approprié"""
+        enonce_lower = enonce.lower()
+        
+        # Détection par zones géographiques spécifiques
+        if any(pays in enonce_lower for pays in ["france", "français", "paris", "lyon", "marseille"]):
+            return "carte_france"
+        elif any(pays in enonce_lower for pays in ["japon", "tokyo", "osaka", "kyoto", "chine", "beijing", "shanghai", "corée", "séoul", "asie"]):
+            return "carte_asie"
+        elif any(pays in enonce_lower for pays in ["états-unis", "usa", "new york", "california", "texas", "canada", "toronto", "vancouver", "amérique du nord"]):
+            return "carte_amerique_nord"
+        elif any(pays in enonce_lower for pays in ["allemagne", "berlin", "italie", "rome", "espagne", "madrid", "royaume-uni", "londres", "europe"]):
+            return "carte_europe"
+        elif any(pays in enonce_lower for pays in ["afrique", "nigeria", "kenya", "égypte", "maroc", "algérie"]):
+            return "carte_afrique"
+        elif any(terme in enonce_lower for terme in ["monde", "mondial", "planète", "continents", "océans"]):
+            return "carte_monde"
+        
+        # Détection par type de contenu géographique
+        if any(terme in enonce_lower for terme in ["urbain", "ville", "métropole", "agglomération"]):
+            # Pour les questions urbaines, prioriser les cartes régionales
+            if any(terme in enonce_lower for terme in ["tokyo", "japon", "asie"]):
+                return "carte_asie"
+            elif any(terme in enonce_lower for terme in ["new york", "états-unis", "amérique"]):
+                return "carte_amerique_nord"
+            else:
+                return "carte_monde"  # Fallback pour urbain général
+        
+        # Fallback par défaut
+        return "carte_monde"
     
     async def _search_wikimedia_commons(self, doc_type: str, elements_requis: List[str], langue: str) -> List[Dict[str, Any]]:
         """Recherche via l'API Wikimedia Commons"""
