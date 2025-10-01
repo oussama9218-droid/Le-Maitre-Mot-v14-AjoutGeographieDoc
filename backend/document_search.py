@@ -369,16 +369,16 @@ class DocumentSearcher:
                 "inclut_continents": False,
                 "inclut_regions": True,
                 "licence": {
-                    "type": "CC BY-SA",
-                    "notice_attribution": "Wikimedia Commons - Vérifier licence",
+                    "type": "CC BY-SA 3.0",
+                    "notice_attribution": "TUBS, CC BY-SA 3.0, via Wikimedia Commons",
                     "lien_licence": "https://creativecommons.org/licenses/by-sa/3.0/"
                 },
-                "auteur_source": "Wikimedia Commons",
-                "url_page_commons": "https://commons.wikimedia.org",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/88/France_administrative_location_map.svg",
-                "largeur_px": 1587,
-                "hauteur_px": 1215,
-                "pourquoi_choisie": "Document de fallback - carte administrative standard",
+                "auteur_source": "TUBS/Wikimedia Commons",
+                "url_page_commons": "https://commons.wikimedia.org/wiki/File:France,_administrative_divisions_-_Nmbrs_(departments+overseas).svg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/55/France%2C_administrative_divisions_-_Nmbrs_%28departments%2Boverseas%29.svg/1200px-France%2C_administrative_divisions_-_Nmbrs_%28departments%2Boverseas%29.svg.png",
+                "largeur_px": 1200,
+                "hauteur_px": 1154,
+                "pourquoi_choisie": "Document de fallback - carte administrative avec départements",
                 "conseils_impression": "Format A4 paysage, marges 15mm"
             },
             "carte_monde": {
@@ -393,10 +393,10 @@ class DocumentSearcher:
                     "lien_licence": ""
                 },
                 "auteur_source": "NASA/Wikimedia",
-                "url_page_commons": "https://commons.wikimedia.org",
-                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/8/83/Equirectangular_projection_SW.jpg",
-                "largeur_px": 2058,
-                "hauteur_px": 1746,
+                "url_page_commons": "https://commons.wikimedia.org/wiki/File:Equirectangular_projection_SW.jpg",
+                "url_fichier_direct": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Equirectangular_projection_SW.jpg/1200px-Equirectangular_projection_SW.jpg",
+                "largeur_px": 1200,
+                "hauteur_px": 600,
                 "pourquoi_choisie": "Document de fallback - planisphère standard",
                 "conseils_impression": "Format A3 paysage, marges 10mm"
             },
