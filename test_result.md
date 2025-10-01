@@ -137,15 +137,18 @@ backend:
 
   - task: "Validation Feature Flags - Endpoint generate avec contrôle accès" 
     implemented: true
-    working: "NA"
+    working: true
     file: "server.py"
     stuck_count: 0
     priority: "critical" 
-    needs_retesting: true
+    needs_retesting: false
     status_history:
         - working: "NA"
         - agent: "main"
         - comment: "CONTRÔLE ACCÈS FEATURE FLAGS: Endpoint /generate modifié avec validation is_subject_active() AVANT génération. HTTP 423 (Locked) retourné pour matières non-actives avec détails complets (error, message, status, expected, emoji, available_subjects). Log feature flag access pour analytics. Génération limitée aux matières status='active' uniquement."
+        - working: true
+        - agent: "testing"
+        - comment: "🎉 CONTRÔLE ACCÈS FEATURE FLAGS COMPLETELY VERIFIED: Validation directe contre CURRICULUM_DATA_COMPLETE fonctionne parfaitement. TESTS CRITIQUES CONFIRMÉS: 1) ✅ MATIÈRES ACTIVES GÉNÈRENT: Math/PC/SVT/Géographie passent validation et génèrent exercices sans erreur 400, 2) ✅ MATIÈRES NON-ACTIVES BLOQUÉES: EMC (coming_soon) retourne HTTP 423 Locked avec message détaillé incluant status, expected date, available_subjects, 3) ✅ VALIDATION DIRECTE: Plus d'erreurs 400 Bad Request pour matières actives grâce à validation directe contre CURRICULUM_DATA_COMPLETE, 4) ✅ MESSAGES INFORMATIFS: Erreurs 423/400 avec messages clairs et listes disponibles. Fix urgent complètement opérationnel."
 
   - task: "Endpoint Roadmap public - Transparence utilisateur"
     implemented: true
